@@ -31,7 +31,7 @@
       border-radius: 50%;
       transition: $global-transition;
       &:hover {
-        transform: scale3d(0.90,0.90,1);
+        transform: scale3d(0.9, 0.9, 1);
       }
     }
   }
@@ -47,7 +47,7 @@
     }
   }
   .c-author__info {
-    font-family: 'Volkhov', serif;
+    font-family: "Volkhov", serif;
   }
   .c-author__name {
     font-size: 18px;
@@ -75,7 +75,7 @@
 .c-sidebar-footer {
   .c-social__title {
     position: relative;
-    font-family: 'Volkhov', serif;
+    font-family: "Volkhov", serif;
     font-size: 15px;
     font-weight: 700;
     color: $darkest;
@@ -137,6 +137,7 @@
     position: relative;
     width: 100%;
     padding: 20px;
+    padding-top: 50px;
     .c-contact-menu {
       margin: 20px 0;
     }
