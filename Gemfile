@@ -1,4 +1,12 @@
 source "https://rubygems.org"
-gemspec
 
-gem 'jekyll-compose', group: [:jekyll_plugins]
+gem 'bundler'
+gem 'jekyll'
+gem 'jekyll-paginate'
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+
+gem "webrick", "~> 1.8"
+gem 'wdm', '>= 0.1.0'

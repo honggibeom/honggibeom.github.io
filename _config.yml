@@ -1,59 +1,53 @@
-# Setup
-title: Not Pure Poole
-description: A simple, beautiful, and powerful Jekyll theme for blogs
-url: https://honggibeom.github.io
-avatar: /avatar.jpeg
-paginate: 5
-permalink: pretty
-cover_image: /bg.jpeg
+title: Welcome to Flexton
+description: Flexton is a responsive and ultra-minimal theme for Jekyll.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "honggibeom.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
-# Gems
+# Author
+author-name:    Clayton Hanson
+author-image:   1.jpg
+author-job:     Web Developer
+author-email:   hkb8129@gmail.com # Add your email for contant form.
+author-twitter: honggibeom # Add your twitter account
+about-author:   I am a web developer focusing on front-end development. Always hungry to keep learning.
+
+# Social settings
+social-twitter:   honggibeom
+social-facebook:
+social-github:    honggibeom
+social-pinterest: honggibeom
+social-instagram: honggibeom
+social-youtube:
+social-vk:   
+social-linkedin:
+
+# Newsletter
+mailchimp: # Add your MailChimp form identifier. For example - blogenjoyfreedom.us16.list-manage.com/subscribe/post?u=cd56155d76ddeeb4c0bc4d080&amp;id=7a526cd13e
+
+# Google Analytics
+google-analytics: # Add your identifier. For example UA-99631805-1
+
+# Comment Section (Disqus)
+disqus-identifier: mr-brown # Add your shortname for Disqus Comment. For example mr-brown
+
+# Build settings
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
 plugins:
-  - jekyll-gist
   - jekyll-paginate
-  - jekyll-seo-tag
-  - jekyll-feed
-  - jekyll-sitemap
 
-# Optimize Jekyll
-exclude:
-  - .editorconfig
-  - .git
-  - .jekyll-cache
-  - Gemfile
-  - Gemfile.lock
-  - LICENSE.md
-  - README.md
-  - scripts/
-  - not-pure-poole.gemspec
+paginate: 7
+paginate_path: "/page/:num/"
 
-# Optimize Jekyl SEO Tag
-twitter:
-  username: vszhub
-  card: summary
-logo: logo.png
-social:
-  name: Songzi Vong
-  links:
-    - https://twitter.com/vszhub
-    - https://github.com/vszhub
-google_site_verification: xxxxx
-lang: en
+include:
+  - _pages
 
 sass:
   sass_dir: _sass
-  style: :compressed
+  style: compressed
 
-# Options
-
-# Replace this value and uncomment to enable Google Analytics tracking
-# google_analytics: UA-000000-0
-
-# Replace this value and uncomment to enable Disqus
-# disqus: xxxxxx
-
-# Specify the author for blog posts
-author:
-  name: Songzi Vong
-  url: https://github.com/vszhub/
-  email: vszhub@gmail.com
+# Exclude from processing.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
