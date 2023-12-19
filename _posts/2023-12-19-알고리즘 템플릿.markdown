@@ -1,0 +1,21 @@
+---
+layout: post
+title: 알고리즘 템플릿
+image:
+date: 2018-03-02 13:35:20 +0200
+tags: ["알고리즘","백준","자바","java"]
+categories: ["알고리즘"]
+---
+
+---
+
+{% highlight java %}
+import java.util.;
+public class main{
+
+public static void main(String[] args){
+
+}
+
+}
+{% endhighlight %}
