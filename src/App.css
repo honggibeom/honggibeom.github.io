@@ -1,0 +1,74 @@
+header {
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  padding: 0 10%;
+  box-sizing: border-box;
+  background: #f2f2f2;
+  color: #767676;
+  height: 80px;
+  top: 0;
+}
+.blogName {
+  font-size: 20px;
+}
+.menus {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+}
+
+.menu {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  padding: 0 10px;
+}
+
+.menu:hover {
+  color: #4670a5;
+}
+
+.banner {
+  width: 100%;
+  padding-top: 80px;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #9bc7f3;
+  color: #000000;
+}
+
+.name {
+  font-size: 80px;
+}
+
+.stacks {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.stack {
+  color: #000000;
+  text-align: center;
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: 12px;
+}
+
+.stack > img {
+  width: 50px;
+  height: 50px;
+}
+
+.stack > p {
+  margin: 0;
+  margin-top: 5px;
+}
