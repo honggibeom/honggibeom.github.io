@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { TfiAngleRight } from "react-icons/tfi";
 import dateIcon from "../Img/MainEventComponent/date.svg";
 import locationIcon from "../Img/MainEventComponent/location.svg";
 import dateBlackIcon from "../Img/MainEventComponent/dateBlack.svg";
@@ -88,8 +88,7 @@ export function MainEventComponent1(props) {
   return (
     <MainEventComponent1Css
       onClick={() => {
-        if (data.is_sell) navigate("/EventDetail?id=" + props.id);
-        else window.location.href = data.ticket_link;
+        navigate("/EventDetail");
       }}
       img={img}
     >
@@ -645,3 +644,45 @@ export function MapEventComponent(props) {
     </MapEventComponentCss>
   );
 }
+export const MainEventList = (props) => {
+  return (
+    <div className="mainEvent">
+      <div className="subHeader">
+        <p className="subTitle">{props.content}</p>
+        <Link
+          className="moreDiv"
+          to={"/EventList?theme"}
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <p className="more">
+            모두보기 <TfiAngleRight style={{ marginLeft: "4px" }} />
+          </p>
+        </Link>
+      </div>
+      <div className="eventList">
+        <span></span>
+        {props.type === 1 &&
+          props.data.map((e, idx) => {
+            return (
+              <MainEventComponent1 key={idx} id={e.event.id} data={e.event} />
+            );
+          })}
+        {props.type === 2 &&
+          props.data.map((e, idx) => {
+            return (
+              <MainEventComponent2 key={idx} id={e.event.id} data={e.event} />
+            );
+          })}
+        {props.type === 3 && (
+          <MainEventComponent3
+            id={props.data[0].event.id}
+            theme={props.id}
+            len={props.data.length}
+            data={props.data[0].event}
+          />
+        )}
+        <span></span>
+      </div>
+    </div>
+  );
+};

@@ -197,13 +197,18 @@ function EventReviewCreateForm() {
     }
   };
 
+  const handleSubmitReview = () => {
+    alert("후기가 성공적으로 등록되었습니다.");
+    navigate("/event/detail");
+  };
+
   return (
     <EventReviewCreateFormCss>
       <div className="header">
         <TfiAngleLeft
           style={{ fontSize: "20px", marginLeft: "20px" }}
           onClick={() => {
-            navigate("/EventDetail?id=" + event.id);
+            navigate("/event/detail");
           }}
         />
         <p className="headerTitle">관람 후기</p>
@@ -289,7 +294,6 @@ function EventReviewCreateForm() {
                 onClick={(e) => {
                   let existBuf = [...existImg];
                   existBuf.splice(idx, 1);
-                  deleteImg({ id: e.target.id, type: "eventReview" });
                   setExistImg(existBuf);
                 }}
               />
@@ -329,12 +333,7 @@ function EventReviewCreateForm() {
         <div className="limit">
           <span>{len + " / " + 1000}</span>
         </div>
-        <div
-          className="next"
-          onClick={() => {
-            next();
-          }}
-        >
+        <div className="next" onClick={handleSubmitReview}>
           등록하기
         </div>
       </div>

@@ -206,7 +206,7 @@ const FindCss = styled.div`
         display: block;
         width: 90%;
         height: 5vh;
-        min-heght: ${(props) => props.vh * 3.5};
+        min-height: ${(props) => props.vh * 3.5};
         border: 1px solid #d2d4dc;
         margin-left: 5%;
         padding: ${(props) => props.vh * 1} 2vw;
@@ -239,6 +239,11 @@ function Find(props) {
   const navigate = useNavigate();
   const phone = useRef();
   const check = useRef();
+
+  //데이터 포맷 확인
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
   const [btn, setBtn] = useState({
     btn1: false,
     btn2: false,
@@ -258,6 +263,13 @@ function Find(props) {
   const [size, setSize] = useState(
     window.innerHeight < 600 ? window.screen.availHeight : window.innerHeight
   );
+
+  const formatPhone = (value) => {
+    const digits = String(value).replace(/\D/g, "");
+    if (digits.length < 4) return digits;
+    if (digits.length < 8) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  };
   const regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{10,20}$/;
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -279,8 +291,7 @@ function Find(props) {
         <div className="fa-solid fa-angle-left">
           <TfiAngleLeft
             onClick={() => {
-              if (page === 0) navigate("/?Login");
-              else setPage(page - 1);
+              navigate(-1);
             }}
           />
         </div>
@@ -340,6 +351,7 @@ function Find(props) {
               <input
                 type="text"
                 placeholder="010-1234-5678"
+                value={phoneNumber}
                 onFocus={() => {
                   phone.current.style.border = "1px solid #B03131";
                 }}
@@ -347,18 +359,22 @@ function Find(props) {
                   phone.current.style.border = "1px solid #D2D4DC";
                 }}
                 onChange={(e) => {
+                  const formattedNumber = formatPhone(e.target.value);
+                  setPhoneNumber(formattedNumber);
+
+                  const rawLen = formattedNumber.replace(/\D/g, "").length;
                   if (props.mode === "id") {
-                    if (e.target.value.length === 11)
-                      setBtn({ ...btn, btn1: true, phone: e.target.value });
-                    else {
-                      setBtn({ ...btn, btn1: false, phone: e.target.value });
-                    }
+                    setBtn({
+                      ...btn,
+                      btn1: rawLen === 11,
+                      phone: formattedNumber,
+                    });
                   } else {
-                    if (e.target.value.length === 11 && btn.id.length > 5)
-                      setBtn({ ...btn, btn1: true, phone: e.target.value });
-                    else {
-                      setBtn({ ...btn, btn1: false, phone: e.target.value });
-                    }
+                    setBtn({
+                      ...btn,
+                      btn1: rawLen === 11 && btn.id.length > 5,
+                      phone: formattedNumber,
+                    });
                   }
                 }}
               />
@@ -367,6 +383,7 @@ function Find(props) {
                 className="btn1"
                 onClick={() => {
                   if (btn.btn1 === true) {
+                    alert("인증번호를 입력한 전화번호로 보냈습니다.");
                   }
                 }}
               >
@@ -416,6 +433,7 @@ function Find(props) {
                   <input
                     type="password"
                     placeholder="인증번호를 입력해주세요"
+                    value={phoneNumber}
                     onChange={(e) => {
                       setResult({ ...result, pw: e.target.value });
                     }}

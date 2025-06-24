@@ -404,8 +404,13 @@ function EventReviewList() {
   const [startDate, setStartDate] = useState("준비중");
   const [endDate, setEndDate] = useState("마감시 종료");
   const [starRating, setStarRating] = useState((0).toFixed(1));
-  const [event, setEvent] = useState({});
+  const [event, setEvent] = useState({
+    event_place: { location: "", place_name: "" },
+    category: "",
+    title: "",
+  });
   const [select, setSelect] = useState({ id: -1, writer: -1 });
+
   const [confirm, setConfirm] = useState(false);
   const color = {
     전시회: "#1593FF",
@@ -452,7 +457,7 @@ function EventReviewList() {
         <TfiAngleLeft
           style={{ fontSize: "20px", marginLeft: "20px" }}
           onClick={() => {
-            navigate("/EventDetail?id=" + event.id);
+            navigate("/event/detail");
           }}
         />
         <p className="headerTitle">관람 후기</p>
@@ -512,6 +517,7 @@ function EventReviewList() {
           <>
             <Link
               to={
+                //해당 부분 수정 필요
                 "/CreateForm/EventReview?event_id=" +
                 event.id +
                 "&mode=edit&id=" +
@@ -533,10 +539,7 @@ function EventReviewList() {
           </>
         )}
         {select.writer !== (Number(sessionStorage.getItem("id")) || -1) && (
-          <Link
-            to={"/Report?mode=eventReview&id=" + select.id}
-            style={{ textDecoration: "none" }}
-          >
+          <Link to={"/report"} style={{ textDecoration: "none" }}>
             <p className="text red border">신고하기</p>
           </Link>
         )}

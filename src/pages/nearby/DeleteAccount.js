@@ -108,6 +108,11 @@ function DeleteAccount() {
     "다른 계정으로 재가입을 원합니다": false,
     직접입력: false,
   });
+  const handleDelete = () => {
+    //API 기능 추가 가능
+    alert("계정이 삭제되었습니다!");
+    navigate("/");
+  };
 
   return (
     <DeleteAccountCss>
@@ -170,7 +175,7 @@ function DeleteAccount() {
 
         <textarea placeholder="계정 삭제 이유를 알려주시면 서비스 개선에 적극적으로 반영하겠습니다!"></textarea>
 
-        <p className="delete" onClick={() => {}}>
+        <p className="delete" onClick={handleDelete}>
           계정 삭제하기
         </p>
       </div>

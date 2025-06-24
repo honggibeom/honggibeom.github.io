@@ -91,17 +91,31 @@ const ReportCss = styled.div`
     color: #00000088;
     font-size: 14px;
   }
+
   input[type="checkbox"] {
+    appearance: none;
+    position: relative;
+    box-sizing: border-box;
     width: 24px;
     height: 24px;
     border: 1px solid #999;
-    appearance: none;
-    cursor: pointer;
-    border-radius: 100%;
+    border-radius: 50%;
   }
-  input[type="checkbox"]:checked {
-    border: 0;
+
+  input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: calc(100% - 3px);
+    height: calc(100% - 3px);
+    background-color: #b03131;
+    border-radius: 50%;
   }
+
   .report {
     position: fixed;
     display: flex;
@@ -174,7 +188,15 @@ function Report() {
         placeholder="신고 상세 내용을 입력해주세요 (선택)"
         ref={content}
       ></textarea>
-      <p className="report">신고하기</p>
+      <p
+        className="report"
+        onClick={() => {
+          alert("성공적으로 신고되었습니다.");
+          navigate("/event-review");
+        }}
+      >
+        신고하기
+      </p>
     </ReportCss>
   );
 }

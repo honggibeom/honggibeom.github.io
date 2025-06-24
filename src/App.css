@@ -1,6 +1,8 @@
 .app {
   padding-top: 80px;
+  overflow: hidden;
 }
+
 header {
   width: 100vw;
   display: flex;
@@ -22,6 +24,7 @@ header {
   justify-content: space-between;
   align-items: center;
   font-size: 18px;
+  margin: 0;
 }
 
 .menu {

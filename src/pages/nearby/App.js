@@ -31,6 +31,8 @@ import Policys from "./Policys";
 import AlarmSetting from "./AlarmSetting";
 import Recommend from "./Recommend";
 import Order from "./Order";
+import EventReviewCreateForm from "./EventReviewCreateForm";
+
 const AppCss = styled.div`
   width: 100vw;
   display: flex;
@@ -55,7 +57,7 @@ const AppCss = styled.div`
     }
   }
   @media (min-width: 450px) {
-    .app {
+    .nearbyapp {
       border: 1px solid #00000022;
       border-radius: 8px;
     }
@@ -76,7 +78,7 @@ function App() {
   return (
     <Router basename={"nearby"}>
       <AppCss>
-        <div className="app">
+        <div className="nearbyapp">
           <Routes>
             <Route exact path="/" element={<Main />} />
             <Route path="/signup" element={<SignUp />} /> {/*회원가입*/}
@@ -98,7 +100,7 @@ function App() {
             {/* 설정 -> 공지사항 */}
             <Route path="/user-service" element={<UserService />} />
             {/* 설정 -> 고객센터 */}
-            <Route path="alarm-setting" element={<AlarmSetting />} />
+            <Route path="/alarm-setting" element={<AlarmSetting />} />
             <Route path="/policys" element={<Policys />} />
             <Route path="/tos" element={<Policy tos={0} />} />
             <Route path="/policy" element={<Policy tos={1} />} />
@@ -108,6 +110,7 @@ function App() {
             <Route path="/report" element={<Report />} />
             {/* 이벤트 상세 관련 추가 파일 */}
             <Route path="/event/detail" element={<Detail />} />
+            <Route path="/event-review-form" element={<EventReviewCreateForm />} />
             {/* 이벤트 상세 */}
             <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<SuccessPage />} />
@@ -121,7 +124,7 @@ function App() {
             <Route
               path="/ReserveTicketDetail"
               element={<ReserveTicketDetail />}
-            />{" "}
+            />
             <Route path="/order" element={<Order />} />
             {/* 티켓 예매내역 */}
           </Routes>
