@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
+
 import { Link, useNavigate } from "react-router-dom";
 import { TfiAngleLeft } from "react-icons/tfi";
 import searchIcon from "./Img/Header/search.svg";
@@ -9,7 +9,7 @@ import filtering from "./Function/FilterFunctions";
 import { EventListComponent } from "./Component/MainEventComponent";
 import Footer from "./Component/Footer";
 import Filter from "./Component/Filter";
-import { origin } from "./Origin/Origin";
+
 const BookmarkCSS = styled.div`
   width: 100vw;
   height: 100vh;
@@ -88,31 +88,6 @@ function Bookmark() {
     startDate: null,
     endDate: null,
   });
-
-  useEffect(() => {
-    axios
-      .get(origin + "search/bookmark/" + sessionStorage.getItem("id"))
-      .then((res) => {
-        const eventIds = res.data.data.map((item) => item.event_id);
-        const uniqueEventIds = [...new Set(eventIds)]; // 중복 이벤트 제거
-
-        Promise.all(
-          uniqueEventIds.map((uniqueEventIds) =>
-            axios.get(`https://deso-us.com/api/v1/event/${uniqueEventIds}`)
-          )
-        )
-          .then((eventResponses) => {
-            const events = eventResponses.map((res) => res.data.data);
-            setEvent(events);
-          })
-          .catch((error) => {
-            console.error("Event data:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Bookmark data: ", error);
-      });
-  }, []);
 
   useEffect(() => {
     setFilteredEvent([]);
@@ -199,7 +174,7 @@ function Bookmark() {
         >
           곧 종료
         </span>
-        <Link to={"/Search"} style={{ textDecoration: "none" }} key={"search"}>
+        <Link to={"/search"} style={{ textDecoration: "none" }} key={"search"}>
           <img alt="filter" src={searchIcon} className="icon" />
         </Link>
         <img

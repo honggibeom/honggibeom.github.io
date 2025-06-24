@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 
 import { BsDot } from "react-icons/bs";
 import { TfiAngleLeft } from "react-icons/tfi";
 import checkedIcon from "./Img/Report/checked.svg";
 import notCheckedIcon from "./Img/Report/notChecked.svg";
-import { origin } from "./Origin/Origin";
+
 const DeleteAccountCss = styled.div`
   width: 100vw;
   height: 100vh;
@@ -110,30 +109,6 @@ function DeleteAccount() {
     직접입력: false,
   });
 
-  const dedelteAccount = () => {
-    axios
-      .delete(origin + "account/delete/" + sessionStorage.getItem("id"), {
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          sessionStorage.removeItem("token");
-          sessionStorage.removeItem("userId");
-          sessionStorage.removeItem("id");
-          alert("회원 탈퇴가 완료되었습니다.\n이용해주셔서 감사합니다");
-          navigate("/");
-        }
-      })
-      .catch(() => {
-        alert("회원탈퇴 오류 \n 관리자에게 문의바랍니다.");
-      });
-  };
-
-  useEffect(() => {
-    console.log(window.screen);
-  }, []);
   return (
     <DeleteAccountCss>
       <div className="header">
@@ -195,12 +170,7 @@ function DeleteAccount() {
 
         <textarea placeholder="계정 삭제 이유를 알려주시면 서비스 개선에 적극적으로 반영하겠습니다!"></textarea>
 
-        <p
-          className="delete"
-          onClick={() => {
-            dedelteAccount();
-          }}
-        >
+        <p className="delete" onClick={() => {}}>
           계정 삭제하기
         </p>
       </div>

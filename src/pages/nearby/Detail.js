@@ -1,15 +1,8 @@
 //모듈
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import {
-  NaverMap,
-  NavermapsProvider,
-  Marker,
-  Container as MapDiv,
-} from "react-naver-maps";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import React, { useState, useRef } from "react";
+
 import { DetailEventComponent } from "./Component/MainEventComponent";
 import Footer from "./Component/Footer";
 
@@ -36,7 +29,7 @@ import festivalIcon from "./Img/Map/festival.svg";
 import fillstarIcon from "./Img/Detail/fillstar.svg";
 import emptystarIcon from "./Img/Detail/emptyStar.svg";
 import ticketIcon from "./Img/Detail/ticket.svg";
-import { origin } from "./Origin/Origin";
+
 import oneDayClassIcon from "./Img/Map/oneDayClassIcon.svg";
 const DetailCss = styled.div`
   margin: 0;
@@ -637,22 +630,6 @@ function Detail() {
         .replace("-", ".");
   }
 
-  async function deleteEvent() {
-    let res = await axios.delete(
-      "https://deso-us.com/api/v1/event/delete/" + data.id,
-      {
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      }
-    );
-
-    if (res.status === 200) {
-      alert("삭제가 완료되었습니다");
-      navigate("/");
-    }
-  }
-
   const isOpened = () => {
     let now = new Date();
     now.setHours(0);
@@ -734,58 +711,7 @@ function Detail() {
       buf[e.date] = e;
     }
     setClose(buf);
-
-    // let now = new Date();
-    // let monday = new Date();
-    // now.setDate();
   }
-
-  async function init(id) {
-    let res = await axios.get(origin + "event/" + id);
-    console.log(res);
-    setImg([...res.data.data.event_image_list]);
-    setPromotion([...res.data.data.promotion_image_list]);
-    setData({ ...res.data.data });
-    setRunInfo(res.data.data.event_open_list, res.data.data.event_close_list);
-    setFee([...res.data.data.event_price_list]);
-
-    if (res.data.data.start_date !== null) {
-      let buf = new Date(res.data.data.start_date);
-      setStartDate(buf);
-    }
-
-    if (res.data.data.end_date !== null) {
-      let buf = new Date(res.data.data.end_date);
-      setEndDate(buf);
-    }
-
-    if (
-      res.data.data.event_review_list !== null &&
-      res.data.data.event_review_list.length > 0
-    ) {
-      let reviewList = [];
-      let starBuf = [0, 0, 0, 0, 0];
-      let sum = 0;
-      for (const e of res.data.data.event_review_list) {
-        sum += e.star_rating;
-        starBuf[5 - e.star_rating] += 1;
-        reviewList.push(e.id);
-      }
-
-      setStarAvg((sum / res.data.data.event_review_list.length).toFixed(1));
-      setStarRating(starBuf);
-      setReview(reviewList);
-      let reviewId = reviewList[Math.floor(Math.random() * reviewList.length)];
-      axios.get(origin + "event/review/" + reviewId).then((res) => {
-        setSimpleReview(res.data.data);
-      });
-    }
-
-    axios.get(origin + "search/event/4").then((res) => {
-      setNearBy(res.data.data);
-    });
-  }
-
   const Anchor = () => {
     let buf = [];
     for (let i = 0; i < Math.ceil(img.length); i++) {
@@ -856,97 +782,6 @@ function Detail() {
     return buf;
   };
 
-  useEffect(() => {
-    const id = location.search.split("?")[1].split("id=")[1];
-    init(id)
-      .then(() => {
-        setLoading(true);
-        let flag = isOpened();
-        setIsOpen(flag);
-      })
-      .catch((e) => {
-        console.log(e);
-        alert("삭제된 이벤트입니다.");
-      });
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const userId = parseInt(sessionStorage.getItem("id"), 10) || null;
-      if (userId == null) return;
-      const eventId = data.id;
-
-      try {
-        const res = await axios.get(origin + "bookmark/" + userId);
-        const bookMarkList = res.data.data;
-
-        if (bookMarkList && bookMarkList.length > 0) {
-          const bookmark = bookMarkList.find(
-            (bookmark) => bookmark.event_id === eventId
-          );
-          if (bookmark) {
-            setIsBookmarked(bookmark);
-            setCurrentBookmarkId(bookmark.id);
-          } else {
-            setIsBookmarked(false);
-            setCurrentBookmarkId(null);
-          }
-        } else {
-          setIsBookmarked(false);
-          setCurrentBookmarkId(null);
-        }
-      } catch (error) {
-        console.error("Checking Bookmark status:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const handleBookmarkClick = async () => {
-    const userId = parseInt(sessionStorage.getItem("id"), 10) || null;
-    const eventId = data.id;
-    try {
-      const bookmarkApiEndpoint = isBookmarked
-        ? origin + "bookmark/delete/" + currentBookmarkId
-        : origin + "bookmark";
-
-      const requestMethod = isBookmarked ? "delete" : "post";
-
-      const response = await axios[requestMethod](bookmarkApiEndpoint, {
-        data: {
-          user_id: userId,
-          event_id: eventId,
-        },
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      });
-      if (response.status === 200) {
-        setIsBookmarked((prev) => !prev);
-      }
-      axios
-        .get(origin + "search/bookmark/" + userId)
-        .then((res) => {
-          const lastBookmark = res.data.data[res.data.data.length - 1];
-          if (
-            lastBookmark &&
-            lastBookmark.event_id === eventId &&
-            lastBookmark.user_id === userId
-          ) {
-            setCurrentBookmarkId(lastBookmark.id);
-          } else {
-            setCurrentBookmarkId(null);
-          }
-        })
-        .catch((error) => {
-          console.error("Bookmark data: ", error);
-          setCurrentBookmarkId(null);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <DetailCss
       top={top}
@@ -970,11 +805,7 @@ function Detail() {
           <TfiAngleLeft />
         </div>
         <div className="header_menu">
-          {isBookmarked ? (
-            <IoBookmark onClick={handleBookmarkClick} />
-          ) : (
-            <IoBookmarkOutline onClick={handleBookmarkClick} />
-          )}
+          {isBookmarked ? <IoBookmark /> : <IoBookmarkOutline />}
           <AiOutlineEllipsis
             onClick={() => {
               setPopup(true);
@@ -1287,7 +1118,7 @@ function Detail() {
 
         <div className="map">
           <p className="subTitle">이벤트 장소</p>
-          <NavermapsProvider
+          {/* <NavermapsProvider
             ncpClientId="pvhem24pi2"
             error={<p>Maps Load Error</p>}
             loading={<p>Maps Loading...</p>}
@@ -1324,27 +1155,29 @@ function Detail() {
                 </NaverMap>
               )}
             </MapDiv>
-          </NavermapsProvider>
+          </NavermapsProvider> */}
           {loading && (
             <div className="location">
               <p className="text">
                 {data.event_place.location + " " + data.event_place.place_name}
               </p>
 
-              <CopyToClipboard
+              <div
                 className="clip"
-                text={
-                  data.event_place.location + " " + data.event_place.place_name
-                }
-                onCopy={() => {
+                onClick={() => {
                   setCopy(true);
                   setTimeout(() => {
                     setCopy(false);
                   }, 800);
+                  navigator.clipboard.writeText(
+                    data.event_place.location +
+                      " " +
+                      data.event_place.place_name
+                  );
                 }}
               >
                 <img src={copyIcon} alt="copy" />
-              </CopyToClipboard>
+              </div>
             </div>
           )}
         </div>
@@ -1458,12 +1291,7 @@ function Detail() {
             >
               {!confirm && "삭제하기"}
               {confirm && (
-                <span
-                  className="confirm red "
-                  onClick={() => {
-                    deleteEvent();
-                  }}
-                >
+                <span className="confirm red " onClick={() => {}}>
                   한번더 누르면 삭제됩니다
                 </span>
               )}

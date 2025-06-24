@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Component/Footer";
-import axios from "axios";
+
 import dateIcon from "./Img/Detail/date.svg";
 import locationIcon from "./Img/Detail/location.svg";
 import fillstarIcon from "./Img/Detail/fillstar.svg";
 import emptystarIcon from "./Img/Detail/emptyStar.svg";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import { origin } from "./Origin/Origin";
+
 const EventReviewComponentCss = styled.div`
   width: 100%;
   .flex {
@@ -417,34 +417,9 @@ function EventReviewList() {
     return date.split("T")[0].replace("-", ".");
   }
   const deleteEventReview = () => {
-    axios.delete(origin + "event/review/delete/" + select.id).then(() => {
-      alert("삭제되었습니다");
-      window.location.reload();
-    });
+    alert("삭제되었습니다");
+    window.location.reload();
   };
-
-  useEffect(() => {
-    let id = location.search.split("id=")[1];
-    axios.get(origin + "event/" + id).then((res) => {
-      setEvent(res.data.data);
-      if (res.data.data.start_date !== null)
-        setStartDate(dateFromat(res.data.data.start_date));
-      if (res.data.data.end_date !== null)
-        setEndDate(dateFromat(res.data.data.end_date));
-      if (
-        res.data.data.event_review_list !== null &&
-        res.data.data.event_review_list.length > 0
-      ) {
-        setReview(res.data.data.event_review_list);
-        let buf = 0;
-        res.data.data.event_review_list.forEach((e) => {
-          buf += e.star_rating;
-        });
-        buf /= res.data.data.event_review_list.length;
-        setStarRating(buf.toFixed(1));
-      }
-    });
-  }, []);
 
   const StarComponent = (props) => {
     let buf = [];

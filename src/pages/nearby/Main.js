@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import styled from "styled-components";
 import Footer from "./Component/Footer";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import { TfiAngleRight } from "react-icons/tfi";
 import { AiOutlineDown } from "react-icons/ai";
 import {
@@ -339,146 +339,7 @@ function Main() {
     },
     touch ? null : 5000
   );
-  async function socialLogin() {
-    if (location.search.includes("kakao")) {
-      let kakao = await axios
-        .get(
-          shortOrigin +
-            "kakaologin?code=" +
-            location.search.split("&")[1].split("code=")[1]
-        )
-        .catch((e) => {
-          console.log(e);
-        });
-      console.log(kakao);
-      if (kakao !== undefined) {
-        localStorage.setItem("deso_id", kakao.data.email);
-        localStorage.setItem("deso_pw", "kakao");
-      }
-    } else if (location.search.includes("apple")) {
-      let apple = await axios.get(
-        shortOrigin +
-          "oauth_apple?code=" +
-          location.search.split("&")[1].split("code=")[1]
-      );
-      localStorage.setItem("deso_id", apple.data.data.code);
-      localStorage.setItem("deso_pw", "kakao");
-      sessionStorage.setItem("id", apple.data.data.user_id);
-    }
-  }
-
-  async function autoLogin() {
-    if (
-      localStorage.getItem("deso_id") !== null &&
-      localStorage.getItem("deso_pw") !== null
-    ) {
-      const tmp = await axios
-        .post(shortOrigin + "login", {
-          email: localStorage.getItem("deso_id"),
-          password: localStorage.getItem("deso_pw"),
-        })
-        .catch((e) => {
-          localStorage.removeItem("deso_id");
-          localStorage.removeItem("deso_pw");
-          console.log(e);
-        });
-
-      const token = tmp.headers.authorization;
-      const accountid = tmp.headers.id;
-      if (token !== undefined && accountid !== undefined) {
-        const tmp2 = await axios
-          .get(origin + "account/" + accountid, {
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              Authorization: token,
-            },
-          })
-          .catch(() => {
-            alert("에러 발생 다시 시도해주세요");
-          });
-
-        if (tmp2.data.data.warning !== null && tmp2.data.data.warning >= 5) {
-          return;
-        } else {
-          sessionStorage.setItem("userId", tmp2.data.data.email);
-          sessionStorage.setItem("token", token);
-          sessionStorage.setItem("id", accountid);
-        }
-      }
-    }
-  }
-  async function loadPopup() {
-    const res = await axios.get(origin + "banner/all");
-    if (res.data.length > 0) {
-      setPopup(true);
-      setTimeout(() => {
-        let img = new Image();
-        img.src = res.data[0].src;
-        let width = window.innerWidth > 450 ? 450 : window.innerWidth;
-        setHeight((img.height * width) / img.width);
-      }, 100);
-      setNotice([...res.data]);
-    }
-  }
-  async function loadRecommend() {
-    const res = await axios.get(origin + "recommend/all");
-    bannerLen.current = res.data.length;
-    setBanner([...res.data, ...res.data]);
-  }
-  async function loadEndEvent() {
-    const res = await axios.get(origin + "search/event/end")
-    setEndList(res.data.data);
-  }
-  async function loadTheme() {
-    const res = await axios.get(origin + "search/theme");
-
-    let buf = {};
-    res.data.data.forEach((e, idx) => {
-      buf[idx] = {
-        id: e.id,
-        content: e.content,
-        type: e.type,
-        data: e.theme_event_list,
-      };
-    });
-    setThemeList(buf);
-  }
-  async function loadUserLog() {
-    if (
-      sessionStorage.getItem("id") === null ||
-      sessionStorage.getItem("id") === undefined
-    )
-      return;
-
-    const res = await axios.get(
-      origin + "log/user/" + sessionStorage.getItem("id")
-    );
-    if (res.data.data.length > 0) {
-      let buf = {};
-      res.data.data.forEach((e) => {
-        searchEventByHashTag(e.type, buf);
-      });
-      setRecommendList(buf);
-    } else {
-      if (localStorage.getItem("recommend") === "true")
-        window.location.href = "/Recommend";
-    }
-  }
-
-  async function searchEventByHashTag(word, buf) {
-    const res = await axios.get(origin + "search/event/hashtag/" + word);
-    buf[word] = res.data.data;
-  }
-  function init() {
-    socialLogin();
-    autoLogin();
-    loadPopup();
-    loadRecommend();
-    loadEndEvent();
-    loadTheme();
-    loadUserLog();
-  }
-
+ 
   useEffect(() => {
     if (localStorage.getItem("notice") !== null) {
       let d = new Date(localStorage.getItem("notice"));
@@ -488,7 +349,6 @@ function Main() {
         setPopup(true);
       }
     }
-    init();
     return;
   }, []);
 

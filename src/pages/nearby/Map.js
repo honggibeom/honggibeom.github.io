@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef, useTransition } from "react";
-import {
-  NaverMap,
-  NavermapsProvider,
-  Marker,
-  Container as MapDiv,
-} from "react-naver-maps";
 import { Link } from "react-router-dom";
-import axios from "axios";
+
 import styled from "styled-components";
 import Footer from "./Component/Footer.js";
 import gpsIcon from "./Img/Map/Gps.svg";
@@ -21,7 +15,6 @@ import filterIcon from "./Img/Header/filter.svg";
 import { MapEventComponent } from "./Component/MainEventComponent.js";
 import filtering from "./Function/FilterFunctions.js";
 import Loading from "./Component/Loading";
-import { origin } from "./Origin/Origin.js";
 const maker = {
   전시회: exhibitionIcon,
   공연: popupstoreIcon,
@@ -29,55 +22,55 @@ const maker = {
   "원데이 클래스": oneDayClassIcon,
 };
 
-function CustomMarker(props) {
-  return (
-    <>
-      {props.data !== undefined && (
-        <Marker
-          position={{
-            lat: props.data.location_x,
-            lng: props.data.location_y,
-          }}
-          visible={true}
-          icon={maker[props.data.category]}
-          onClick={() => {
-            props.setTouch(true);
-            props.center.current = {
-              lat: props.data.location_x,
-              lng: props.data.location_y,
-            };
-            props.setCenter({
-              lat: props.data.location_x,
-              lng: props.data.location_y,
-            });
-            props.setEvent(props.data);
-            props.detailRef.current.style.top = "-284px";
-            props.detailRef.current.style.transitionDuration = "600ms";
-            setTimeout(() => {
-              props.detailRef.current.style.transitionDuration = "0ms";
-            }, 600);
+// function CustomMarker(props) {
+//   return (
+//     <>
+//       {props.data !== undefined && (
+//         <Marker
+//           position={{
+//             lat: props.data.location_x,
+//             lng: props.data.location_y,
+//           }}
+//           visible={true}
+//           icon={maker[props.data.category]}
+//           onClick={() => {
+//             props.setTouch(true);
+//             props.center.current = {
+//               lat: props.data.location_x,
+//               lng: props.data.location_y,
+//             };
+//             props.setCenter({
+//               lat: props.data.location_x,
+//               lng: props.data.location_y,
+//             });
+//             props.setEvent(props.data);
+//             props.detailRef.current.style.top = "-284px";
+//             props.detailRef.current.style.transitionDuration = "600ms";
+//             setTimeout(() => {
+//               props.detailRef.current.style.transitionDuration = "0ms";
+//             }, 600);
 
-            setTimeout(() => {
-              props.setTouch(false);
-            }, 100);
-          }}
-        />
-      )}
-    </>
-  );
-  /*
-    <CustomMaker pos={}
-    filter={filter}
-    time={}
-    classify={}
-    my={}
-    category={}
-    setDetail={setDetail}
-    detail={detail}
-    />
+//             setTimeout(() => {
+//               props.setTouch(false);
+//             }, 100);
+//           }}
+//         />
+//       )}
+//     </>
+//   );
+//   /*
+//     <CustomMaker pos={}
+//     filter={filter}
+//     time={}
+//     classify={}
+//     my={}
+//     category={}
+//     setDetail={setDetail}
+//     detail={detail}
+//     />
 
-  */
-}
+//   */
+// }
 
 const MapCss = styled.div`
   overflow: hidden;
@@ -253,16 +246,6 @@ function Map() {
     navigator.geolocation.getCurrentPosition(success, error, options);
   };
 
-  const init = async () => {
-    try {
-      const event = await axios.get(origin + "search/event?page=0&size=100");
-      const event_res = event.data.data;
-      seteventList([...event_res]);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     window.addEventListener("resize", () => {
       setSize(
@@ -270,9 +253,6 @@ function Map() {
           ? window.screen.availHeight
           : window.innerHeight
       );
-    });
-    startTransition(() => {
-      init();
     });
   }, []);
 
@@ -312,7 +292,7 @@ function Map() {
           </span>
         </div>
         <div className="menu">
-          <Link to={"/Search"} style={{ textDecoration: "none" }}>
+          <Link to={"/search"} style={{ textDecoration: "none" }}>
             <p className="dot">
               <img alt="search" src={searchIcon} />
             </p>
@@ -339,7 +319,7 @@ function Map() {
             }}
           />
         </div>
-        {center.current !== undefined && (
+        {/* {center.current !== undefined && (
           <NavermapsProvider
             ncpClientId="pvhem24pi2"
             error={<p>Maps Load Error</p>}
@@ -391,7 +371,7 @@ function Map() {
               </NaverMap>
             </MapDiv>
           </NavermapsProvider>
-        )}
+        )} */}
         {isPending && <Loading />}
       </div>
       <div className="detail" ref={detailRef}>

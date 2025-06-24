@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { useRef } from "react";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
-import { origin } from "./Origin/Origin";
 const FindCss = styled.div`
   overflow: hidden;
   width: 100vw;
@@ -369,29 +367,6 @@ function Find(props) {
                 className="btn1"
                 onClick={() => {
                   if (btn.btn1 === true) {
-                    axios({
-                      method: "post",
-                      url: origin + "find/send",
-                      headers: {
-                        "Access-Control-Allow-Origin": "*",
-                      },
-
-                      data: {
-                        type: "PASSWORD",
-                        phone: btn.phone,
-                      },
-                    })
-                      .then((res) => {
-                        if (
-                          res.status === 200 &&
-                          res.data !== "UNREGISTERED USER"
-                        )
-                          alert("인증번호가 전송되었습니다.");
-                        else alert("전화번호를 확인해주세요");
-                      })
-                      .catch(() => {
-                        alert("전화번호를 확인해주세요");
-                      });
                   }
                 }}
               >
@@ -421,47 +396,6 @@ function Find(props) {
                 className="btn2"
                 onClick={() => {
                   if (btn.btn2 === true && btn.checkInput.length === 4) {
-                    axios({
-                      method: "post",
-
-                      url: origin + "find/check",
-
-                      headers: {
-                        "Access-Control-Allow-Origin": "*",
-                      },
-                      data: {
-                        type: "PASSWORD",
-                        phone: btn.phone,
-                        check_str: btn.checkInput,
-                      },
-                    })
-                      .then(function (res) {
-                        if (
-                          props.mode === "pw" &&
-                          res.headers.email !== btn.email
-                        ) {
-                          alert("존재하지 않는 이메일 입니다");
-                          return;
-                        }
-
-                        if (res.status === 200 && res.data !== "ERROR") {
-                          setPage(1);
-                          axios
-                            .get(origin + "account/" + res.data)
-                            .then((res) => {
-                              setResult({
-                                ...result,
-                                result: res.data.data.id,
-                                email: res.data.data.email,
-                              });
-                            });
-                        } else {
-                          alert("인증번호를 확인해주세요");
-                        }
-                      })
-                      .catch(() => {
-                        alert("전화번호를 확인해주세요");
-                      });
                   }
                 }}
               >
@@ -517,44 +451,9 @@ function Find(props) {
           <p
             className="goLogin"
             onClick={() => {
-              if (props.mode === "id") navigate("/?Login");
-              else {
-                const regExp =
-                  /^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{10,20}$/;
-
-                if (
-                  result.pw !== "" &&
-                  regExp.test(result.pw) &&
-                  result.pw === result.pwCheck
-                ) {
-                  axios
-                    .patch(
-                      origin + "account/password/update",
-                      {
-                        data: {
-                          id: Number(localStorage.getItem("user_id")),
-                          password: result.pw,
-                        },
-                      },
-                      {
-                        headers: {
-                          "Access-Control-Allow-Origin": "*",
-                        },
-                      }
-                    )
-                    .then(function (res) {
-                      if (res.status === 200) {
-                        alert("비밀번호 변경이 완료되었습니다.");
-                        navigate("/?Login");
-                      }
-                    });
-                } else {
-                  if (result.pw !== result.pwCheck)
-                    alert("입력하신 두 비밀번호가 다릅니다");
-                  else
-                    alert("비밀번호는 특수문자가 들어간 10자리이어야 합니다");
-                }
-              }
+              if (result.pw !== result.pwCheck)
+                alert("입력하신 두 비밀번호가 다릅니다");
+              else alert("비밀번호는 특수문자가 들어간 10자리이어야 합니다");
             }}
           >
             {props.mode === "id" ? "로그인 하기" : "비밀번호 변경"}

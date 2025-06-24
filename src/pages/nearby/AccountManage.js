@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
-import axios from "axios";
-import { origin } from "./Origin/Origin";
+
 const AccountManageCss = styled.div`
   width: 100vw;
   height: 100vh;
@@ -59,45 +58,33 @@ const AccountManageCss = styled.div`
     justify-content: center;
     width: 10%;
   }
-  
-  label{
+
+  label {
     display: flex;
-    border-bottom: 1px solid #C8C8C8;
+    border-bottom: 1px solid #c8c8c8;
     width: 100%;
     padding: 10px 0px;
     font-size: 12px;
     justify-content: space-between;
   }
 
-  input{
+  input {
     border: 0;
     background-color: #ffffff00;
     width: 80%;
-    
   }
-  .resetpw{
+  .resetpw {
     text-decoration: none;
     color: #ffffff;
     padding: 4px 12px;
-    background-color: #981C26;
+    background-color: #981c26;
     border-radius: 100px;
-
   }
 `;
 
 function AccountManage() {
   const navigate = useNavigate();
-  const [data,setData] = useState({email:''});
-  useEffect(()=>{
-  
-    axios
-    .get(origin + "account/" + sessionStorage.getItem("id"))
-    .then((res) => {
-      setData(res.data.data);
-      console.log(res.data.data);
-    })
- 
-  },[])
+  const [data, setData] = useState({ email: "" });
   return (
     <AccountManageCss>
       <div className="header">
@@ -112,28 +99,30 @@ function AccountManage() {
         <p className="title text1">계정 관리</p>
       </div>
       <div className="content">
-      <div>
-        
-        <p className="idpw">아이디(이메일)</p>
-        <label>
-        <input type="text" disabled={true} value={data.email}/>
-        </label>
-        <p className="idpw">비밀번호</p>
-        <label>
-          <input type="password" disabled={true} value={1234567890} />
-          <Link className="resetpw" to='/FindPw'>재설정</Link>
-        </label>
-        
-      </div>
-        
-            <Link to="/deleteAccount" className="menu" style={{ textDecoration: "none"}}>
-            <p className="delete text1"> 계정 삭제</p>
-            <p className="right">
-              <TfiAngleRight />
-            </p>
+        <div>
+          <p className="idpw">아이디(이메일)</p>
+          <label>
+            <input type="text" disabled={true} value={data.email} />
+          </label>
+          <p className="idpw">비밀번호</p>
+          <label>
+            <input type="password" disabled={true} value={1234567890} />
+            <Link className="resetpw" to="/find/passwrod">
+              재설정
             </Link>
-      
-       
+          </label>
+        </div>
+
+        <Link
+          to="/delete-account"
+          className="menu"
+          style={{ textDecoration: "none" }}
+        >
+          <p className="delete text1"> 계정 삭제</p>
+          <p className="right">
+            <TfiAngleRight />
+          </p>
+        </Link>
       </div>
     </AccountManageCss>
   );

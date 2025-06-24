@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
+
 import NoSearch from "../Img/Address/noSearch.svg";
 import SearchImg from "../Img/Address/search.svg";
 import proj4 from "proj4";
@@ -35,38 +35,7 @@ function SearchLog(props) {
     props.region.bdNm.split("(")[0] +
     " )";
   return (
-    <SearchLogCss
-      vh={props.vh}
-      onClick={() => {
-        axios
-          .get("https://business.juso.go.kr/addrlink/addrCoordApi.do", {
-            params: {
-              confmKey: "U01TX0FVVEgyMDIyMDgyNTExMzA1OTExMjkxNjQ=",
-              admCd: props.region.admCd,
-              rnMgtSn: props.region.rnMgtSn,
-              udrtYn: props.region.udrtYn,
-              buldMnnm: Number(props.region.buldMnnm),
-              buldSlno: Number(props.region.buldSlno),
-              resultType: "json",
-            },
-          })
-          .then(function (res) {
-            const p = [
-              Number(res.data.results.juso[0].entX),
-              Number(res.data.results.juso[0].entY),
-            ];
-
-            var firstProjection =
-              "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
-            var secondProjection =
-              "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-            const pos = proj4(firstProjection, secondProjection, [
-              Number(res.data.results.juso[0].entX),
-              Number(res.data.results.juso[0].entY),
-            ]);
-          });
-      }}
-    >
+    <SearchLogCss vh={props.vh} onClick={() => {}}>
       <p>{content}</p>
     </SearchLogCss>
   );
@@ -81,23 +50,6 @@ function Address(props) {
     if (!checkSearchedWord(str)) {
       return;
     }
-
-    axios
-      .get("https://www.juso.go.kr/addrlink/addrLinkApi.do", {
-        params: {
-          confmKey: "U01TX0FVVEgyMDIyMDgyNTExMjc1MjExMjkxNTk=",
-          currentPage: 1,
-          countPerPage: 20,
-          keyword: str,
-          resultType: "json",
-        },
-        responsetype: "json",
-      })
-      .then(function (response) {
-        let juso = response.data.results.juso;
-        if (juso === null || juso.length === 0) setRegionList([]);
-        else setRegionList(juso);
-      });
   }
 
   //특수문자, 특정문자열(sql예약어의 앞뒤공백포함) 제거

@@ -11,7 +11,48 @@ import PYTHON from "../../assets/img/Python.svg";
 import TYPESCRIPT from "../../assets/img/TypeScript.svg";
 import REACT from "../../assets/img/React.svg";
 import SPRING from "../../assets/img/Spring.svg";
-const MainCss = styled.div``;
+const MainCss = styled.div`
+  .banner {
+    width: 100%;
+    padding-top: 80px;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #9bc7f3;
+    color: #000000;
+  }
+
+  .name {
+    font-size: 80px;
+  }
+
+  .stacks {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .stack {
+    color: #000000;
+    text-align: center;
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 12px;
+  }
+
+  .stack > img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .stack > p {
+    margin: 0;
+    margin-top: 5px;
+  }
+`;
 
 function Main() {
   const stacks = {

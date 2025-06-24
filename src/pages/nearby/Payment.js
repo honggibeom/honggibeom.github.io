@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import { TfiAngleLeft, TfiClose } from "react-icons/tfi";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import locationBlackIcon from "./Img/MainEventComponent/locationBlack.svg";
 import dateBlackIcon from "./Img/MainEventComponent/dateBlack.svg";
 import minusBtnRed from "./Img/Payment/minusBtnRed.svg";
@@ -11,7 +11,7 @@ import plusBtnRed from "./Img/Payment/plusBtnRed.svg";
 import plusBtn from "./Img/Payment/plusBtn.svg";
 import PaymentCalendar from "./Component/PaymentCalendar";
 import PopUp from "./Component/PopUp";
-import { origin } from "./Origin/Origin";
+
 import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
 import { nanoid } from "nanoid";
 const PaymentCSS = styled.div`
@@ -336,60 +336,6 @@ function Payment() {
     timeArray.push(`${hour}:00`);
     if (hour !== 17) timeArray.push(`${hour}:30`);
   }
-
-  useEffect(() => {
-    const id = location.search.split("id=")[1];
-    axios
-      .get(origin + "event/" + id)
-      .then((res) => {
-        setData({ ...res.data.data });
-        if (res.data.data.event_image_list.length > 0)
-          setImg(res.data.data.event_image_list[0].src);
-
-        if (res.data.data.start_date !== null) {
-          setStartDate(
-            res.data.data.start_date
-              .split("T")[0]
-              .replace("-", ".")
-              .replace("-", ".")
-          );
-        }
-
-        if (res.data.data.end_date !== null) {
-          setEndDate(
-            res.data.data.end_date
-              .split("T")[0]
-              .replace("-", ".")
-              .replace("-", ".")
-          );
-        }
-        setFee(res.data.data.event_price_list);
-        let buf = {};
-        let buf1 = {};
-        for (const e of res.data.data.event_price_list) {
-          buf[e.target] = 0;
-          buf1[e.target] = 5;
-        }
-        setCount(buf);
-        setTicket(buf1);
-      })
-      .then(() => {
-        const fetchPaymentWidget = async () => {
-          try {
-            const loadedWidget = await loadPaymentWidget(
-              widgetClientKey,
-              ANONYMOUS
-            );
-            setPaymentWidget(loadedWidget);
-          } catch (error) {
-            console.error("Error fetching payment widget:", error);
-          }
-        };
-
-        fetchPaymentWidget();
-        setLoad(true);
-      });
-  }, []);
 
   const handlePaymentRequest = async () => {
     // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.

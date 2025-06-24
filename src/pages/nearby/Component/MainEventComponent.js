@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import dateIcon from "../Img/MainEventComponent/date.svg";
 import locationIcon from "../Img/MainEventComponent/location.svg";
 import dateBlackIcon from "../Img/MainEventComponent/dateBlack.svg";

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import EventReviewCreateForm from "./EventReviewCreateForm";
 import Search from "./Search";
 import Map from "./Map";
 import Profile from "./Profile";
@@ -16,7 +15,6 @@ import AccountManage from "./AccountManage";
 import DeleteAccount from "./DeleteAccount";
 import Detail from "./Detail";
 import Report from "./Report";
-import EventCreateForm from "./EventCreateForm";
 import styled from "styled-components";
 import Main from "./Main";
 import "./Font/Pretendard/web/static/pretendard.css";
@@ -76,54 +74,49 @@ function App() {
   }, []);
 
   return (
-    <AppCss>
-      <div className="app">
-        <Router>
+    <Router basename={"nearby"}>
+      <AppCss>
+        <div className="app">
           <Routes>
             <Route exact path="/" element={<Main />} />
-            <Route path="/SignUp" element={<SignUp />} /> {/*회원가입*/}
-            <Route path="/Map" element={<Map />} />
-            <Route path="/EventReview" element={<EventReviewList />} />
-            <Route path="/ProfileSet" element={<Profile />} />
-            <Route path="/SignIn" element={<SignIn />} />
-            <Route path="/EventList" element={<EventList theme={false} />} />
-            <Route path="/CreateForm/Event" element={<EventCreateForm />} />
-            <Route
-              path="CreateForm/EventReview"
-              element={<EventReviewCreateForm />}
-            />
+            <Route path="/signup" element={<SignUp />} /> {/*회원가입*/}
+            <Route path="/map" element={<Map />} />
+            <Route path="/event-review" element={<EventReviewList />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/eventList" element={<EventList theme={false} />} />
             {/*검색창*/}
-            <Route path="/Search" element={<Search />} />
+            <Route path="/search" element={<Search />} />
             {/*비밀번호 찾기*/}
-            <Route path="/FindPw" element={<Find mode={"pw"} />} />
+            <Route path="/find/passwrod" element={<Find mode={"pw"} />} />
             {/*아이디 찾기*/}
-            <Route path="/FindId" element={<Find mode={"id"} />} />
-            <Route path="/Alarm" element={<Alarm />} />
+            <Route path="/find/id" element={<Find mode={"id"} />} />
+            <Route path="/alarm" element={<Alarm />} />
             {/* 마이페이지 */}
-            <Route path="/MyPage" element={<MyPage />} />
-            <Route path="/Notice" element={<Notice />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/notice" element={<Notice />} />
             {/* 설정 -> 공지사항 */}
-            <Route path="/UserService" element={<UserService />} />
+            <Route path="/user-service" element={<UserService />} />
             {/* 설정 -> 고객센터 */}
-            <Route path="AlarmSetting" element={<AlarmSetting />} />
-            <Route path="/Policys" element={<Policys />} />
-            <Route path="/Tos" element={<Policy tos={0} />} />
-            <Route path="/Policy" element={<Policy tos={1} />} />
+            <Route path="alarm-setting" element={<AlarmSetting />} />
+            <Route path="/policys" element={<Policys />} />
+            <Route path="/tos" element={<Policy tos={0} />} />
+            <Route path="/policy" element={<Policy tos={1} />} />
             {/* 설정 -> 약관 및 정책 */}
-            <Route path="/Accountmanage" element={<AccountManage />} />
-            <Route path="/deleteAccount" element={<DeleteAccount />} />
-            <Route path="/Report" element={<Report />} />
+            <Route path="/accountmanage" element={<AccountManage />} />
+            <Route path="/delete-account" element={<DeleteAccount />} />
+            <Route path="/report" element={<Report />} />
             {/* 이벤트 상세 관련 추가 파일 */}
-            <Route path="/EventDetail" element={<Detail />} />
+            <Route path="/event/detail" element={<Detail />} />
             {/* 이벤트 상세 */}
-            <Route path="/Payment" element={<Payment />} />
+            <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/fail" element={<FailPage />} />
             {/* 결제 */}
-            <Route path="/Bookmark" element={<Bookmark />} />
+            <Route path="/bookmark" element={<Bookmark />} />
             {/* 찜 내역 */}
-            <Route path="/ReserveTicket" element={<ReserveTicket />} />
-            <Route path="/Recommend" element={<Recommend />} />
+            <Route path="/reserveTicket" element={<ReserveTicket />} />
+            <Route path="/recommend" element={<Recommend />} />
             {/* 티켓 예매내역 */}
             <Route
               path="/ReserveTicketDetail"
@@ -132,9 +125,9 @@ function App() {
             <Route path="/order" element={<Order />} />
             {/* 티켓 예매내역 */}
           </Routes>
-        </Router>
-      </div>
-    </AppCss>
+        </div>
+      </AppCss>
+    </Router>
   );
 }
 

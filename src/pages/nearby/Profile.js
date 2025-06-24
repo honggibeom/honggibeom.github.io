@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import ProfileImg from "./Img/ProfileSet/ProfileImg.svg";
-import FormData from "form-data";
 import { TfiAngleLeft } from "react-icons/tfi";
-import { origin } from "./Origin/Origin";
+
 const Page1Css = styled.div`
   width: 100vw;
   max-width: 450px;
@@ -212,91 +211,6 @@ function Profile() {
     imgObj: "",
   });
 
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize(
-        window.innerHeight < 600
-          ? window.screen.availHeight
-          : window.innerHeight
-      );
-    });
-    axios
-      .get(origin + "account/" + sessionStorage.getItem("id"))
-      .then((res) => {
-        let data = res.data.data;
-        setPage1({
-          ...page1,
-          img: data.profile_image,
-          nickName: data.nickname === null ? "" : data.nickname,
-          introduce: data.description === null ? "" : data.description,
-        });
-      });
-  }, []);
-
-  async function profileSet() {
-    var imgdata = new FormData();
-
-    let res = await axios.get(
-      "https://deso-us.com/api/v1/account/" + sessionStorage.getItem("id")
-    );
-
-    const userData = res.data.data;
-
-    if (page1.imgObj !== "") {
-      imgdata.append("multipartFile", page1.imgObj);
-      let res1 = await axios.post(
-        "https://deso-us.com/api/v1/image/upload?dir=profile/" +
-          sessionStorage.getItem("id"),
-        { data: imgdata },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-
-      const imgurl =
-        "https://deso-spring.s3.ap-northeast-2.amazonaws.com/" +
-        res1.data.data[0];
-
-      await axios.patch("https://deso-us.com/api/v1/account/update", {
-        data: {
-          ...userData,
-          nickname: page1.nickName,
-          profile_image: imgurl,
-          description: page1.introduce,
-        },
-      });
-
-      alert("프로필이 설정되었습니다");
-      navigate("/");
-    } else {
-      await axios.patch(
-        "https://deso-us.com/api/v1/account/update",
-        {
-          data: {
-            ...userData,
-            nickname: page1.nickName,
-            profile_image: page1.img,
-            description: page1.introduce,
-          },
-        },
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-
-      alert("프로필이 설정되었습니다");
-      navigate("/MyPage");
-    }
-  }
-  const next = () => {
-    if (page1.nickName.length > 1) profileSet();
-    else alert("닉네임은 한글자 이상이어야 합니다.");
-  };
   return (
     <ProfileCss vh={size / 100}>
       <div className="layout">
@@ -314,12 +228,7 @@ function Profile() {
         <div className="container">
           <Page1 page1={page1} setPage1={setPage1} vh={size / 100} />
         </div>
-        <p
-          className="next"
-          onClick={() => {
-            next();
-          }}
-        >
+        <p className="next" onClick={() => {}}>
           저장하기
         </p>
       </div>

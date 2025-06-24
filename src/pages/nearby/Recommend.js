@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
-import { origin } from "./Origin/Origin";
-import axios from "axios";
-import { func } from "prop-types";
+
 const RecommendCss = styled.div`
   width: 100vw;
   height: 100vh;
@@ -76,35 +74,8 @@ function Recommend() {
   const [subject, setSubject] = useState({});
   const navigate = useNavigate();
 
-  async function init() {
-    const res1 = await axios.get(origin + "event/hashtag/type");
-    let tmp = {};
-    res1.data.data.forEach((e) => {
-      tmp[e] = 0;
-    });
-
-    const res2 = await axios.get(
-      origin + "log/user/" + sessionStorage.getItem("id")
-    );
-    res2.data.data.forEach((e) => {
-      tmp[e.type] = e.id;
-    });
-    setSubject(tmp);
-  }
-
-  async function addLog(type) {
-    await axios.post(origin + "log", {
-      data: { type: type, user_id: sessionStorage.getItem("id") },
-    });
-  }
-
-  async function deleteLog(id) {
-    await axios.delete(origin + "log/delete/" + id);
-  }
-
   useEffect(() => {
     localStorage.setItem("recommend", "true");
-    init();
   }, []);
 
   return (
@@ -128,8 +99,6 @@ function Recommend() {
                 let tmp = { ...subject };
                 tmp[e] = !tmp[e];
                 setSubject(tmp);
-                if (subject[e] > 0) deleteLog(subject[e]);
-                else addLog(e);
               }}
             >
               {"#" + e}

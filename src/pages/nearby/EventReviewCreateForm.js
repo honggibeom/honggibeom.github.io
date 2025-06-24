@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import Footer from "./Component/Footer";
 
 //이미지
@@ -11,7 +11,7 @@ import locationIcon from "./Img/Detail/location.svg";
 import fillstarIcon from "./Img/Detail/fillstar.svg";
 import emptystarIcon from "./Img/Detail/emptyStar.svg";
 import cameraIcon from "./Img/EventReviewCreateForm/camera.svg";
-import { origin } from "./Origin/Origin";
+
 const EventReviewCreateFormCss = styled.div`
   width: 100vw;
   max-width: 450px;
@@ -171,39 +171,6 @@ function EventReviewCreateForm() {
     return date.split("T")[0].replace("-", ".").replace("-", ".");
   }
 
-  useEffect(() => {
-    if (location.search.includes("edit")) {
-      setEdit(true);
-      const review_id = location.search.split("&")[2].split("id=")[1];
-      axios
-        .get(origin + "event/review/" + review_id)
-        .then((res) => {
-          setReview(res.data.data);
-          setExistImg(res.data.data.event_review_image_dto_list);
-          setStarRating(res.data.data.star_rating.toFixed(1));
-          content.current.value = res.data.data.content;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-
-    const event_id = location.search.split("&")[0].split("event_id=")[1];
-    axios
-      .get(origin + "event/" + event_id)
-      .then((res) => {
-        setEvent(res.data.data);
-        if (res.data.data.start_date !== null)
-          setStartDate(dateFromat(res.data.data.start_date));
-        if (res.data.data.end_date !== null)
-          setEndDate(dateFromat(res.data.data.end_date));
-        setLoad(true);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
-
   const StarComponent = (props) => {
     let buf = [];
     let size = props.size === null ? "14px" : props.size + "px";
@@ -223,180 +190,11 @@ function EventReviewCreateForm() {
     return buf;
   };
 
-  async function deleteImg(data) {
-    let res = await axios
-      .post(
-        origin + "image-update/delete",
-
-        {
-          data: {
-            type: data.type,
-            id: Number(location.search.split("&")[2].split("id=")[1]),
-            img_id: data.id,
-          },
-        },
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            Authorization: sessionStorage.getItem("token"),
-          },
-        }
-      )
-      .catch(() => {
-        alert("이미지를 삭제할 수 없습니다");
-      });
-
-    return res;
-  }
-
-  async function createReview(data) {
-    let buf = { ...data };
-    let imgData = new FormData();
-
-    buf["event_id"] = event.id;
-
-    let res = await axios.post(
-      origin + "event/review",
-      {
-        data: {
-          star_rating: Number(starRating),
-          content: content.current.value,
-          event_id: event.id,
-        },
-      },
-      {
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      }
-    );
-
-    let review_id = res.data.data.id;
-
-    if (newImg.obj.length > 0) {
-      for (let i = 0; i < newImg.obj.length; i++) {
-        imgData.append("multipartFile", newImg.obj[i]);
-      }
-
-      let res1 = await axios.post(
-        origin + "image/upload?dir=eventReview/" + review_id,
-        imgData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          processData: false,
-          contentType: false,
-        }
-      );
-
-      res1.data.data.forEach((e) => {
-        axios
-          .post(
-            origin + "image-update/create",
-            {
-              data: {
-                type: "eventReview",
-                id: Number(review_id),
-                src: "https://deso-spring.s3.ap-northeast-2.amazonaws.com/" + e,
-              },
-            },
-            {
-              headers: {
-                "Access-Control-Allow-Origin": "*",
-                Authorization: sessionStorage.getItem("token"),
-              },
-            }
-          )
-          .catch(() => {
-            alert("이미지를 등록할 수 없습니다");
-          });
-      });
-    }
-
-    if (res.status === 200) {
-      alert("등록되었습니다");
-      navigate("/EventDetail?id=" + event.id);
-    }
-  }
-
-  async function editReview(data) {
-    let buf = { ...data };
-    let imgData = new FormData();
-
-    buf["event_id"] = event.id;
-
-    if (newImg.obj.length > 0) {
-      for (let i = 0; i < newImg.obj.length; i++) {
-        imgData.append("multipartFile", newImg.obj[i]);
-      }
-
-      let res = await axios.post(
-        origin + "image/upload?dir=eventReview/" + review.id,
-        imgData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Access-Control-Allow-Origin": "*",
-          },
-          processData: false,
-          contentType: false,
-        }
-      );
-
-      res.data.data.forEach((e) => {
-        axios
-          .post(
-            origin + "image-update/create",
-            {
-              data: {
-                type: "eventReview",
-                id: review.id,
-                src: "https://deso-spring.s3.ap-northeast-2.amazonaws.com/" + e,
-              },
-            },
-            {
-              headers: {
-                "Access-Control-Allow-Origin": "*",
-                Authorization: sessionStorage.getItem("token"),
-              },
-            }
-          )
-          .catch(() => {
-            alert("이미지를 등록할 수 없습니다");
-          });
-      });
-    }
-
-    let res = await axios.patch(
-      origin + "event/review/update",
-      {
-        data: {
-          id: review.id,
-          star_rating: Number(starRating),
-          content: content.current.value,
-          event_id: event.id,
-        },
-      },
-      {
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      }
-    );
-    if (res.status === 200) {
-      alert("수정 되었습니다");
-      navigate("/EventReview?id=" + event.id);
-    }
-  }
-
   const next = () => {
     if (starRating <= 0) {
       alert("별점을 입력해주세요");
       return;
     }
-    if (edit) editReview();
-    else createReview();
   };
 
   return (

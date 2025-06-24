@@ -31,7 +31,7 @@ export function SuccessPage() {
         return;
       }
 
-      navigate("/ReserveTicket");
+      navigate("/reserveTicket");
     }
     confirm();
   }, []);

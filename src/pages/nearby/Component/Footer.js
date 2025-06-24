@@ -39,12 +39,12 @@ function Footer(props) {
           <img src={props.mode === 0 ? HomeFill : HomeEmpty} alt="Home" />
         </Link>
 
-        <Link to="/Map" className="footerMenu Map">
+        <Link to="/map" className="footerMenu Map">
           <img src={props.mode === 1 ? MapFill : MapEmpty} alt="Map" />
         </Link>
 
         <Link
-          to="/EventList"
+          to="/eventList"
           className="footerMenu Search"
           onClick={() => {
             if (props.setTheme !== undefined) props.setTheme(false);
@@ -53,7 +53,7 @@ function Footer(props) {
           <img src={props.mode === 2 ? SearchFill : SearchEmpty} alt="Event" />
         </Link>
 
-        <Link to="/MyPage" className="footerMenu User">
+        <Link to="/mypage" className="footerMenu User">
           <img src={props.mode === 3 ? UserFill : UserEmpty} alt="MyPage" />
         </Link>
       </FooterCss>

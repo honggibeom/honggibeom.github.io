@@ -2,16 +2,10 @@ import { useState } from "react";
 import { Route, Routes, BrowserRouter as Router, Link } from "react-router-dom";
 import "./App.css";
 import Main from "./pages/blog/main";
+import NearbyApp from "./pages/nearby/App";
 function App() {
-  const data = {
-    nearby: {
-      "/": <></>,
-    },
-    donghangsa: { "/": <></> },
-  };
-
   return (
-    <>
+    <div className="app">
       <Router>
         <header>
           <p className="blogName">honggibeom's blog</p>
@@ -24,15 +18,11 @@ function App() {
           </div>
         </header>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route exact path="/" element={<Main />} />
         </Routes>
       </Router>
-      <Router basename={"/nearby"}>
-        <Routes>
-          <Route path="/" element={<div>hi</div>} />
-        </Routes>
-      </Router>
-    </>
+      <NearbyApp />
+    </div>
   );
 }
 

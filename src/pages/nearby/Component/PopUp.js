@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { styled } from "styled-components";
-import {useNavigate} from "react-router-dom";
-const PopUpCss = styled.div`  
+import { useNavigate } from "react-router-dom";
+const PopUpCss = styled.div`
   position: absolute;
   height: 100vh;
   width: 100%;
@@ -35,7 +35,7 @@ const PopUpCss = styled.div`
     font-weight: 600;
     text-align: center;
     margin: 25px 0 20px 0;
-  }  
+  }
   .descriptionPopupOne {
     font-size: 16px;
     font-weight: 600;
@@ -54,9 +54,9 @@ const PopUpCss = styled.div`
   }
   .cancel {
     flex: 1;
-    background-color: #E5E5E5;
+    background-color: #e5e5e5;
     border-radius: 5px;
-    border: 1px solid #E5E5E5;
+    border: 1px solid #e5e5e5;
   }
   .check {
     flex: 1;
@@ -79,8 +79,8 @@ function PopUp(props) {
   return (
     <PopUpCss>
       <div className="box">
-        {(props.type === 1) ? (
-          (!isClickCheck) ? (
+        {props.type === 1 ? (
+          !isClickCheck ? (
             <div className="layoutPopup">
               <div className="descriptionPopup">
                 <p>취소수수료가 부과됩니다.</p>
@@ -88,8 +88,17 @@ function PopUp(props) {
                 <p>정말 취소하시겠습니까?</p>
               </div>
               <div className="checkBtn">
-                <button className="cancel" onClick={handleClose}>취소</button>
-                <button className="check" onClick={() => {setIsClickCheck(true);}}>확인</button>
+                <button className="cancel" onClick={handleClose}>
+                  취소
+                </button>
+                <button
+                  className="check"
+                  onClick={() => {
+                    setIsClickCheck(true);
+                  }}
+                >
+                  확인
+                </button>
               </div>
             </div>
           ) : (
@@ -98,10 +107,15 @@ function PopUp(props) {
                 <p>취소가 완료되었습니다.</p>
               </div>
               <div className="checkBtn">
-                <button className="check" onClick={() => {
-                  navigate("/ReserveTicket");
-                  handleClose();
-                }}>예매내역 확인하기</button>
+                <button
+                  className="check"
+                  onClick={() => {
+                    navigate("/reserveTicket");
+                    handleClose();
+                  }}
+                >
+                  예매내역 확인하기
+                </button>
               </div>
             </div>
           )
@@ -111,7 +125,14 @@ function PopUp(props) {
               <p>결제가 완료되었습니다.</p>
             </div>
             <div className="checkBtn">
-              <button className="check" onClick={() => {navigate("/ReserveTicket")}}>예매내역 확인하기</button>
+              <button
+                className="check"
+                onClick={() => {
+                  navigate("/reserveTicket");
+                }}
+              >
+                예매내역 확인하기
+              </button>
             </div>
           </div>
         )}

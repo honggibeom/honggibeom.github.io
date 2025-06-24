@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef, useTransition } from "react";
 import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "./Component/Footer";
-import axios from "axios";
+
 import Filter from "./Component/Filter";
 import { EventListComponent } from "./Component/MainEventComponent";
 import filterIcon from "./Img/Header/filter.svg";
 import searchIcon from "./Img/Header/search.svg";
 import filtering from "./Function/FilterFunctions";
-import useDebounce from "./Hook/Debounce";
-import { origin } from "./Origin/Origin";
+
 const EventListCss = styled.div`
   width: 100vw;
   height: 100vh;
@@ -71,53 +70,6 @@ function EventList(props) {
   const [display, setDisplay] = useState(false);
   const [theme, setTheme] = useState(props.theme);
   const [scroll, setScroll] = useState(30);
-  function LoadTheme() {
-    setTheme(true);
-    const id = location.search.split("id=")[1];
-    axios.get(origin + "theme/" + id).then((res) => {
-      let buf = [];
-      res.data.data.theme_event_list.forEach((e) => {
-        buf.push(e.event);
-      });
-      setEvent(buf);
-    });
-  }
-  function LoadEndEvent() {
-    setTheme(true);
-    axios.get(origin + "search/event/end").then((res) => {
-      setEvent(res.data.data);
-    });
-  }
-  function LoadEventByHashTag() {
-    setTheme(true);
-    axios
-      .get(origin + "search/event/hashtag/" + location.search.split("=")[1])
-      .then((res) => {
-        setEvent(res.data.data);
-      });
-  }
-  function LoadAllEvent() {
-    axios.get(origin + "search/event/all").then((res) => {
-      let buf = [];
-      for (const e of res.data.data) {
-        buf.push(e);
-      }
-      setEvent(buf);
-    });
-  }
-  useEffect(() => {
-    if (location.search.includes("theme")) {
-      setTheme(true);
-      LoadTheme();
-    } else if (location.search.includes("end")) {
-      setTheme(true);
-      LoadEndEvent();
-    } else if (location.search.includes("hashTag")) {
-      LoadEventByHashTag();
-    } else {
-      LoadAllEvent();
-    }
-  }, [theme]);
 
   return (
     <EventListCss>
@@ -178,7 +130,7 @@ function EventList(props) {
         >
           곧 종료
         </span>
-        <Link to={"/Search"} style={{ textDecoration: "none" }} key={"search"}>
+        <Link to={"/search"} style={{ textDecoration: "none" }} key={"search"}>
           <img alt="filter" src={searchIcon} className="icon" />
         </Link>
         <img

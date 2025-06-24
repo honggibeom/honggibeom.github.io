@@ -3,7 +3,6 @@ import { styled } from "styled-components";
 import { TfiAngleLeft, TfiClose, TfiAngleDown } from "react-icons/tfi";
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const AddressCss = styled.div`
   display: flex;

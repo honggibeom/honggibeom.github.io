@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import noAlarm from "./Img/Alarm/noAlarm.svg";
-import axios from "axios";
+
 import userimg from "./Img/ProfileSet/ProfileImg.svg";
 import { TfiAngleLeft } from "react-icons/tfi";
-import { origin } from "./Origin/Origin";
+
 const AlarmElementCss = styled.div`
   display: flex;
   width: 90vw;
@@ -62,13 +62,6 @@ const AlarmElementCss = styled.div`
 `;
 function AlarmElement(props) {
   const [data, setData] = useState({});
-
-  useEffect(() => {
-    axios.get(origin + "account/" + props.id).then((res) => {
-      setData(res.data.data);
-    });
-  }, []);
-
   const Content = (kind) => {
     if (kind === "댓글")
       return (
@@ -265,36 +258,7 @@ const AlarmCss = styled.div`
 function Alarm() {
   const navigate = useNavigate();
   const [alarm, setAlarm] = useState([]);
-  useEffect(() => {
-    if (sessionStorage.getItem("id") || false) {
-      axios
-        .get(
-          "https://deso-us.com/api/v1/alim/all/" + sessionStorage.getItem("id")
-        )
-        .then((res) => {
-          let buf = [];
-          const kind = [
-            "댓글",
-            "댓글좋아요",
-            "게더링신청",
-            "게더링승인",
-            "팔로우",
-          ];
-          res.data.forEach((e, idx) => {
-            let flag = false;
-            for (let i = 0; i < kind.length; i++) {
-              if (kind[i] === e.content) {
-                flag = true;
-                break;
-              }
-            }
-            if (flag) buf.push(e);
 
-            if (res.data.length === idx + 1) setAlarm(buf);
-          });
-        });
-    }
-  }, []);
   return (
     <AlarmCss>
       <div className="header">

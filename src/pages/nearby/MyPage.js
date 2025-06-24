@@ -3,12 +3,9 @@ import styled from "styled-components";
 import React, { useState, useEffect, useRef } from "react";
 import Footer from "./Component/Footer";
 import proFileImg from "./Img/ProfileSet/ProfileImg.svg";
-import axios from "axios";
+
 import { TfiAngleRight } from "react-icons/tfi";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getMessaging, getToken } from "firebase/messaging";
-import { origin } from "./Origin/Origin";
+
 const MyPageCss = styled.div`
   width: 100vw;
   height: 100vh;
@@ -79,34 +76,21 @@ function MyPage() {
     일반: [
       {
         name: "아이디 찾기",
-        url: "/FindId",
+        url: "/find/id",
       },
       {
         name: "비밀번호 찾기",
-        url: "/FindId",
+        url: "/find/id",
       },
     ],
     정보: [
-      { name: "공지사항", url: "/Notice" },
-      { name: "약관 및 정책", url: "/Policys" },
-      { name: "고객센터", url: "/UserService" },
+      { name: "공지사항", url: "/notice" },
+      { name: "약관 및 정책", url: "/policys" },
+      { name: "고객센터", url: "/user-service" },
       { name: "알림설정", url: "/AlarmSetting" },
     ],
   });
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_fYRs6WzGLTnyuOoKYvURuZw0ZbEJPrk",
-    authDomain: "desoadmin.firebaseapp.com",
-    projectId: "desoadmin",
-    storageBucket: "desoadmin.appspot.com",
-    messagingSenderId: "260314271589",
-    appId: "1:260314271589:web:39990dc95432e73d595b8c",
-    measurementId: "G-F98D6CBHN4",
-  };
-
-  // const app = initializeApp(firebaseConfig);
-  // const analytics = getAnalytics(app);
-  // const messaging = getMessaging(app);
   function getOs() {
     var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
 
@@ -132,16 +116,16 @@ function MyPage() {
         일반: [
           {
             name: "관심 분야 설정",
-            url: "/Recommend",
+            url: "/recommend",
           },
 
           {
             name: "찜 내역",
-            url: "/Bookmark",
+            url: "/bookmark",
           },
           {
             name: "티켓 예매내역",
-            url: "/ReserveTicket",
+            url: "/reserveTicket",
           },
           {
             name: "관람후기",
@@ -149,29 +133,21 @@ function MyPage() {
           },
           {
             name: "계정 관리",
-            url: "/Accountmanage",
+            url: "/accountmanage",
           },
         ],
       });
-      axios
-        .get(origin + "account/" + sessionStorage.getItem("id"))
-        .then((res) => {
-          setData(res.data.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
     } else {
       setMenu({
         ...menu,
         일반: [
           {
             name: "아이디 찾기",
-            url: "/FindId",
+            url: "/find/id",
           },
           {
             name: "비밀번호 찾기",
-            url: "/FindPw",
+            url: "/find/passwrod",
           },
         ],
       });
@@ -246,7 +222,7 @@ function MyPage() {
             sessionStorage.getItem("id") !== null &&
             sessionStorage.getItem("id") !== undefined
               ? "/ProfileSet?edit"
-              : "/SignIn"
+              : "/signIn"
           }
           style={{ textDecoration: "none" }}
         >
@@ -270,7 +246,7 @@ function MyPage() {
             로그아웃
           </p>
         ) : (
-          <Link to={"/SignIn"} style={{ textDecoration: "none" }}>
+          <Link to={"/signIn"} style={{ textDecoration: "none" }}>
             <p className="menu text1">로그인</p>
           </Link>
         )}

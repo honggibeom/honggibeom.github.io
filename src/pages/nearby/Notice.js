@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
-import { origin } from "./Origin/Origin";
+
 const NoticeCss = styled.div`
   width: 100vw;
   height: 100vh;
