@@ -1,7 +1,7 @@
 //모듈
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { DetailEventComponent } from "./Component/MainEventComponent";
 import Footer from "./Component/Footer";
@@ -29,7 +29,13 @@ import festivalIcon from "./Img/Map/festival.svg";
 import fillstarIcon from "./Img/Detail/fillstar.svg";
 import emptystarIcon from "./Img/Detail/emptyStar.svg";
 import ticketIcon from "./Img/Detail/ticket.svg";
-
+import dummyMusicalImg1 from "./Img/Detail/dummyMusicalImg1.svg";
+import dummyMusicalImg2 from "./Img/Detail/dummyMusicalImg2.svg";
+import dummyMusicalImg3 from "./Img/Detail/dummyMusicalImg3.svg";
+import dummyMusicalImg4 from "./Img/Detail/dummyMusicalImg4.svg";
+import dummyMusicalImg5 from "./Img/Detail/dummyMusicalImg5.svg";
+import dummyMusicalImg6 from "./Img/Detail/dummyMusicalImg6.svg";
+import dummyReviewImg1 from "./Img/Detail/dummyReviewImg1.webp";
 import oneDayClassIcon from "./Img/Map/oneDayClassIcon.svg";
 const DetailCss = styled.div`
   margin: 0;
@@ -45,12 +51,12 @@ const DetailCss = styled.div`
     width: 100vw;
     max-width: 450px;
     height: 6vh;
-    padding: 5px 0 5px 0;
+    padding: 5px 0;
     position: ${(props) => (props.top > 0 ? "fixed" : "absolute")};
-    top: ${(props) => (props.top > 0 ? "0" : "22")}px;
+    top: ${(props) => (props.top > 0 ? "81" : "-100")}px;
     ${(props) => props.top > 0 && "background:#ffffff"};
     z-index: 1;
-
+    text-decoration: none;
     .header_back,
     .header_menu {
       width: 45vw;
@@ -61,7 +67,6 @@ const DetailCss = styled.div`
     }
     .header_back {
       padding-left: 5vw;
-
       @media (min-width: 450px) {
         padding-left: 25px;
       }
@@ -286,6 +291,8 @@ const DetailCss = styled.div`
       border-radius: 100px;
       border: 1px solid #981c26;
 
+      cursor: pointer;
+
       .text1 {
         color: ${(props) => (props.info.more ? "#981C26" : "#fff")};
       }
@@ -358,6 +365,7 @@ const DetailCss = styled.div`
         display: flex;
         align-items: center;
         justify-content: right;
+        cursor: pointer;
       }
     }
 
@@ -503,7 +511,7 @@ const DetailCss = styled.div`
   .back {
     ${(props) => !props.popup && "display:none"};
     position: fixed;
-    top: 0;
+    top: 160px;
     height: 100vh;
     width: 100vw;
     max-width: 450px;
@@ -559,60 +567,12 @@ const DetailCss = styled.div`
       object-fit: contain;
     }
   }
+  .clip {
+    cursor: pointer;
+  }
 `;
 
 function Detail() {
-  const location = useLocation();
-  const slider = useRef();
-  const container = useRef();
-  const color = {
-    전시회: "#1593FF",
-    공연: "#F3757C",
-    축제: "#EFA116",
-    "원데이 클래스": "#981C26",
-  };
-  const navigate = useNavigate();
-  const day = ["월", "화", "수", "목", "금", "토", "일"];
-  const [loading, setLoading] = useState(false);
-  const [img, setImg] = useState([]);
-  const [top, setTop] = useState(0);
-  const [data, setData] = useState({});
-  const [info, setInfo] = useState({
-    run: false,
-    fee: false,
-    more: false,
-  });
-  const [isOpen, setIsOpen] = useState(0);
-  const [open, setOpen] = useState({
-    월: null,
-    화: null,
-    수: null,
-    목: null,
-    금: null,
-    토: null,
-    일: null,
-  });
-  const [run, setRun] = useState({});
-  const [close, setClose] = useState([]);
-  const [fee, setFee] = useState([]);
-  const [startDate, setStartDate] = useState("준비중");
-  const [endDate, setEndDate] = useState("마감시 종료");
-  const [startPos, setStartPos] = useState(0);
-  const [curPos, setCurPos] = useState(0);
-  const [mode, setMode] = useState(0);
-  const [nearBy, setNearBy] = useState([]);
-  const [copy, setCopy] = useState(false);
-  const [popup, setPopup] = useState(false);
-  const [confirm, setConfirm] = useState(false);
-  const [review, setReview] = useState([]);
-  const [simpleReview, setSimpleReview] = useState({});
-  const [starRating, setStarRating] = useState([0, 0, 0, 0, 0]);
-  const [starAvg, setStarAvg] = useState((0).toFixed(1));
-  // const [imgPopup, setImgPopup] = useState(false);
-  // const [imgSrc, setImgSrc] = useState("#");
-  const [promotion, setPromotion] = useState([]);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [currentBookmarkId, setCurrentBookmarkId] = useState("");
   const maker = {
     전시회: exhibitionIcon,
     공연: popupstoreIcon,
@@ -620,17 +580,118 @@ function Detail() {
     "원데이 클래스": oneDayClassIcon,
   };
 
+  const color = {
+    전시회: "#1593FF",
+    공연: "#F3757C",
+    축제: "#EFA116",
+    "원데이 클래스": "#981C26",
+  };
+
+  const navigate = useNavigate();
+  const day = ["월", "화", "수", "목", "금", "토", "일"];
+  const [img, setImg] = useState([dummyMusicalImg1, dummyMusicalImg3]);
+  const [promotion, setPromotion] = useState([
+    dummyMusicalImg6,
+    dummyMusicalImg2,
+    dummyMusicalImg5,
+    dummyMusicalImg4,
+  ]);
+  const [top, setTop] = useState(0);
+  const [data, setData] = useState({
+    title: "뮤지컬 〈브로드웨이 42번가〉",
+    category: "공연",
+    location: "서울특별시 송파구 잠실동 40-1",
+    place_name: "샤롯데씨어터",
+    location_x: "이벤트 주소 x 좌표",
+    location_y: "이벤트 주소 y 좌표",
+    homepage: "https://tickets.interpark.com/goods/25007451",
+    description: `국내 초연 21주년, 브로드웨이 스테디셀러 뮤지컬
+    브로드웨이 5,000회 이상 정기공연 기록!
+    1996년 국내 초연 이후 21년 동안 써내려간 흥행불패의 신화
+    2016년 20주년 공연의 성공적인 피날레에 힘입어
+    격이 다른 뮤지컬의 진화판 ‘21년산’으로 되돌아오다.
+
+    경쾌하고 짜릿한 쇼 뮤지컬의 진수, 더욱 완벽해진 무대로 찾아오다!
+
+    20주년 기념공연에서 새롭게 선보인 장면들의 안무, 세트, 조명을 보완해
+    압도적인 입체감과 역대 최고 레벨의 탭댄스를 선보인다.
+    올 여름 누구나 즐길 수 있는 짜릿한 퍼포먼스와 차원이 다른 고품격 무대가 펼쳐진다.
+
+    BEST CASTING MATCH, 믿고 보는 배우들의 환상적인 조합
+    카리스마 넘치는 ‘외강내유’ 형 줄리안 마쉬, 김석훈!
+    시크하면서도 반전 있는 ‘외유내강’형 줄리안마쉬, 이종혁!
+    21년 만에 뭉친 초연콤비, 최정원, 전수경!
+    새롭게 합류한 NEW CAST, 배해선, 오소연!
+    환상호흡의 최정예 멤버, 전예지, 에녹, 전재홍!
+    새롭고 품격 있는 캐스트로 차원이 다른 21주년 무대를 선보인다.`,
+    start_date: "2024-01-02T00:00:00", //시작 일시
+    end_date: "2024-01-03T00:00:00", //종료 일시
+    open: "오픈 시간",
+    close: "휴관 일",
+    charge: 1,
+    view: 10, //조회수
+    wraning: 0, // 신고 횟수
+    created_at: "2025-07-10T00:00:00", //작성 일시
+    updated_at: "2025-09-14T00:00:00", //마지막 수정 일시
+    hashtag_list: ["#신나는", "#탭댄스"], // 해시태그
+    event_review_list: [], //이벤트 리뷰 응답형식 참고
+  });
+  const [info, setInfo] = useState({
+    run: false,
+    fee: false,
+    more: false,
+  });
+  const [isOpen, setIsOpen] = useState(0);
+  const [open, setOpen] = useState({
+    월: "공연없음",
+    화: "19:30",
+    수: "14:30, 19:30",
+    목: "19:30",
+    금: "19:30",
+    토: "14:00, 18:30",
+    일: "14:00",
+  });
+  const [run, setRun] = useState({});
+  const [close, setClose] = useState([]);
+  const [fee, setFee] = useState([
+    { target: "VIP", price: 130000 },
+    { target: "OP석", price: 110000 },
+    { target: "R석", price: 110000 },
+    { target: "S석", price: 80000 },
+    { target: "A선", price: 60000 },
+  ]);
+
+  //TouchScroll
+  const slider = useRef();
+  const container = useRef();
+  const [startPos, setStartPos] = useState(0);
+  const [curPos, setCurPos] = useState(0);
+  const [page, setPage] = useState(0);
+
+  const [nearBy, setNearBy] = useState([]);
+  const [copy, setCopy] = useState(false);
+  const [popup, setPopup] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const [review, setReview] = useState([
+    {
+      star_rating: 5,
+      event_review_image_dto_list: [dummyReviewImg1],
+      content: "기대 안하고 갔었는데 재밌게 잘봤어요!",
+    },
+  ]);
+
+  //starRation
+  const [starRating, setStarRating] = useState([1, 2, 5, 3, 7]);
+  const [starAvg, setStarAvg] = useState((0).toFixed(1));
+
+  //bookmark
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
   function dateFromat(date) {
-    if (typeof date === "string") return date;
-    else
-      return date
-        .toISOString()
-        .split("T")[0]
-        .replace("-", ".")
-        .replace("-", ".");
+    return date.split("T")[0].replace("-", ".").replace("-", ".");
   }
 
-  const isOpened = () => {
+  const isOpened = (startDate, endDate) => {
     let now = new Date();
     now.setHours(0);
     now.setMinutes(0);
@@ -686,16 +747,17 @@ function Detail() {
     const tok = start_at.split(":");
     return tok[0] + ":" + tok[1];
   };
-  async function share() {
+  function share() {
     const shareData = {
       title: data.title,
       text: data.description,
       url: window.location.href,
     };
     try {
-      await navigator.share(shareData);
+      navigator.share(shareData);
     } catch (err) {
-      console.log("공유 실패");
+      navigator.clipboard.writeText(window.location.href);
+      alert("주소가 복사되었습니다");
     }
   }
 
@@ -715,7 +777,7 @@ function Detail() {
   const Anchor = () => {
     let buf = [];
     for (let i = 0; i < Math.ceil(img.length); i++) {
-      if (mode === i)
+      if (page === i)
         buf.push(
           <p key={i} className="dot" style={{ background: "#080708" }}></p>
         );
@@ -781,13 +843,81 @@ function Detail() {
 
     return buf;
   };
+  const touchStartEvent = (e) => {
+    setStartPos(e.changedTouches[0].pageX);
+  };
+  const touchMoveEvent = (e) => {
+    const offset = curPos + (e.changedTouches[0].pageX - startPos);
+    const width = window.innerWidth > 450 ? 450 : window.innerWidth;
+    const isScroll = offset % width;
+    const limit = img.length;
+    if (isScroll < -30 || isScroll > 30) {
+      container.current.style.overflow = "hidden";
+    }
+    if (
+      offset < 0 &&
+      offset > -width * (limit - 1) &&
+      (isScroll < -30 || isScroll > 30)
+    ) {
+      slider.current.style.transform = `translate(${offset}px)`;
+      slider.current.style.transitionDuration = "0ms";
+    }
+  };
+  const touchEndEvent = (e) => {
+    const width = window.innerWidth > 450 ? 450 : window.innerWidth;
+    const sum = curPos + (e.changedTouches[0].pageX - startPos);
+    const limit = img.length;
+    if (sum > 0) {
+      slider.current.style.transitionDuration = "600ms";
+      slider.current.style.transform = `translate(0px)`;
+      setTimeout(() => {
+        slider.current.style.transitionDuration = "0ms";
+      }, 600);
+    } else if (sum < -width * (limit - 1)) {
+      slider.current.style.transitionDuration = "600ms";
+      slider.current.style.transform = `translate(${-width * (limit - 1)}px)`;
+      setTimeout(() => {
+        slider.current.style.transitionDuration = "0ms";
+      }, 600);
+    } else {
+      let drag = (-sum / width) % 1;
+      let destination;
+      if (e.changedTouches[0].pageX > startPos && drag <= 0.9) {
+        destination = -Math.floor(-sum / width) * width;
+      } else if (e.changedTouches[0].pageX < startPos && drag >= 0.1) {
+        destination = Math.floor(sum / width) * width;
+      } else {
+        destination = Math.round(sum / width) * width;
+      }
+      slider.current.style.transform = `translate(${destination}px)`;
+      slider.current.style.transitionDuration = "600ms";
+      setCurPos(destination);
+      setPage(-destination / width);
+      setTimeout(() => {
+        slider.current.style.transitionDuration = "0ms";
+      }, 600);
+    }
+    container.current.style.overflowY = "scroll";
+    container.current.style.overflowX = "hidden";
+  };
+
+  useEffect(() => {
+    const rate = [1, 2, 5, 3, 7];
+    setStarRating(rate);
+    let avg = 0;
+    let total = 0;
+    for (let i = 0; i < 5; i++) {
+      avg += (i + 1) * rate[i];
+      total += rate[i];
+    }
+    setStarAvg((avg / total).toFixed(1));
+  }, []);
 
   return (
     <DetailCss
       top={top}
       img={img}
       info={info}
-      mode={mode}
       copy={copy}
       popup={popup}
       onScroll={(e) => {
@@ -796,86 +926,45 @@ function Detail() {
       ref={container}
     >
       <div className="header">
-        <div
-          className="header_back"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
+        <Link className="header_back" to="/">
           <TfiAngleLeft />
-        </div>
+        </Link>
         <div className="header_menu">
-          {isBookmarked ? <IoBookmark /> : <IoBookmarkOutline />}
+          {isBookmarked ? (
+            <IoBookmark
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setIsBookmarked(false);
+              }}
+            />
+          ) : (
+            <IoBookmarkOutline
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setIsBookmarked(true);
+              }}
+            />
+          )}
           <AiOutlineEllipsis
+            style={{ cursor: "pointer" }}
             onClick={() => {
-              setPopup(true);
+              setPopup(!popup);
             }}
           />
         </div>
       </div>
-
       <div className="ImgContainer">
         <div
           className="slider"
           ref={slider}
           onTouchStart={(e) => {
-            setStartPos(e.changedTouches[0].pageX);
+            touchStartEvent(e);
           }}
           onTouchMove={(e) => {
-            const offset = curPos + (e.changedTouches[0].pageX - startPos);
-            const width = window.innerWidth > 450 ? 450 : window.innerWidth;
-            const isScroll = offset % width;
-            const limit = img.length;
-            if (isScroll < -30 || isScroll > 30) {
-              container.current.style.overflow = "hidden";
-            }
-            if (
-              offset < 0 &&
-              offset > -width * (limit - 1) &&
-              (isScroll < -30 || isScroll > 30)
-            ) {
-              slider.current.style.transform = `translate(${offset}px)`;
-              slider.current.style.transitionDuration = "0ms";
-            }
+            touchMoveEvent(e);
           }}
           onTouchEnd={(e) => {
-            const width = window.innerWidth > 450 ? 450 : window.innerWidth;
-            const sum = curPos + (e.changedTouches[0].pageX - startPos);
-            const limit = img.length;
-            if (sum > 0) {
-              slider.current.style.transitionDuration = "600ms";
-              slider.current.style.transform = `translate(0px)`;
-              setTimeout(() => {
-                slider.current.style.transitionDuration = "0ms";
-              }, 600);
-            } else if (sum < -width * (limit - 1)) {
-              slider.current.style.transitionDuration = "600ms";
-              slider.current.style.transform = `translate(${
-                -width * (limit - 1)
-              }px)`;
-              setTimeout(() => {
-                slider.current.style.transitionDuration = "0ms";
-              }, 600);
-            } else {
-              let drag = (-sum / width) % 1;
-              let destination;
-              if (e.changedTouches[0].pageX > startPos && drag <= 0.9) {
-                destination = -Math.floor(-sum / width) * width;
-              } else if (e.changedTouches[0].pageX < startPos && drag >= 0.1) {
-                destination = Math.floor(sum / width) * width;
-              } else {
-                destination = Math.round(sum / width) * width;
-              }
-              slider.current.style.transform = `translate(${destination}px)`;
-              slider.current.style.transitionDuration = "600ms";
-              setCurPos(destination);
-              setMode(-destination / width);
-              setTimeout(() => {
-                slider.current.style.transitionDuration = "0ms";
-              }, 600);
-            }
-            container.current.style.overflowY = "scroll";
-            container.current.style.overflowX = "hidden";
+            touchEndEvent(e);
           }}
         >
           {img.map((e, idx) => {
@@ -884,7 +973,7 @@ function Detail() {
                 style={{
                   backgroundImage:
                     'linear-gradient(180deg, rgba(38, 38, 38, 0.00) 69.7%, rgba(38, 38, 38, 0.40) 80.18%, #262626 109.8%), url("' +
-                    e.src +
+                    e +
                     '")',
                 }}
                 key={idx}
@@ -900,32 +989,27 @@ function Detail() {
         </div>
       )}
 
-      {loading && (
-        <div className="shortly">
-          <p className="title">{data.title}</p>
-          <div className="location">
-            <span>{data.event_place.location.split(" ")[0]}</span>
-            <span style={{ whiteSpace: "pre-wrap" }}>{"  ·  "}</span>
-            <span>{data.event_place.location.split(" ")[1]}</span>
-          </div>
+      <div className="shortly">
+        <p className="title">{data.title}</p>
+        <div className="location">
+          <span>{data.location.split(" ")[0]}</span>
+          <span style={{ whiteSpace: "pre-wrap" }}>{"  ·  "}</span>
+          <span>{data.location.split(" ")[1]}</span>
         </div>
-      )}
+      </div>
 
       <div className="part1">
         <div className="info topInfo">
           <img src={dateIcon} alt={"dateIcon"} />
           <span className="text">
-            {dateFromat(startDate) + " - " + dateFromat(endDate)}
+            {dateFromat(data.start_date) + " - " + dateFromat(data.end_date)}
           </span>
         </div>
 
         <div className="info">
           <img src={locationIcon} alt={"locationIcon"} />
-          {loading && (
-            <span className="text">
-              {data.event_place.location + " " + data.event_place.place_name}
-            </span>
-          )}
+
+          <span className="text">{data.location + " " + data.place_name}</span>
         </div>
 
         <div className="foldedInfo">
@@ -939,7 +1023,7 @@ function Detail() {
                 {"월요일   " +
                   (open["월"] === null || open["월"] === undefined
                     ? "운영정보 없음"
-                    : open["월"].text)}
+                    : open["월"])}
               </p>
 
               {info.run &&
@@ -953,7 +1037,7 @@ function Detail() {
                       >
                         {e +
                           "요일   " +
-                          (open[e] === null ? "운영정보 없음" : open[e].text)}
+                          (open[e] === null ? "운영정보 없음" : open[e])}
                       </p>
                     );
                 })}
@@ -1022,19 +1106,12 @@ function Detail() {
             </a>
           </div>
         )}
-        {loading && data.isSell ? (
-          <a href={data.ticket_link}>
-            <div className="ticket">
-              <img src={ticketIcon} alt={"ticketIcon"} />
-            </div>
-          </a>
-        ) : (
-          <Link to={"/Payment?id=" + data.id}>
-            <div className="ticket">
-              <img src={ticketIcon} alt={"ticketIcon"} />
-            </div>
-          </Link>
-        )}
+
+        <Link to={"/payment"}>
+          <div className="ticket">
+            <img src={ticketIcon} alt={"ticketIcon"} />
+          </div>
+        </Link>
 
         <div className="info hashtagInfo">
           <img src={hashtagIcon} alt={"hashtagIcon"} />
@@ -1050,14 +1127,14 @@ function Detail() {
                 >
                   {data.category}
                 </span>
-                {data.event_hashtag_list !== undefined &&
-                  data.event_hashtag_list.map((e, idx) => {
-                    return (
-                      <span key={idx} className="hashtag">
-                        {e.content}
-                      </span>
-                    );
-                  })}
+
+                {data.hashtag_list.map((e, idx) => {
+                  return (
+                    <span key={idx} className="hashtag">
+                      {e}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1066,9 +1143,7 @@ function Detail() {
         {promotion.length > 0 && (
           <div className="posterContainer">
             {promotion.map((e, idx) => {
-              return (
-                <img className="poster" src={e.src} alt="poster" key={idx} />
-              );
+              return <img className="poster" src={e} alt="poster" key={idx} />;
             })}
           </div>
         )}
@@ -1102,7 +1177,6 @@ function Detail() {
           </>
         )}
       </div>
-
       <div className="part2">
         <p className="description">
           {data.description !== undefined &&
@@ -1135,51 +1209,45 @@ function Detail() {
                 borderRadius: "12px",
               }}
             >
-              {loading && (
                 <NaverMap
                   defaultZoom={17}
                   center={{
-                    lat: data.event_place.location_x,
-                    lng: data.event_place.location_y,
+                    lat: data.location_x,
+                    lng: data.location_y,
                   }}
                 >
                   {data.category !== null && data.category !== undefined && (
                     <Marker
                       position={{
-                        lat: data.event_place.location_x,
-                        lng: data.event_place.location_y,
+                        lat: data.location_x,
+                        lng: data.location_y,
                       }}
                       icon={maker[data.category]}
                     />
                   )}
                 </NaverMap>
-              )}
+              
             </MapDiv>
           </NavermapsProvider> */}
-          {loading && (
-            <div className="location">
-              <p className="text">
-                {data.event_place.location + " " + data.event_place.place_name}
-              </p>
 
-              <div
-                className="clip"
-                onClick={() => {
-                  setCopy(true);
-                  setTimeout(() => {
-                    setCopy(false);
-                  }, 800);
-                  navigator.clipboard.writeText(
-                    data.event_place.location +
-                      " " +
-                      data.event_place.place_name
-                  );
-                }}
-              >
-                <img src={copyIcon} alt="copy" />
-              </div>
+          <div className="location">
+            <p className="text">{data.location + " " + data.place_name}</p>
+
+            <div
+              className="clip"
+              onClick={() => {
+                setCopy(true);
+                setTimeout(() => {
+                  setCopy(false);
+                }, 800);
+                navigator.clipboard.writeText(
+                  data.location + " " + data.place_name
+                );
+              }}
+            >
+              <img src={copyIcon} alt="copy" />
             </div>
-          )}
+          </div>
         </div>
 
         <div className="review">
@@ -1212,19 +1280,17 @@ function Detail() {
               {review.length > 0 && (
                 <div className="reviewContainer">
                   <div className="reviewHeader">
-                    <StarComponent size={12} star={simpleReview.star_rating} />
+                    <StarComponent size={12} star={review[0].star_rating} />
                     <p className="writeDay">3일전</p>
                   </div>
                   <div className="reviewContent">
-                    {simpleReview.event_review_image_dto_list !== null &&
-                      simpleReview.event_review_image_dto_list !== undefined &&
-                      simpleReview.event_review_image_dto_list.length > 0 && (
-                        <img
-                          alt="reviewImg"
-                          src={simpleReview.event_review_image_dto_list[0].src}
-                        />
-                      )}
-                    <p className="text">{simpleReview.content}</p>
+                    {review[0].event_review_image_dto_list.length > 0 && (
+                      <img
+                        alt="reviewImg"
+                        src={review[0].event_review_image_dto_list[0]}
+                      />
+                    )}
+                    <p className="text">{review[0].content}</p>
                   </div>
                 </div>
               )}
@@ -1242,7 +1308,6 @@ function Detail() {
           </Link>
         </div>
       </div>
-
       <div className="nearby">
         <p className="subTitle">주변 이벤트</p>
         <div className="eventList">
@@ -1251,9 +1316,7 @@ function Detail() {
           })}
         </div>
       </div>
-
       <p className="completeCopy">주소가 복사되었습니다.</p>
-
       <div
         className="back"
         onClick={() => {
@@ -1261,7 +1324,6 @@ function Detail() {
           setConfirm(false);
         }}
       ></div>
-
       <div className="popup">
         <p
           className="text"

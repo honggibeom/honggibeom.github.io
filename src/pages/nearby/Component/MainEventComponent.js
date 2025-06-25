@@ -1,5 +1,3 @@
-// 게더링 상세 및 이벤트 상세 페이지의 댓글 아이콘을 클릭 시 보이는 화면입니다.
-import React from "react";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,7 +12,7 @@ const color = {
   축제: "#EFA116",
   "원데이 클래스": "#981C26",
 };
-//css 기본
+
 const MainEventComponent1Css = styled.div`
   width: 200px;
   .img {
@@ -88,7 +86,7 @@ export function MainEventComponent1(props) {
   return (
     <MainEventComponent1Css
       onClick={() => {
-        navigate("/EventDetail");
+        navigate("/event/detail");
       }}
       img={img}
     >
@@ -186,7 +184,7 @@ export function MainEventComponent2(props) {
   return (
     <MainEventComponent2Css
       onClick={() => {
-        navigate("/EventDetail");
+        navigate("/event/detail");
       }}
       img={img}
     >
@@ -326,8 +324,7 @@ export function DetailEventComponent(props) {
   return (
     <DetailEventComponentCss
       onClick={() => {
-        if (data.is_sell) navigate("/EventDetail?id=" + props.id);
-        else window.location.href = data.ticket_link;
+        navigate("/event/detail");
         window.history.scrollRestoration = "manual";
         window.location.reload();
       }}
@@ -489,8 +486,7 @@ export function EventListComponent(props) {
   return (
     <EventListComponentCss
       onClick={() => {
-        if (data.is_sell) navigate("/EventDetail?id=" + props.id);
-        else window.location.href = data.ticket_link;
+        navigate("/event/detail");
       }}
       display={props.display}
       img={img}
@@ -607,8 +603,7 @@ export function MapEventComponent(props) {
   return (
     <MapEventComponentCss
       onClick={() => {
-        if (data.is_sell) navigate("/EventDetail?id=" + props.id);
-        else window.location.href = data.ticket_link;
+        navigate("/event/detail");
       }}
     >
       <div className="img">

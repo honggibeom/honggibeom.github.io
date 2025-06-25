@@ -7,8 +7,6 @@ import { TfiAngleRight } from "react-icons/tfi";
 import { AiOutlineDown } from "react-icons/ai";
 import {
   MainEventComponent1,
-  MainEventComponent2,
-  MainEventComponent3,
   MainEventList,
 } from "./Component/MainEventComponent";
 import useInteval from "./Hook/UseInteval";
@@ -25,7 +23,7 @@ const MainCss = styled.div`
   margin: 0;
   overflow: hidden;
   .mainContainer {
-    height: 90vh;
+    height: calc(100vh - 80px);
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100vw;
@@ -326,6 +324,7 @@ function Main() {
       data: [
         {
           src: dummydata1,
+          category: "전시회",
           content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
           title: "맥스달튼, 영화의 순간들 63",
           location: "서울특별시 강남구 테헤란로 518",
@@ -340,6 +339,7 @@ function Main() {
       data: [
         {
           src: dummydata1,
+          category: "전시회",
           content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
           title: "맥스달튼, 영화의 순간들 63",
           location: "서울특별시 강남구 테헤란로 518",
@@ -354,6 +354,7 @@ function Main() {
       data: [
         {
           src: dummydata1,
+          category: "전시회",
           content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
           title: "맥스달튼, 영화의 순간들 63",
           location: "서울특별시 강남구 테헤란로 518",
@@ -421,7 +422,6 @@ function Main() {
       slider.current.style.transitionDuration = "0ms";
     }
   };
-
   const bannerTouchEndEvent = (
     e,
     slider,
@@ -605,7 +605,7 @@ function Main() {
             {banner.map((e, idx) => {
               return (
                 <Link
-                  href="/EventDetail"
+                  to="/event/detail"
                   key={idx}
                   className="bannerimg"
                   style={{
