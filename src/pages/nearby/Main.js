@@ -24,15 +24,13 @@ const MainCss = styled.div`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  max-width: 450px;
   .mainContainer {
-    height: 100vh;
+    height: 90vh;
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100vw;
     max-width: 450px;
+    padding-bottom: 100px;
   }
 
   .banner {
@@ -322,7 +320,50 @@ function Main() {
   const [bannerPos, setBannerPos] = useState(0);
   const [bannerPage, setBannerPage] = useState(0);
 
-  const [themeList, setThemeList] = useState({});
+  const [themeList, setThemeList] = useState([
+    {
+      type: 1,
+      data: [
+        {
+          src: dummydata1,
+          content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
+          title: "맥스달튼, 영화의 순간들 63",
+          location: "서울특별시 강남구 테헤란로 518",
+          start_date: "2021-04-16",
+          end_date: "2021-7-11",
+        },
+      ],
+      content: "사진 이벤트",
+    },
+    {
+      type: 2,
+      data: [
+        {
+          src: dummydata1,
+          content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
+          title: "맥스달튼, 영화의 순간들 63",
+          location: "서울특별시 강남구 테헤란로 518",
+          start_date: "2021-04-16",
+          end_date: "2021-7-11",
+        },
+      ],
+      content: "사진 이벤트",
+    },
+    {
+      type: 3,
+      data: [
+        {
+          src: dummydata1,
+          content: "웨스 앤더슨 감독 영화 <그랜드 부다페스트 호텔",
+          title: "맥스달튼, 영화의 순간들 63",
+          location: "서울특별시 강남구 테헤란로 518",
+          start_date: "2021-04-16",
+          end_date: "2021-7-11",
+        },
+      ],
+      content: "사진 이벤트",
+    },
+  ]);
   const [popup, setPopup] = useState(true);
   const [day3, setDay3] = useState(false);
   const [notice, setNotice] = useState([
@@ -590,13 +631,12 @@ function Main() {
           return <RecommendEvent data={e} key={idx} />;
         })}
 
-        {Object.keys(themeList).map((e, idx) => {
+        {themeList.map((e, idx) => {
           return (
             <MainEventList
-              id={themeList[e].id}
-              type={themeList[e].type}
-              data={themeList[e].data}
-              content={themeList[e].content}
+              type={e.type}
+              data={e.data}
+              content={e.content}
               key={idx}
             />
           );

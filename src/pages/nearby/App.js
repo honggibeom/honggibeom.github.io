@@ -110,7 +110,10 @@ function App() {
             <Route path="/report" element={<Report />} />
             {/* 이벤트 상세 관련 추가 파일 */}
             <Route path="/event/detail" element={<Detail />} />
-            <Route path="/event-review-form" element={<EventReviewCreateForm />} />
+            <Route
+              path="/event-review-form"
+              element={<EventReviewCreateForm />}
+            />
             {/* 이벤트 상세 */}
             <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<SuccessPage />} />

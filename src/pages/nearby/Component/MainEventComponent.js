@@ -18,7 +18,7 @@ const color = {
 const MainEventComponent1Css = styled.div`
   width: 200px;
   .img {
-    background-image: url("${(props) => props.img}");
+    background-image: url(" ${(props) => props.img}");
     background-position: center;
     background-size: cover;
     width: 200px;
@@ -72,7 +72,7 @@ export function MainEventComponent1(props) {
   const [endDate, setEndDate] = useState("마감시 종료");
   useEffect(() => {
     setData({ ...props.data });
-    if (props.data.img !== null) setImg(props.data.img);
+    setImg(props.data.src);
     if (props.data.start_date != null) {
       setStartDate(
         props.data.start_date.split("T")[0].replace("-", ".").replace("-", ".")
@@ -103,9 +103,6 @@ export function MainEventComponent1(props) {
           <p className="text">
             {data.location !== undefined &&
               data.location.split(" ")[0] + " " + data.location.split(" ")[1]}
-            {!data.is_sell && (
-              <span className="text site">{" · " + data.homepage}</span>
-            )}
           </p>
         </div>
         <div className="container">
@@ -174,7 +171,7 @@ export function MainEventComponent2(props) {
   const [endDate, setEndDate] = useState("마감시 종료");
   useEffect(() => {
     setData({ ...props.data });
-    if (props.data.img !== null) setImg(props.data.img);
+    setImg(props.data.src);
     if (props.data.start_date != null) {
       setStartDate(
         props.data.start_date.split("T")[0].replace("-", ".").replace("-", ".")
@@ -189,8 +186,7 @@ export function MainEventComponent2(props) {
   return (
     <MainEventComponent2Css
       onClick={() => {
-        if (data.is_sell) navigate("/EventDetail?id=" + props.id);
-        else window.location.href = data.ticket_link;
+        navigate("/EventDetail");
       }}
       img={img}
     >
@@ -201,9 +197,6 @@ export function MainEventComponent2(props) {
           <p className="text">
             {data.location !== undefined &&
               data.location.split(" ")[0] + " " + data.location.split(" ")[1]}
-            {!data.is_sell && (
-              <span className="text site">{" · " + data.homepage}</span>
-            )}
           </p>
         </div>
         <div className="container">
@@ -248,7 +241,7 @@ const MainEventComponent3Css = styled.div`
 export function MainEventComponent3(props) {
   const [img, setImg] = useState("");
   useEffect(() => {
-    if (props.data.img !== null) setImg(props.data.img);
+    if (props.data.img !== null) setImg(props.data.src);
   }, []);
   return (
     <Link
@@ -663,22 +656,17 @@ export const MainEventList = (props) => {
         <span></span>
         {props.type === 1 &&
           props.data.map((e, idx) => {
-            return (
-              <MainEventComponent1 key={idx} id={e.event.id} data={e.event} />
-            );
+            return <MainEventComponent1 key={idx} data={e} />;
           })}
         {props.type === 2 &&
           props.data.map((e, idx) => {
-            return (
-              <MainEventComponent2 key={idx} id={e.event.id} data={e.event} />
-            );
+            return <MainEventComponent2 key={idx} data={e} />;
           })}
         {props.type === 3 && (
           <MainEventComponent3
-            id={props.data[0].event.id}
             theme={props.id}
             len={props.data.length}
-            data={props.data[0].event}
+            data={props.data[0]}
           />
         )}
         <span></span>
