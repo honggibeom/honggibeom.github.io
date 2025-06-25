@@ -110,10 +110,7 @@ function App() {
             <Route path="/report" element={<Report />} />
             {/* 이벤트 상세 관련 추가 파일 */}
             <Route path="/event/detail" element={<Detail />} />
-            <Route
-              path="/event-review-form"
-              element={<EventReviewCreateForm />}
-            />
+            <Route path="/event/create" element={<EventReviewCreateForm />} />
             {/* 이벤트 상세 */}
             <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<SuccessPage />} />
@@ -121,11 +118,11 @@ function App() {
             {/* 결제 */}
             <Route path="/bookmark" element={<Bookmark />} />
             {/* 찜 내역 */}
-            <Route path="/reserveTicket" element={<ReserveTicket />} />
+            <Route path="/reserve-ticket" element={<ReserveTicket />} />
             <Route path="/recommend" element={<Recommend />} />
             {/* 티켓 예매내역 */}
             <Route
-              path="/ReserveTicketDetail"
+              path="/reserve-ticket/detail"
               element={<ReserveTicketDetail />}
             />
             <Route path="/order" element={<Order />} />

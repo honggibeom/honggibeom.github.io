@@ -133,6 +133,7 @@ const EventReviewCreateFormCss = styled.div`
     }
   }
   .next {
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -15,12 +15,14 @@ import PopUp from "./Component/PopUp";
 import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
 import { nanoid } from "nanoid";
 const PaymentCSS = styled.div`
+  position: relative;
   padding: 0;
   margin: 0;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   max-width: 450px;
+
   .layout {
     display: flex;
     flex-direction: column;
@@ -132,15 +134,36 @@ const PaymentCSS = styled.div`
     padding: 0 10px;
   }
   .buttonLayout {
-    box-shadow: 0px -1px 3px 0px #00000011;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    bottom: -70px;
+    max-width: 417px;
+    height: 180px;
+    padding: 16px;
+    background: #fff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    transition: bottom 0.3s ease;
   }
+
+  .buttonLayout.active {
+    bottom: 0; /* 스크롤 끝 도달 시 완전히 올라옴 */
+  }
+
   .selectBtn {
+    position: absolute;
     display: flex;
     justify-content: center;
-    margin-top: auto;
-    margin-left: 20px;
-    margin-right: 20px;
+
+    left: 50%;
     width: ${window.innerWidth > 450 ? 410 : window.innerWidth - 40}px;
+
+    transform: translateX(-50%);
+    margin-top: auto;
+    box-sizing: border-box; /* 패딩/테두리 포함 계산 */
     padding: 14px 0;
     color: ${(props) => (props.isTouched ? "#ffffff" : "#981c26")};
     background: ${(props) => (props.isTouched ? "#981c26" : "#ffffff")};
@@ -217,7 +240,7 @@ const PaymentCSS = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 17px 0;
+    padding: 17px 0 24px;
     margin: 0 20px;
     color: #981c26;
     .totalTitle {
@@ -236,7 +259,7 @@ const PaymentCSS = styled.div`
     gap: 10px;
     input {
       padding: 15px 20px;
-      border-radius: 100px;
+      border-radius: 10px;
       border: #525252 solid 1px;
       font-size: 14px;
       margin: 5px 0;
@@ -245,14 +268,67 @@ const PaymentCSS = styled.div`
       }
     }
   }
+
   .payInfo {
     margin: 17px 20px 50px 20px;
-    .subTitle {
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 600;
-    }
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    /* 본문 및 리스트 양쪽정렬처럼 보이기 */
+    text-align: justify;
   }
+
+  .payInfo .subTitle {
+    position: relative;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin: 16px 0 8px;
+    padding-left: 12px;
+  }
+  .payInfo .subTitle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    background-color: #981c26;
+    border-radius: 2px;
+  }
+
+  .payInfo ul.list {
+    list-style: none; /* 기본 불릿 제거 */
+    margin: 0 0 16px;
+    padding: 0 0 0 16px; /* 전체 들여쓰기 */
+  }
+  .payInfo ul.list > li {
+    position: relative;
+    margin-bottom: 12px; /* 항목 간 간격 */
+    font-size: 12px;
+    line-height: 1.5;
+    color: #555555;
+    text-align: justify; /* 각 항목도 양쪽정렬 */
+  }
+
+  /*1단 리스트*/
+  .payInfo ul.list > li ul.nested-list {
+    list-style: none;
+    margin: 8px 0 16px 20px;
+    padding: 0;
+  }
+
+  /*2단 리스트*/
+  .payInfo ul.list > li ul.nested-list > li {
+    list-style: disc inside;
+    margin: 8px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #333333;
+  }
+
   .indent {
     text-indent: -11px;
     padding-left: 10px;
@@ -301,6 +377,7 @@ function Payment() {
   const [paymentWidget, setPaymentWidget] = useState(null);
   const paymentMethodsWidgetRef = useRef(null);
   const [price, setPrice] = useState(0);
+  const [buttonActive, setButtonActive] = useState(false);
   const [info, setInfo] = useState({
     customerName: "김토스",
     customerEmail: "customer123@gmail.com",
@@ -329,6 +406,17 @@ function Payment() {
     }
     paymentMethodsWidget.updateAmount(price);
   }, [price]);
+
+  useEffect(() => {
+    const el = scroll.current;
+    if (!el) return;
+    const onScroll = () => {
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight;
+      setButtonActive(atBottom);
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   // TODO: 임시 배열, 각 전시회 별 예매 가능한 시간 API로 대체
   const timeArray = [];
@@ -360,7 +448,7 @@ function Payment() {
             <div
               className="headerBack"
               onClick={() => {
-                navigate("/EventDetail?id=" + data.id);
+                navigate("/event/detail");
               }}
             >
               <TfiAngleLeft />
@@ -369,7 +457,7 @@ function Payment() {
             <div
               className="headerCancel"
               onClick={() => {
-                navigate("/EventDetail?id=" + data.id);
+                navigate("/event/detail");
               }}
             >
               <TfiClose />
@@ -537,60 +625,63 @@ function Payment() {
             </div>
             <p className="selectTitle">판매 정보</p>
             <div className="payInfo">
+              {/* 티켓수령 안내 */}
               <p className="subTitle">티켓수령 안내</p>
-              <p className="indent">
-                <span>&bull;</span> 공연 당일 현장 교부처에서 예약번호 및 본인
-                확인 후 티켓을 수령하실 수 있습니다.{" "}
-              </p>
-              <p className="indent">
-                <span>&bull;</span> 상단 예매확인/취소 메뉴에서 예매내역을
-                프린트하여 가시면 편리합니다.{" "}
-              </p>
+              <ul className="list">
+                <li>
+                  공연 당일 현장 교부처에서 예약번호 및 본인 확인 후 티켓을
+                  수령하실 수 있습니다.
+                </li>
+                <li>
+                  상단 예매확인/취소 메뉴에서 예매내역을 프린트하여 가시면
+                  편리합니다.
+                </li>
+              </ul>
+
+              {/* 환불 안내 */}
               <p className="subTitle">환불 안내</p>
-              <p className="indent">
-                <span>&bull;</span> 당사의 취소 처리가 완료되고 4-5일 후
-                카드사의 취소가 확인됩니다.{" "}
-              </p>
-              <p className="indent">
-                <span>&bull;</span> 예매 취소 시점과 해당 카드사의 환불
-                처리기준에 따라 취소금액의 환급방법과 환급일은 다소 차이가 있을
-                수 있으며, 예매 취소시 기존에 결제하였던 내역을 취소하며 최초
-                결제하셨던 동일카드로 취소 시점에 따라 취소수수료를
-                재승인합니다.{" "}
-              </p>
+              <ul className="list">
+                <li>
+                  당사의 취소 처리가 완료되고 4-5일 후 카드사의 취소가
+                  확인됩니다.
+                </li>
+                <li>
+                  예매 취소 시점과 해당 카드사의 환불 처리기준에 따라 취소금액의
+                  환급방법과 환급일은 다소 차이가 있을 수 있으며, 예매 취소 시
+                  기존에 결제하였던 내역을 취소하며 최초 결제하셨던 동일카드로
+                  취소 시점에 따라 취소수수료를 재승인합니다.
+                </li>
+              </ul>
+
+              {/* 취소수수료 안내 */}
               <p className="subTitle">취소수수료 안내</p>
-              <p className="indent">
-                <span>&bull;</span> 예매 후 7일까지 취소 시에는 취소수수료가
-                없습니다. 단, 취소수수료가 적용되는 기간일 시 관람일 기준 동일한
-                취소수수료가 적용됩니다.{" "}
-              </p>
-              <p className="indent">
-                <span>&bull;</span> 관람일 기준, 아래의 취소수수료가 적용됩니다.{" "}
-              </p>
-              <p className="indent">
-                <span style={{ marginLeft: "20px" }}>&bull;</span> 관람일 9일전
-                - 7일전까지 : 티켓금액의 10%{" "}
-              </p>
-              <p className="indent">
-                <span style={{ marginLeft: "20px" }}>&bull;</span> 관람일 6일전
-                - 3일전까지 : 티켓금액의 20%{" "}
-              </p>
-              <p className="indent">
-                <span style={{ marginLeft: "20px" }}>&bull;</span> 관람일 2일전
-                - 1일전까지 : 티켓금액의 30%{" "}
-              </p>
-              <p className="indent">
-                <span>&bull;</span> 상품의 특성에 따라서, 취소수수료 정책이
-                달라질 수 있습니다.{" "}
-              </p>
+              <ul className="list">
+                <li>
+                  예매 후 7일까지 취소 시에는 취소수수료가 없습니다. 단,
+                  취소수수료가 적용되는 기간일 시 관람일 기준 동일한
+                  취소수수료가 적용됩니다.
+                </li>
+                <li>
+                  관람일 기준, 아래의 취소수수료가 적용됩니다.
+                  <ul className="nested-list">
+                    <li>관람일 9일전 - 7일전까지 : 티켓금액의 10%</li>
+                    <li>관람일 6일전 - 3일전까지 : 티켓금액의 20%</li>
+                    <li>관람일 2일전 - 1일전까지 : 티켓금액의 30%</li>
+                  </ul>
+                </li>
+                <li>
+                  상품의 특성에 따라서, 취소수수료 정책이 달라질 수 있습니다.
+                </li>
+              </ul>
             </div>
+
             <p className="selectTitle">결제수단</p>
             <div id="payment-widget" />
             <div id="agreement" />
           </div>
         </div>
 
-        <div className="buttonLayout">
+        <div className={`buttonLayout${buttonActive ? " active" : ""}`}>
           <div className="total">
             <div className="totalTitle">결제 예정 금액</div>
             <div className="totalPrice">{price}원</div>

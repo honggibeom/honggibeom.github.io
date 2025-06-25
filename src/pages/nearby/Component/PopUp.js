@@ -110,7 +110,7 @@ function PopUp(props) {
                 <button
                   className="check"
                   onClick={() => {
-                    navigate("/reserveTicket");
+                    navigate("/reserve-ticket");
                     handleClose();
                   }}
                 >
@@ -128,7 +128,7 @@ function PopUp(props) {
               <button
                 className="check"
                 onClick={() => {
-                  navigate("/reserveTicket");
+                  navigate("/reserve-ticket");
                 }}
               >
                 예매내역 확인하기

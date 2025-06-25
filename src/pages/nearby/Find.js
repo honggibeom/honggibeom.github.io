@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const FindCss = styled.div`
   overflow: hidden;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   max-width: 450px;
   min-height: ${(props) => props.vh * 100};
 

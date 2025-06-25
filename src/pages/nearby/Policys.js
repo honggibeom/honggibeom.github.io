@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 const PolicysCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   max-width: 450px;
 
   .text {
@@ -65,7 +65,7 @@ function Policys() {
   const [menu, setMenu] = useState([
     {
       name: "이용약관",
-      url: "/https://www.notion.so/fcb7ba21cca44f7ba23a376a8bae94f3?pvs=4",
+      url: "https://www.notion.so/fcb7ba21cca44f7ba23a376a8bae94f3?pvs=4",
     },
     {
       name: "개인정보처리방침",

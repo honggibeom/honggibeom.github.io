@@ -74,7 +74,7 @@ const maker = {
 
 const MapCss = styled.div`
   overflow: hidden;
-  height: 100vh;
+  height: calc(100vh - 80px);
   min-height: ${(props) => props.vh * 100}px;
   max-width: 450px;
 

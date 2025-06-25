@@ -161,11 +161,11 @@ function ReserveTicket() {
         >
           <TfiAngleLeft />
         </p>
-        <p className="reserveTicket">티켓 예매내역</p>
+        <p className="reserve-ticket">티켓 예매내역</p>
       </div>
       <div
         className="layout"
-        onClick={() => navigate("/ReserveTicketDetail?id=" + id)}
+        onClick={() => navigate("/reserve-ticket/etail?id=" + id)}
       >
         <div className="img"></div>
         <div className="content">

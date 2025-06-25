@@ -9,7 +9,7 @@ import { TfiAngleLeft } from "react-icons/tfi";
 import { useRef } from "react";
 const SignInCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh-80px);
   max-width: 450px;
   overflow: hidden;
   background-image: url(${Background});
@@ -105,6 +105,7 @@ const SignInCss = styled.div`
         .loginPage {
           text-decoration: underline;
           color: #ffffff;
+          cursor: pointer;
         }
       }
     }

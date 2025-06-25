@@ -8,7 +8,7 @@ import { TfiAngleRight } from "react-icons/tfi";
 
 const MyPageCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh-80px);
   max-width: 450px;
   overflow: auto;
 
@@ -87,7 +87,7 @@ function MyPage() {
       { name: "공지사항", url: "/notice" },
       { name: "약관 및 정책", url: "/policys" },
       { name: "고객센터", url: "/user-service" },
-      { name: "알림설정", url: "/AlarmSetting" },
+      { name: "알림설정", url: "/alarm-setting" },
     ],
   });
 
@@ -125,7 +125,7 @@ function MyPage() {
           },
           {
             name: "티켓 예매내역",
-            url: "/reserveTicket",
+            url: "/reserve-ticket",
           },
           {
             name: "관람후기",
@@ -246,7 +246,7 @@ function MyPage() {
             로그아웃
           </p>
         ) : (
-          <Link to={"/signIn"} style={{ textDecoration: "none" }}>
+          <Link to={"/signin"} style={{ textDecoration: "none" }}>
             <p className="menu text1">로그인</p>
           </Link>
         )}

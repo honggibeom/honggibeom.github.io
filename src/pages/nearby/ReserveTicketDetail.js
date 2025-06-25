@@ -224,7 +224,7 @@ function ReserveTicketDetail() {
         >
           <TfiAngleLeft />
         </p>
-        <p className="reserveTicketDetail">예매상세내역</p>
+        <p className="reserve-ticket/detail">예매상세내역</p>
       </div>
       <div className="layout">
         <div className="img"></div>

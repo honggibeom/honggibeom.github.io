@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 const AlarmSettingCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   max-width: 450px;
 
   .text {

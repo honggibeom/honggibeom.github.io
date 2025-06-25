@@ -12,7 +12,7 @@ import userServiceIcon from "./Img/UserService/userService.svg";
 const UserServiceCss = styled.div`
   width: 100vw;
   max-width: 450px;
-  height: 100vh;
+  height: calc(100vh - 80px);
   overflow: auto;
 
   .header {
@@ -48,7 +48,7 @@ const UserServiceCss = styled.div`
     background-color: #f7e600;
     text-decoration: none;
     marign-top: 40px;
-    
+
     img {
       margin-right: 8px;
     }

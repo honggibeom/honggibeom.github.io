@@ -6,7 +6,7 @@ import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 
 const NoticeCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   max-width: 450px;
 
   .text {
@@ -63,6 +63,20 @@ const NoticeCss = styled.div`
 
 function Notice() {
   const navigate = useNavigate();
+  const notices = [
+    { title: "[공지] 이용약관관련", date: "2023.10.13" },
+    { title: "[이벤트] 가을맞이 포토 콘테스트", date: "2023.10.20" },
+    { title: "[이벤트] 할로윈 스탬프 랠리", date: "2023.10.31" },
+    { title: "[이벤트] 회원 감사주간 특별쿠폰", date: "2023.11.15" },
+    { title: "[이벤트] 새해맞이 후기 이벤트", date: "2023.12.01" },
+  ];
+
+  const sortedNotices = [...notices].sort((a, b) => {
+    const dataA = new Date(a.date);
+    const dataB = new Date(b.date);
+    return dataB - dataA;
+  });
+
   return (
     <NoticeCss>
       <div className="header">
@@ -77,15 +91,17 @@ function Notice() {
         <p className="title text1">공지사항</p>
       </div>
       <div className="noticeList">
-        <div className="notice">
-          <div className="content">
-            <p className="text1">[공지 이용약관관련]</p>
-            <p className="text">2023.10.13</p>
+        {sortedNotices.map((notice, index) => (
+          <div key={index} className="notice">
+            <div className="content">
+              <p className="text">{notice.title}</p>
+              <p className="text">{notice.date}</p>
+            </div>
+            <p className="right">
+              <TfiAngleRight />
+            </p>
           </div>
-          <p className="right">
-            <TfiAngleRight />
-          </p>
-        </div>
+        ))}
       </div>
     </NoticeCss>
   );
