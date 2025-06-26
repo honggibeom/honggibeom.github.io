@@ -324,7 +324,7 @@ function SignIn() {
               <Link className="link" to="/find/id">
                 <p className="idFind">아이디 찾기</p>
               </Link>
-              <Link className="link" to="/find/passwrod">
+              <Link className="link" to="/find/password">
                 <p className="pwFind">비밀번호 찾기</p>
               </Link>
               <Link className="link" to="/signup">

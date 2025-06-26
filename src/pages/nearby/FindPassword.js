@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useRef } from "react";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
-const FindCss = styled.div`
+const FindPasswordCss = styled.div`
   overflow: hidden;
   width: 100vw;
   height: calc(100vh - 80px);
@@ -234,7 +234,7 @@ const FindCss = styled.div`
   }
 `;
 
-function Find(props) {
+function FindPassword(props) {
   const id = useRef();
   const navigate = useNavigate();
   const phone = useRef();
@@ -270,7 +270,9 @@ function Find(props) {
     if (digits.length < 8) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
     return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
   };
+
   const regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{10,20}$/;
+
   useEffect(() => {
     window.addEventListener("resize", () => {
       setSize(
@@ -280,13 +282,20 @@ function Find(props) {
       );
     });
   }, []);
+
   useEffect(() => {
     if (page === 0) setResult({ ...result, top: "100" });
     else setResult({ ...result, top: "10" });
   }, [page]);
 
   return (
-    <FindCss btn={btn} page={page} result={result} blur={blur} vh={size / 100}>
+    <FindPasswordCss
+      btn={btn}
+      page={page}
+      result={result}
+      blur={blur}
+      vh={size / 100}
+    >
       <div className="header">
         <div className="fa-solid fa-angle-left">
           <TfiAngleLeft
@@ -478,8 +487,8 @@ function Find(props) {
           </p>
         </div>
       </div>
-    </FindCss>
+    </FindPasswordCss>
   );
 }
 
-export default Find;
+export default FindPassword;

@@ -5,7 +5,6 @@ import SignUp from "./SignUp";
 import Search from "./Search";
 import Map from "./Map";
 import Profile from "./Profile";
-import Find from "./Find";
 import Alarm from "./Alarm";
 import MyPage from "./MyPage";
 import Notice from "./Notice";
@@ -32,6 +31,8 @@ import AlarmSetting from "./AlarmSetting";
 import Recommend from "./Recommend";
 import Order from "./Order";
 import EventReviewCreateForm from "./EventReviewCreateForm";
+import FindId from "./FindId";
+import FindPassword from "./FindPassword";
 
 const AppCss = styled.div`
   width: 100vw;
@@ -66,8 +67,6 @@ const AppCss = styled.div`
 
 // ------------------------------------------------------------------ //
 function App() {
-  console.log("Kakao JS Key:", process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY);
-
   useEffect(() => {
     let flag1 = true;
     window.addEventListener("blur", (e) => {
@@ -91,10 +90,10 @@ function App() {
             <Route path="/eventList" element={<EventList theme={false} />} />
             {/*검색창*/}
             <Route path="/search" element={<Search />} />
-            {/*비밀번호 찾기*/}
-            <Route path="/find/password" element={<Find mode={"pw"} />} />
             {/*아이디 찾기*/}
-            <Route path="/find/id" element={<Find mode={"id"} />} />
+            <Route path="/find/id" element={<FindId />} />
+            {/*비밀번호 찾기*/}
+            <Route path="/find/password" element={<FindPassword />} />
             <Route path="/alarm" element={<Alarm />} />
             {/* 마이페이지 */}
             <Route path="/mypage" element={<MyPage />} />

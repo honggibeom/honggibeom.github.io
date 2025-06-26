@@ -107,7 +107,7 @@ function AccountManage() {
           <p className="idpw">비밀번호</p>
           <label>
             <input type="password" disabled={true} value={1234567890} />
-            <Link className="resetpw" to="/find/passwrod">
+            <Link className="resetpw" to="/find/password">
               재설정
             </Link>
           </label>

@@ -147,7 +147,7 @@ function MyPage() {
           },
           {
             name: "비밀번호 찾기",
-            url: "/find/passwrod",
+            url: "/find/password",
           },
         ],
       });
