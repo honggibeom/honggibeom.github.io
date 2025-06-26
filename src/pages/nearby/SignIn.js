@@ -224,6 +224,21 @@ function SignIn() {
   const [mode, setMode] = useState(0);
   const id = useRef("");
   const pw = useRef("");
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    const emailValue = id.current.value;
+    const pwValue = pw.current.value;
+    const emailReg = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    if (!emailReg.test(emailValue)) {
+      alert("올바른 이메일 형식이 아닙니다.");
+      return;
+    }
+
+    alert("로그인 되었습니다");
+    navigate("/");
+  };
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -302,7 +317,7 @@ function SignIn() {
           </div>
 
           <div className="next">
-            <p className="loginbtn" onClick={() => {}}>
+            <p className="loginbtn" onClick={handleLogin}>
               로그인
             </p>
             <div className="find">

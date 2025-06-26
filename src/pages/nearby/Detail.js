@@ -1227,7 +1227,7 @@ function Detail() {
             <p
               className="moreReview"
               onClick={() => {
-                navigate("/event-review");
+                navigate("/event/review");
               }}
             >
               모두 보기
@@ -1274,7 +1274,7 @@ function Detail() {
               )}
             </div>
           </div>
-          <Link to={"/event-review-form"} style={{ textDecoration: "none" }}>
+          <Link to={"/event/review-create"} style={{ textDecoration: "none" }}>
             <p className="writeReview">관람 후기 작성하기</p>
           </Link>
         </div>

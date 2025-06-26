@@ -66,6 +66,8 @@ const AppCss = styled.div`
 
 // ------------------------------------------------------------------ //
 function App() {
+  console.log("Kakao JS Key:", process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY);
+
   useEffect(() => {
     let flag1 = true;
     window.addEventListener("blur", (e) => {
@@ -83,7 +85,7 @@ function App() {
             <Route exact path="/" element={<Main />} />
             <Route path="/signup" element={<SignUp />} /> {/*회원가입*/}
             <Route path="/map" element={<Map />} />
-            <Route path="/event-review" element={<EventReviewList />} />
+            <Route path="/event/review" element={<EventReviewList />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/eventList" element={<EventList theme={false} />} />
@@ -110,7 +112,10 @@ function App() {
             <Route path="/report" element={<Report />} />
             {/* 이벤트 상세 관련 추가 파일 */}
             <Route path="/event/detail" element={<Detail />} />
-            <Route path="/event/create" element={<EventReviewCreateForm />} />
+            <Route
+              path="/event/review-create"
+              element={<EventReviewCreateForm />}
+            />
             {/* 이벤트 상세 */}
             <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<SuccessPage />} />

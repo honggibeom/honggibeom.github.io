@@ -518,10 +518,7 @@ function EventReviewList() {
             <Link
               to={
                 //해당 부분 수정 필요
-                "/CreateForm/EventReview?event_id=" +
-                event.id +
-                "&mode=edit&id=" +
-                select.id
+                "/d" + event.id + "&mode=edit&id=" + select.id
               }
               style={{ textDecoration: "none" }}
             >

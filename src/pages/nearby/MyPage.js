@@ -8,7 +8,7 @@ import { TfiAngleRight } from "react-icons/tfi";
 
 const MyPageCss = styled.div`
   width: 100vw;
-  height: calc(100vh-80px);
+  height: 100vh;
   max-width: 450px;
   overflow: auto;
 

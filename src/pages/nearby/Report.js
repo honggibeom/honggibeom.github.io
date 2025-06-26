@@ -192,7 +192,7 @@ function Report() {
         className="report"
         onClick={() => {
           alert("성공적으로 신고되었습니다.");
-          navigate("/event-review");
+          navigate("/event/review");
         }}
       >
         신고하기
