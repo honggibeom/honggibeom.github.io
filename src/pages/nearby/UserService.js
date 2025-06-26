@@ -47,7 +47,7 @@ const UserServiceCss = styled.div`
     border-radius: 8px;
     background-color: #f7e600;
     text-decoration: none;
-    marign-top: 40px;
+    margin-top: 40px;
 
     img {
       margin-right: 8px;

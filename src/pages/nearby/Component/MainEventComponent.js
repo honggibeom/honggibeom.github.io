@@ -14,6 +14,7 @@ const color = {
 };
 
 const MainEventComponent1Css = styled.div`
+  cursor: pointer;
   width: 200px;
   .img {
     background-image: url(" ${(props) => props.img}");
@@ -113,6 +114,7 @@ export function MainEventComponent1(props) {
 }
 
 const MainEventComponent2Css = styled.div`
+  cursor: pointer;
   flex-shrink: 0;
   background-image: linear-gradient(
       180deg,
@@ -207,6 +209,7 @@ export function MainEventComponent2(props) {
 }
 
 const MainEventComponent3Css = styled.div`
+  cursor: pointer;
   flex-shrink: 0;
   background-image: linear-gradient(
       180deg,
@@ -258,6 +261,7 @@ export function MainEventComponent3(props) {
 }
 
 const DetailEventComponentCss = styled.div`
+  cursor: pointer;
   width: ${window.innerWidth > 450 ? 225 - 9.5 : window.innerWidth / 2 - 9.5}px;
   margin-bottom: 40px;
   .img {
@@ -351,6 +355,7 @@ export function DetailEventComponent(props) {
   );
 }
 const EventListComponentCss = styled.div`
+  cursor: pointer;
   ${(props) => !props.display && "display:none"};
   width: ${window.innerWidth > 450 ? 225 - 9.5 : window.innerWidth / 2 - 9.5}px;
   margin-bottom: 40px;
@@ -526,6 +531,7 @@ export function EventListComponent(props) {
 
 const MapEventComponentCss = styled.div`
   width: 100%;
+  cursor: pointer;
   display: flex;
   padding-bottom: 30px;
   .img {

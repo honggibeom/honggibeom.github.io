@@ -11,22 +11,19 @@ const Page1Css = styled.div`
   max-width: 450px;
   min-height: ${(props) => props.vh * 70}px;
   overflow: hidden;
-  div {
-    margin-left: 7%;
-    margin-top: ${(props) => props.vh * 5}px;
-  }
 
   input {
     padding: ${(props) => props.vh * 2}px 3vw;
-    border: none;
-    width: 80%;
+    width: 90%;
     font-size: 16px;
     letter-spacing: -0.02em;
     border-radius: 8px;
     font-weight: 500;
     color: #222222;
     border: 1px solid #91949d;
+    box-sizing: border-box;
   }
+
   input:focus {
     outline: none;
     border: 1px solid #b03131;
@@ -59,7 +56,7 @@ function Page1(props) {
   const [blur, setBlur] = useState(false);
   return (
     <Page1Css user={props.user} blur={blur} vh={props.vh}>
-      <div className="email">
+      <div className="form">
         <label>
           <input
             type="text"
@@ -101,21 +98,17 @@ const Page2Css = styled.div`
     color: #080708;
   }
 
-  div {
-    margin-left: 7%;
-    margin-top: ${(props) => props.vh * 5}px;
-  }
-
   input {
     padding: ${(props) => props.vh * 2}px 3vw;
     border: none;
-    width: 80%;
+    width: 90%;
     font-size: 16px;
     letter-spacing: -0.02em;
     border-radius: 8px;
     font-weight: 500;
     color: #222222;
     border: 1px solid #91949d;
+    box-sizing: border-box;
   }
   input:focus {
     outline: none;
@@ -159,7 +152,7 @@ function Page2(props) {
   });
   return (
     <Page2Css user={props.user} vh={props.vh} blur={blur}>
-      <div className="pw">
+      <div className="form">
         <p>비밀번호</p>
         <label>
           <input
@@ -177,7 +170,7 @@ function Page2(props) {
       </div>
 
       <p className="warn2">특수문자 포함 10자 이상 작성해주세요</p>
-      <div className="pwcheck">
+      <div className="form">
         <p>비밀번호 확인</p>
         <label>
           <input
@@ -213,10 +206,6 @@ const Page3Css = styled.div`
     margin-left: 2%;
   }
 
-  div {
-    margin-left: 7vw;
-    margin-top: ${(props) => props.vh * 5}px;
-  }
   label {
     display: block;
     width: 90%;
@@ -226,7 +215,8 @@ const Page3Css = styled.div`
   }
   input {
     padding: ${(props) => props.vh * 2}px 3%;
-    border: none;
+    width: 80vw;
+    border: 0;
     font-size: 16px;
     letter-spacing: -0.02em;
     border-radius: 8px;
@@ -235,11 +225,11 @@ const Page3Css = styled.div`
   }
 
   .input1 {
-    width: 60%;
+    width: 63%;
   }
 
   .input2 {
-    width: 55%;
+    width: 60%;
   }
 
   input:focus {
@@ -255,7 +245,7 @@ const Page3Css = styled.div`
     cursor: pointer;
     position: relative;
     border: 0;
-    ontline: 0;
+    outline: 0;
     padding: ${(props) => props.vh * 1}px 2%;
     border-radius: 8px;
     margin: 0 auto;
@@ -285,7 +275,7 @@ function Page3(props) {
   const [checkAble, setCheckAble] = useState("");
   return (
     <Page3Css user={props.user} check={checkAble} isSend={isSend} vh={props.vh}>
-      <div>
+      <div className="form">
         <p>휴대폰 번호</p>
 
         <label>
@@ -298,13 +288,20 @@ function Page3(props) {
               props.setUser({ ...props.user, phone: phone.current.value });
             }}
           />
-          <button type="button" className="phone">
+          <button
+            type="button"
+            className="phone"
+            onClick={() => {
+              alert("인증번호 전송");
+              setIsSend(true);
+            }}
+          >
             인증요청
           </button>
         </label>
       </div>
 
-      <div>
+      <div className="form">
         <p>인증번호</p>
         <label>
           <input
@@ -315,7 +312,13 @@ function Page3(props) {
             onChange={() => setCheckAble(check.current.value)}
           />
 
-          <button type="button" className="check" onClick={() => {}}>
+          <button
+            type="button"
+            className="check"
+            onClick={() => {
+              props.setUser({ ...props.user, phone_check: true });
+            }}
+          >
             인증번호 확인
           </button>
         </label>
@@ -336,15 +339,10 @@ const Page4Css = styled.div`
     margin-left: 2%;
   }
 
-  div {
-    margin-left: 7%;
-    margin-top: ${(props) => props.vh * 4}px;
-  }
-
   input {
     padding: ${(props) => props.vh * 2}px 3vw;
     border: none;
-    width: 80%;
+    width: 70%;
     font-size: 16px;
     letter-spacing: -0.02em;
     border-radius: 8px;
@@ -379,7 +377,7 @@ function Page4(props) {
   const [blur, setBlur] = useState(false);
   return (
     <Page4Css user={props.user} blur={blur} vh={props.vh}>
-      <div>
+      <div className="form">
         <p>닉네임</p>
         <label>
           <input
@@ -621,182 +619,162 @@ function Page5(props) {
 }
 
 const Wrap = styled.form`
+  width: 100vw;
+  height: 100vh;
+  max-width: 450px;
+  min-height: ${(props) => props.vh * 100}px;
+  background: #ffffff;
+  overflow: hidden;
 
-    width: 100vw;
-    height: 100vh;
-    max-width:450px;
-    min-height:${(props) => props.vh * 100}px;
-    background: #ffffff;
-    overflow:hidden;
+  * {
+    font-family: "Spoqa Han Sans Neo";
+    letter-spacing: -0.02em;
+  }
+  .form {
+    margin-left: 7%;
+    margin: ${(props) => props.vh * 5}px 0 0 7%;
+  }
 
-    *{
-        font-family: 'Spoqa Han Sans Neo';
-        letter-spacing: -0.02em;
+  .icon {
+    margin: ${(props) => props.vh * 2}px 0;
+    display: flex;
+
+    .fa-angle-left {
+      cursor: pointer;
+      width: 10%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #080708;
+      font-size: 24px;
+      margin-left: 5%;
+      margin-top: ${(props) => props.vh * 2}px;
     }
 
-    .icon{
-
-        margin:${(props) => props.vh * 2}px 0;
-        display:flex;
-
-        .fa-angle-left{
-            cursor:pointer;
-            width:10%;
-            display:flex;
-            align-items:center;
-            justify-conetent:center;
-            color::#080708;
-            font-size: 24px;
-            margin-left:5%;
-            margin-top:${(props) => props.vh * 2}px;
-        }
-
-        .step{
-            margin-top: ${(props) => props.vh * 2}px;
-            width:70%;
-            display: flex;
-            justify-content:center;
-            .step1,.step2,.step3,.step4,.step5{
-
-                height:15px;
-                background: #080708;
-                transition: 0.5s;
-                margin: auto 2%;
-
-            }
-            .step1
-            {
-                
-                ${(props) =>
-                  props.mode === 0
-                    ? "border-radius: 10px; width:40px;"
-                    : "border-radius: 100%; opacity:0.3; width:15px;"}
-
-            }
-            .step2
-            {
-
-                ${(props) =>
-                  props.mode === 1
-                    ? "border-radius: 10px; width:40px;"
-                    : "border-radius: 100%; opacity:0.3; width:15px;"}
-
-            }
-            .step3
-            {
-                
-                ${(props) =>
-                  props.mode === 2
-                    ? "border-radius: 10px; width:40px;"
-                    : "border-radius: 100%; opacity:0.3; width:15px;"}
-
-            }
-            .step4
-            {
-
-                ${(props) =>
-                  props.mode === 3
-                    ? "border-radius: 10px; width:40px;"
-                    : "border-radius: 100%; opacity:0.3; width:15px;"}
-
-            }
-            .step5
-            {
-
-                ${(props) =>
-                  props.mode === 4
-                    ? "border-radius: 10px; width:40px;"
-                    : "border-radius: 100%; opacity:0.3; width:15px;"}
-
-            }
-        }
-    }
-    
-    .text{
-
-        margin-top:${(props) => props.vh * 8}px;
-
-        .text1{
-           
-            color :#080708;
-            margin-left: 8%;
-            font-size:  24px;
-            font-weight: 700;
-        
-        }
-
-        .text2{
-            margin-bottom:0;
-            margin-left: 8%;
-            margin-right: 8%;    
-            font-size: 16px;
-            color: #91949D;
-        }
-
-    }
-    .container{
-
-        display: flex;
-        background:white;
-        margin-top: ${(props) => props.vh * 5}px;;
-        width: 500vw;
-        height: 70vh;
-        max-width:2250px;
-        min-height:${(props) => props.vh * 70}px;
-        transform: translate(${(props) => props.mode * -20}%);
+    .step {
+      margin-top: ${(props) => props.vh * 2}px;
+      width: 70%;
+      display: flex;
+      justify-content: center;
+      .step1,
+      .step2,
+      .step3,
+      .step4,
+      .step5 {
+        height: 15px;
+        background: #080708;
         transition: 0.5s;
-        overflow:hidden;
+        margin: auto 2%;
+      }
+      .step1 {
+        ${(props) =>
+          props.mode === 0
+            ? "border-radius: 10px; width:40px;"
+            : "border-radius: 100%; opacity:0.3; width:15px;"}
+      }
+      .step2 {
+        ${(props) =>
+          props.mode === 1
+            ? "border-radius: 10px; width:40px;"
+            : "border-radius: 100%; opacity:0.3; width:15px;"}
+      }
+      .step3 {
+        ${(props) =>
+          props.mode === 2
+            ? "border-radius: 10px; width:40px;"
+            : "border-radius: 100%; opacity:0.3; width:15px;"}
+      }
+      .step4 {
+        ${(props) =>
+          props.mode === 3
+            ? "border-radius: 10px; width:40px;"
+            : "border-radius: 100%; opacity:0.3; width:15px;"}
+      }
+      .step5 {
+        ${(props) =>
+          props.mode === 4
+            ? "border-radius: 10px; width:40px;"
+            : "border-radius: 100%; opacity:0.3; width:15px;"}
+      }
+    }
+  }
+
+  .text {
+    margin-top: ${(props) => props.vh * 8}px;
+
+    .text1 {
+      color: #080708;
+      margin-left: 8%;
+      font-size: 24px;
+      font-weight: 700;
     }
 
-    .next{
-        margin:0;
-        display: flex;
-        cursor: pointer;
-        position: fixed;
-        top: ${(props) => props.vh * 94}px;
-        width: 100vw;
-        height: 6vh;
-        max-width:450px;
-        min-height: ${(props) => props.vh * 6}px;
-        background: ${(props) => {
-          const regExp =
-            /^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{10,20}$/;
-
-          if (
-            props.mode === 0 &&
-            /[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(
-              props.user.id
-            )
-          )
-            return "#B03131;";
-          else if (
-            props.mode === 1 &&
-            props.user.pw === props.user.pw_check &&
-            regExp.test(props.user.pw)
-          )
-            return "#B03131;";
-          else if (props.mode === 2 && props.user.phone_check === true)
-            return "#B03131;";
-          else if (props.mode === 3 && props.user.nickname.length > 1)
-            return "#B03131;";
-
-          if (
-            props.mode === 4 &&
-            (JSON.stringify(props.tos) === JSON.stringify([true, true, true]) ||
-              JSON.stringify(props.tos) === JSON.stringify([true, true, false]))
-          )
-            return "#B03131;";
-          else return "#CBCED7;";
-        }};
-
-        font-size: 24px;
-        font-weight: 700;
-        color: #ffffff;
-        align-items:center;
-        justify-content: center;
-        transition:0.3s;
+    .text2 {
+      margin-bottom: 0;
+      margin-left: 8%;
+      margin-right: 8%;
+      font-size: 16px;
+      color: #91949d;
     }
-    
+  }
+  .container {
+    display: flex;
+    background: white;
+    margin-top: ${(props) => props.vh * 5}px;
+    width: 500vw;
+    height: 70vh;
+    max-width: 2250px;
+    min-height: ${(props) => props.vh * 70}px;
+    transform: translate(${(props) => props.mode * -20}%);
+    transition: 0.5s;
+    overflow: hidden;
+  }
+
+  .next {
+    margin: 0;
+    display: flex;
+    cursor: pointer;
+    position: fixed;
+    top: ${(props) => props.vh * 94}px;
+    width: 100vw;
+    height: 6vh;
+    max-width: 450px;
+    min-height: ${(props) => props.vh * 6}px;
+    background: ${(props) => {
+      const regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{10,20}$/;
+
+      if (
+        props.mode === 0 &&
+        /[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(props.user.id)
+      )
+        return "#B03131;";
+      else if (
+        props.mode === 1 &&
+        props.user.pw === props.user.pw_check &&
+        regExp.test(props.user.pw)
+      )
+        return "#B03131;";
+      else if (props.mode === 2 && props.user.phone_check === true)
+        return "#B03131;";
+      else if (props.mode === 3 && props.user.nickname.length > 1)
+        return "#B03131;";
+
+      if (
+        props.mode === 4 &&
+        (JSON.stringify(props.tos) === JSON.stringify([true, true, true]) ||
+          JSON.stringify(props.tos) === JSON.stringify([true, true, false]))
+      )
+        return "#B03131;";
+      else return "#CBCED7;";
+    }};
+
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+  }
 `;
 
 function SignUp() {
@@ -827,6 +805,7 @@ function SignUp() {
   }, []);
 
   const next = () => {
+    console.log(mode);
     if (mode === 0) {
       if (/[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(user.id))
         setMode(mode + 1);
@@ -844,6 +823,8 @@ function SignUp() {
         JSON.stringify(tos) === JSON.stringify([true, true, true]) ||
         JSON.stringify(tos) === JSON.stringify([true, true, false])
       ) {
+        alert("회원가입 성공!");
+        navigate("/");
       } else {
         alert("필수 이용약관에 동의해주세요");
       }

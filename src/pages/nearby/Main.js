@@ -206,6 +206,7 @@ const MainCss = styled.div`
       border: 1px solid ${(props) => (props.day3 ? "#981c26" : "#525252")};
       background: ${(props) => (props.day3 ? "#981c26" : "#fff")};
       margin: auto 6px auto 20px;
+      cursor: pointer;
     }
 
     .close {
@@ -213,6 +214,7 @@ const MainCss = styled.div`
       align-items: center;
       justify-content: right;
       width: 50%;
+      cursor: pointer;
     }
     label {
       display: flex;

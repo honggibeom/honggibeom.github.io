@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import ProfileImg from "./Img/ProfileSet/ProfileImg.svg";
 import { TfiAngleLeft } from "react-icons/tfi";
@@ -142,7 +142,6 @@ function Page1(props) {
 const ProfileCss = styled.form`
   overflow: hidden;
   width: 100vw;
-  height: 100vh;
   max-width: 450px;
   min-height: ${(props) => props.vh * 100}px;
 
@@ -184,18 +183,20 @@ const ProfileCss = styled.form`
   }
 
   .next {
+    position: fixed;
+    bottom: 40px;
+    text-decoration: none;
     display: flex;
     justify-content: center;
     width: ${window.innerWidth > 450 ? 410 : window.innerWidth - 40}px;
     padding: 14px 0;
     color: #ffffff;
     background: #981c26;
-    margin-top: auto;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin: 0 20px;
     font-size: 14px;
     font-weight: 600;
     border-radius: 100px;
+    cursor: pointer;
   }
 `;
 
@@ -228,9 +229,9 @@ function Profile() {
         <div className="container">
           <Page1 page1={page1} setPage1={setPage1} vh={size / 100} />
         </div>
-        <p className="next" onClick={() => {}}>
+        <Link className="next" to={"/mypage"}>
           저장하기
-        </p>
+        </Link>
       </div>
     </ProfileCss>
   );
