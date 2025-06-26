@@ -92,7 +92,7 @@ function App() {
             {/*검색창*/}
             <Route path="/search" element={<Search />} />
             {/*비밀번호 찾기*/}
-            <Route path="/find/passwrod" element={<Find mode={"pw"} />} />
+            <Route path="/find/password" element={<Find mode={"pw"} />} />
             {/*아이디 찾기*/}
             <Route path="/find/id" element={<Find mode={"id"} />} />
             <Route path="/alarm" element={<Alarm />} />
