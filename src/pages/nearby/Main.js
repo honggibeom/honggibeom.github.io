@@ -175,9 +175,9 @@ const MainCss = styled.div`
 
       .img {
         width: ${window.innerWidth > 450 ? 450 : window.innerWidth}px;
-        height: ${(props) => props.popupHeight}px;
+        height: ${(props) => props.popupheight}px;
         min-height: 350px;
-        object-fit: contain;
+        object-fit: cover;
       }
     }
 
@@ -379,25 +379,25 @@ function Main() {
   const [popupPos, setPopupPos] = useState(0);
   const [popupPage, setPopupPage] = useState(0);
 
-  const [popupHeight, setPopupHeight] = useState(0);
+  const [popupheight, setpopupheight] = useState(0);
   const [touch, setTouch] = useState(false);
 
   const scrolledBanner = useInteval(
     () => {
+      if (bannerSlider.current === null) return;
       const width = window.innerWidth > 450 ? 450 : window.innerWidth;
-      if (bannerSlider.current !== null)
-        bannerSlider.current.style.transitionDuration = "600ms";
+      bannerSlider.current.style.transitionDuration = "600ms";
+
       setTimeout(() => {
-        if (bannerSlider.current !== null)
-          bannerSlider.current.style.transitionDuration = "0ms";
+        if (bannerSlider.current === null) return;
+        bannerSlider.current.style.transitionDuration = "0ms";
         if ((bannerPage + 2) % bannerData.current.length === 0) {
           setBanner([...banner, ...bannerData.current]);
         }
       }, 500);
-      if (bannerSlider.current !== null)
-        bannerSlider.current.style.transform = `translate(${
-          bannerPos - width
-        }px)`;
+      bannerSlider.current.style.transform = `translate(${
+        bannerPos - width
+      }px)`;
       setBannerPos(bannerPos - width);
       setBannerPage(bannerPage + 1);
     },
@@ -437,8 +437,8 @@ function Main() {
       slider.current.style.transitionDuration = "600ms";
       slider.current.style.transform = `translate(0px)`;
       setTimeout(() => {
-        if (slider.current !== null)
-          slider.current.style.transitionDuration = "0ms";
+        if (slider.current === null) return;
+        slider.current.style.transitionDuration = "0ms";
       }, 600);
     } else {
       let drag = (-sum / width) % 1;
@@ -504,6 +504,13 @@ function Main() {
   };
 
   useEffect(() => {
+    if (notice.length > 0) {
+      let img = new Image();
+      img.src = notice[0].src;
+      let width = window.innerWidth > 450 ? 450 : window.innerWidth;
+      setpopupheight((img.height * width) / img.width);
+    }
+
     if (localStorage.getItem("notice") !== null) {
       let d = new Date(localStorage.getItem("notice"));
       let now = new Date();
@@ -514,15 +521,6 @@ function Main() {
     }
     return;
   }, []);
-
-  useEffect(() => {
-    if (notice.length > 0) {
-      let img = new Image();
-      img.src = notice[0].src;
-      let width = window.innerWidth > 450 ? 450 : window.innerWidth;
-      setPopupHeight((img.height * width) / img.width);
-    }
-  }, [popupPage]);
 
   const BannerAnchor = (props) => {
     let buf = [];
@@ -558,7 +556,7 @@ function Main() {
       popup={popup}
       day3={day3}
       notice={notice}
-      popupHeight={popupHeight}
+      popupheight={popupheight}
     >
       <div className="mainContainer" ref={container}>
         <div className="banner">
@@ -591,6 +589,7 @@ function Main() {
                 setBannerPos,
                 setBannerPage,
                 () => {
+                  if (bannerSlider.current === null) return;
                   bannerSlider.current.style.transitionDuration = "0ms";
                   if ((bannerPage + 2) % bannerData.current.length === 0) {
                     setBanner([

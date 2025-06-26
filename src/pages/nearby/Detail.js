@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { DetailEventComponent } from "./Component/MainEventComponent";
 import Footer from "./Component/Footer";
-
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 //이미지
 import {
   TfiAngleLeft,
@@ -375,13 +375,9 @@ const DetailCss = styled.div`
     }
 
     .location {
+      margin-top: 20px;
       display: flex;
       align-items: center;
-      p {
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-
       img {
         width: 24px;
         height: 24px;
@@ -602,8 +598,8 @@ function Detail() {
     category: "공연",
     location: "서울특별시 송파구 잠실동 40-1",
     place_name: "샤롯데씨어터",
-    location_x: "이벤트 주소 x 좌표",
-    location_y: "이벤트 주소 y 좌표",
+    location_x: 37.5112866236555,
+    location_y: 127.097939034042,
     homepage: "https://tickets.interpark.com/goods/25007451",
     description: `국내 초연 21주년, 브로드웨이 스테디셀러 뮤지컬
     브로드웨이 5,000회 이상 정기공연 기록!
@@ -651,7 +647,6 @@ function Detail() {
     토: "14:00, 18:30",
     일: "14:00",
   });
-  const [run, setRun] = useState({});
   const [close, setClose] = useState([]);
   const [fee, setFee] = useState([
     { target: "VIP", price: 130000 },
@@ -1192,43 +1187,19 @@ function Detail() {
 
         <div className="map">
           <p className="subTitle">이벤트 장소</p>
-          {/* <NavermapsProvider
-            ncpClientId="pvhem24pi2"
-            error={<p>Maps Load Error</p>}
-            loading={<p>Maps Loading...</p>}
+
+          <Map
+            center={{ lat: data.location_x, lng: data.location_y }}
+            style={{ width: "100%", height: "360px" }}
           >
-            <MapDiv
-              id={"nearby"}
-              style={{
-                width: "90%",
-                height:
-                  window.innerWidth > 450
-                    ? "270px"
-                    : window.innerWidth * 0.6 + "px",
-                margin: "5%",
-                borderRadius: "12px",
+            <MapMarker
+              position={{ lat: data.location_x, lng: data.location_y }}
+              image={{
+                src: maker[data.category],
+                size: { width: 40, height: 40 },
               }}
-            >
-                <NaverMap
-                  defaultZoom={17}
-                  center={{
-                    lat: data.location_x,
-                    lng: data.location_y,
-                  }}
-                >
-                  {data.category !== null && data.category !== undefined && (
-                    <Marker
-                      position={{
-                        lat: data.location_x,
-                        lng: data.location_y,
-                      }}
-                      icon={maker[data.category]}
-                    />
-                  )}
-                </NaverMap>
-              
-            </MapDiv>
-          </NavermapsProvider> */}
+            ></MapMarker>
+          </Map>
 
           <div className="location">
             <p className="text">{data.location + " " + data.place_name}</p>
@@ -1367,18 +1338,6 @@ function Detail() {
           취소
         </p>
       </div>
-      {/* {imgPopup && (
-        <div className="imgPopup">
-          <div className="imgPopupHeader">
-            <TfiAngleLeft
-              onClick={() => {
-                setImgPopup(false);
-              }}
-            />
-          </div>
-          <img src={imgSrc} alt="img" className="img" />
-        </div>
-      )} */}
       <p style={{ height: "50px" }}></p>
       <Footer mode={-1} />
     </DetailCss>
