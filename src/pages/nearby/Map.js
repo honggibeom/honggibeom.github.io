@@ -15,6 +15,7 @@ import filterIcon from "./Img/Header/filter.svg";
 import { MapEventComponent } from "./Component/MainEventComponent.js";
 import filtering from "./Function/FilterFunctions.js";
 import Loading from "./Component/Loading";
+import { Map as KakaoMap, MapMarker } from "react-kakao-maps-sdk";
 const maker = {
   전시회: exhibitionIcon,
   공연: popupstoreIcon,
@@ -22,55 +23,53 @@ const maker = {
   "원데이 클래스": oneDayClassIcon,
 };
 
-// function CustomMarker(props) {
-//   return (
-//     <>
-//       {props.data !== undefined && (
-//         <Marker
-//           position={{
-//             lat: props.data.location_x,
-//             lng: props.data.location_y,
-//           }}
-//           visible={true}
-//           icon={maker[props.data.category]}
-//           onClick={() => {
-//             props.setTouch(true);
-//             props.center.current = {
-//               lat: props.data.location_x,
-//               lng: props.data.location_y,
-//             };
-//             props.setCenter({
-//               lat: props.data.location_x,
-//               lng: props.data.location_y,
-//             });
-//             props.setEvent(props.data);
-//             props.detailRef.current.style.top = "-284px";
-//             props.detailRef.current.style.transitionDuration = "600ms";
-//             setTimeout(() => {
-//               props.detailRef.current.style.transitionDuration = "0ms";
-//             }, 600);
+function CustomMarker(props) {
+  return (
+    <MapMarker
+      position={{
+        lat: props.data.location_x,
+        lng: props.data.location_y,
+      }}
+      image={{
+        src: maker[props.data.category],
+        size: { width: 40, height: 40 },
+      }}
+      onClick={() => {
+        props.setTouch(true);
+        props.center.current = {
+          lat: props.data.location_x,
+          lng: props.data.location_y,
+        };
+        props.setCenter({
+          lat: props.data.location_x,
+          lng: props.data.location_y,
+        });
+        props.setEvent(props.data);
+        props.detailRef.current.style.top = "-284px";
+        props.detailRef.current.style.transitionDuration = "600ms";
+        setTimeout(() => {
+          props.detailRef.current.style.transitionDuration = "0ms";
+        }, 600);
 
-//             setTimeout(() => {
-//               props.setTouch(false);
-//             }, 100);
-//           }}
-//         />
-//       )}
-//     </>
-//   );
-//   /*
-//     <CustomMaker pos={}
-//     filter={filter}
-//     time={}
-//     classify={}
-//     my={}
-//     category={}
-//     setDetail={setDetail}
-//     detail={detail}
-//     />
+        setTimeout(() => {
+          props.setTouch(false);
+        }, 100);
+      }}
+    />
+  );
+}
+/*
+    <CustomMaker pos={}
+    filter={filter}
+    time={}
+    classify={}
+    my={}
+    category={}
+    setDetail={setDetail}
+    detail={detail}
+    />
 
-//   */
-// }
+  */
 
 const MapCss = styled.div`
   overflow: hidden;
@@ -215,7 +214,6 @@ function Map() {
   });
   const [display, setDisplay] = useState(false);
   const [touch, setTouch] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const getMyLoc = () => {
     function success(position) {
       center.current = {
@@ -319,66 +317,58 @@ function Map() {
             }}
           />
         </div>
-        {/* {center.current !== undefined && (
-          <NavermapsProvider
-            ncpClientId="pvhem24pi2"
-            error={<p>Maps Load Error</p>}
-            loading={<p>Maps Loading...</p>}
-          >
-            <MapDiv
-              id="nearby"
-              style={{
-                width: "100vw",
-                maxWidth: "450px",
-                height: "100%",
-                minHeight: size * 0.8 + "px",
-              }}
-              onTouchStart={() => {
-                detailRef.current.style.top = "-108px";
-                detailRef.current.style.transitionDuration = "600ms";
-                setTimeout(() => {
-                  if (detailRef.current !== null)
-                    detailRef.current.style.transitionDuration = "0ms";
-                }, 600);
-              }}
-            >
-              <NaverMap
-                defaultZoom={15}
-                center={centerState}
-                onCenterChanged={(e) => {
-                  center.current = {
-                    lat: e.y,
-                    lng: e.x,
-                  };
-                }}
-              >
-                <Marker position={my.pos} visible={my.vis} icon={myloc} />
-                {!isPending &&
-                  eventList.map((e, idx) => {
-                    if (filtering(filter, e))
-                      return (
-                        <CustomMarker
-                          key={idx}
-                          data={e}
-                          setEvent={setEvent}
-                          detailRef={detailRef}
-                          center={center}
-                          setCenter={setCenter}
-                          setTouch={setTouch}
-                        />
-                      );
-                  })}
-              </NaverMap>
-            </MapDiv>
-          </NavermapsProvider>
-        )} */}
-        {isPending && <Loading />}
+
+        <KakaoMap
+          style={{
+            width: "100vw",
+            maxWidth: "450px",
+            height: "100%",
+            minHeight: size * 0.8 + "px",
+          }}
+          onTouchStart={() => {
+            detailRef.current.style.top = "-108px";
+            detailRef.current.style.transitionDuration = "600ms";
+            setTimeout(() => {
+              if (detailRef.current !== null)
+                detailRef.current.style.transitionDuration = "0ms";
+            }, 600);
+          }}
+          center={centerState}
+          onCenterChanged={(e) => {
+            center.current = {
+              lat: e.y,
+              lng: e.x,
+            };
+          }}
+        >
+          {my.vis && (
+            <MapMarker
+              position={my.pos}
+              visible={my.vis}
+              image={{ src: myloc, size: { width: 40, height: 40 } }}
+            />
+          )}
+          {eventList.map((e, idx) => {
+            if (filtering(filter, e))
+              return (
+                <CustomMarker
+                  key={idx}
+                  data={e}
+                  setEvent={setEvent}
+                  detailRef={detailRef}
+                  center={center}
+                  setCenter={setCenter}
+                  setTouch={setTouch}
+                />
+              );
+          })}
+        </KakaoMap>
       </div>
       <div className="detail" ref={detailRef}>
         <div ref={barRef}>
           <div
             className="bar"
-            onClick={(e) => {
+            onClick={() => {
               detailRef.current.style.transitionDuration = "600ms";
               if (detailRef.current.style.top === "-108px")
                 detailRef.current.style.top = "-284px";
