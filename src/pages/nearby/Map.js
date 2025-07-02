@@ -73,7 +73,7 @@ function CustomMarker(props) {
 
 const MapCss = styled.div`
   overflow: hidden;
-  height: calc(100vh - 80px);
+  height: 100vh;
   min-height: ${(props) => props.vh * 100}px;
   max-width: 450px;
 

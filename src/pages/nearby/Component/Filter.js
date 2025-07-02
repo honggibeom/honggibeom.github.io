@@ -13,7 +13,7 @@ const FilterCss = styled.div`
   overflow: auto;
   position: fixed;
   background: #ffffff;
-  top: ${(props) => (props.display ? 0 : 100)}vh;
+  top: ${(props) => (props.display ? "80px" : "100vh")};
   z-index: 100;
   .filterHeader {
     display: flex;
@@ -27,6 +27,7 @@ const FilterCss = styled.div`
       display: flex;
       justify-content: center;
       font-size: 20px;
+      cursor: pointer;
     }
     .title {
       display: flex;
@@ -42,6 +43,7 @@ const FilterCss = styled.div`
       width: 15%;
       font-size: 12px;
       font-weight: 400;
+      cursor: pointer;
     }
   }
   .subTitle {
@@ -65,6 +67,7 @@ const FilterCss = styled.div`
         border-radius: 100px;
         font-size: 12px;
         font-weight: 400;
+        cursor: pointer;
       }
     }
   }

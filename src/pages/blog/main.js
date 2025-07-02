@@ -15,7 +15,7 @@ const MainCss = styled.div`
   .banner {
     width: 100%;
     padding-top: 80px;
-    height: calc(100vh - 80px);
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

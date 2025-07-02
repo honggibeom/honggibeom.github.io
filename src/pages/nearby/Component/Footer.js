@@ -43,13 +43,7 @@ function Footer(props) {
           <img src={props.mode === 1 ? MapFill : MapEmpty} alt="Map" />
         </Link>
 
-        <Link
-          to="/eventList"
-          className="footerMenu Search"
-          onClick={() => {
-            if (props.setTheme !== undefined) props.setTheme(false);
-          }}
-        >
+        <Link to="/eventList" className="footerMenu Search">
           <img src={props.mode === 2 ? SearchFill : SearchEmpty} alt="Event" />
         </Link>
 

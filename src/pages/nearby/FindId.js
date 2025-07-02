@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const FindIdCss = styled.div`
   overflow: hidden;
   width: 100vw;
-  height: calc(100vh - 80px);
+  height: 100vh;
   max-width: 450px;
   min-height: ${(props) => props.vh * 100};
 
@@ -85,7 +85,7 @@ const FindIdCss = styled.div`
     width: 200vw;
     height: 80vh;
     max-width: 900px;
-    min-height: ${(props) => props.vh * 80};
+    min-height: ${(props) => props.vh * 80}px;
     display: flex;
     transform: translate(${(props) => props.page * -50}%);
     transition: 0.5s;
@@ -124,7 +124,6 @@ const FindIdCss = styled.div`
       }
       input {
         border: none;
-        width: 65%;
         font-size: 16px;
         letter-spacing: -0.02em;
         font-weight: 500;
@@ -135,16 +134,20 @@ const FindIdCss = styled.div`
         width: 80%;
       }
 
+      .phone {
+        width: 65%;
+        padding-left: 2vw;
+        box-sizing: border-box;
+      }
+
       label {
         margin-top: 1vh;
         display: block;
         width: 90vw;
         max-width: 400px;
         height: 5vh;
-        min-height: ${(props) => props.vh * 5};
         border: 1px solid #d2d4dc;
         margin-left: 5%;
-        padding: ${(props) => props.vh * 1} 2vw;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -207,10 +210,8 @@ const FindIdCss = styled.div`
         display: block;
         width: 90%;
         height: 5vh;
-        min-height: ${(props) => props.vh * 3.5};
         border: 1px solid #d2d4dc;
         margin-left: 5%;
-        padding: ${(props) => props.vh * 1} 2vw;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -308,6 +309,7 @@ function FindId() {
             <label ref={phone}>
               <input
                 type="text"
+                className="phone"
                 placeholder="010-1234-5678"
                 value={phoneNumber}
                 onFocus={() => {
@@ -345,6 +347,7 @@ function FindId() {
             <label ref={check}>
               <input
                 type="text"
+                className="phone"
                 placeholder="인증번호를 입력해주세요"
                 onFocus={() => {
                   check.current.style.border = "1px solid #B03131";

@@ -6,7 +6,7 @@ import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 
 const NoticeCss = styled.div`
   width: 100vw;
-  height: calc(100vh - 80px);
+  height: 100vh;
   max-width: 450px;
 
   .text {

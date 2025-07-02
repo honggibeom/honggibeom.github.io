@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const FindPasswordCss = styled.div`
   overflow: hidden;
   width: 100vw;
-  height: calc(100vh - 80px);
+  height: 100vh;
   max-width: 450px;
   min-height: ${(props) => props.vh * 100};
 
@@ -85,7 +85,7 @@ const FindPasswordCss = styled.div`
     width: 200vw;
     height: 80vh;
     max-width: 900px;
-    min-height: ${(props) => props.vh * 80};
+    min-height: ${(props) => props.vh * 80}px;
     display: flex;
     transform: translate(${(props) => props.page * -50}%);
     transition: 0.5s;
@@ -124,7 +124,6 @@ const FindPasswordCss = styled.div`
       }
       input {
         border: none;
-        width: 65%;
         font-size: 16px;
         letter-spacing: -0.02em;
         font-weight: 500;
@@ -135,16 +134,20 @@ const FindPasswordCss = styled.div`
         width: 80%;
       }
 
+      .phone {
+        width: 65%;
+        padding-left: 2vw;
+        box-sizing: border-box;
+      }
+
       label {
         margin-top: 1vh;
         display: block;
         width: 90vw;
         max-width: 400px;
         height: 5vh;
-        min-height: ${(props) => props.vh * 5};
         border: 1px solid #d2d4dc;
         margin-left: 5%;
-        padding: ${(props) => props.vh * 1} 2vw;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -186,7 +189,8 @@ const FindPasswordCss = styled.div`
         font-size: 16px;
         opacity: ${(props) => (props.page === 0 ? "0" : "1")};
         transition: 2s;
-        bottom: 0;
+        bottom: 80px;
+        cursor: pointer;
       }
       .first,
       .second {
@@ -206,10 +210,8 @@ const FindPasswordCss = styled.div`
         display: block;
         width: 90%;
         height: 5vh;
-        min-height: ${(props) => props.vh * 3.5};
         border: 1px solid #d2d4dc;
         margin-left: 5%;
-        padding: ${(props) => props.vh * 1} 2vw;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -242,7 +244,6 @@ function FindPassword(props) {
 
   //데이터 포맷 확인
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [phoneError, setPhoneError] = useState("");
 
   const [btn, setBtn] = useState({
     btn1: false,
@@ -257,7 +258,6 @@ function FindPassword(props) {
     email: "",
     pw: "",
     pwCheck: "",
-    top: "",
   });
   const [blur, setBlur] = useState({ blur1: false, blur2: false });
   const [size, setSize] = useState(
@@ -283,11 +283,6 @@ function FindPassword(props) {
     });
   }, []);
 
-  useEffect(() => {
-    if (page === 0) setResult({ ...result, top: "100" });
-    else setResult({ ...result, top: "10" });
-  }, [page]);
-
   return (
     <FindPasswordCss
       btn={btn}
@@ -309,55 +304,43 @@ function FindPassword(props) {
           <p className="step2"></p>
         </div>
       </div>
-      <p className="title">
-        {props.mode === "id" ? "아이디 찾기" : "비밀번호 찾기"}
-      </p>
+      <p className="title">비밀번호 찾기</p>
       <p className="guide">
-        {props.mode === "id" &&
-          (page === 0
-            ? "가입시에 사용된 전화번호를 입력해 주세요"
-            : "아이디를 확인하세요")}
-        {props.mode === "pw" &&
-          (page === 0
-            ? "가입시에 사용된 아이디를 입력해 주세요"
-            : "비밀번호를 재설정 해주세요")}
+        {page === 0
+          ? "가입시에 사용된 아이디를 입력해 주세요"
+          : "비밀번호를재설정 해주세요"}
       </p>
       <div className="find">
         <div className="page1">
-          {props.mode === "pw" && (
-            <>
-              <p className="subTitle">아이디</p>
-              <div className="first">
-                <label ref={id}>
-                  <input
-                    type="text"
-                    className="id"
-                    placeholder="아이디를 입력해 주세요"
-                    onFocus={() => {
-                      id.current.style.border = "1px solid #B03131";
-                    }}
-                    onBlur={() => {
-                      id.current.style.border = "1px solid #D2D4DC";
-                    }}
-                    onChange={(e) => {
-                      if (
-                        btn.phone.length === 11 &&
-                        e.target.value.length > 5
-                      ) {
-                        setBtn({ ...btn, btn1: true, id: e.target.value });
-                      } else {
-                        setBtn({ ...btn, btn1: false, id: e.target.value });
-                      }
-                    }}
-                  />
-                </label>
-              </div>
-            </>
-          )}
+          <p className="subTitle">아이디</p>
+          <div className="first">
+            <label ref={id}>
+              <input
+                type="text"
+                className="id"
+                placeholder="아이디를 입력해 주세요"
+                onFocus={() => {
+                  id.current.style.border = "1px solid #B03131";
+                }}
+                onBlur={() => {
+                  id.current.style.border = "1px solid #D2D4DC";
+                }}
+                onChange={(e) => {
+                  if (btn.phone.length === 11 && e.target.value.length > 5) {
+                    setBtn({ ...btn, btn1: true, id: e.target.value });
+                  } else {
+                    setBtn({ ...btn, btn1: false, id: e.target.value });
+                  }
+                }}
+              />
+            </label>
+          </div>
+
           <p className="subTitle">전화번호</p>
           <div className="first">
             <label ref={phone}>
               <input
+                className="phone"
                 type="text"
                 placeholder="010-1234-5678"
                 value={phoneNumber}
@@ -404,6 +387,7 @@ function FindPassword(props) {
           <div className="second">
             <label ref={check}>
               <input
+                className="phone"
                 type="text"
                 placeholder="인증번호를 입력해주세요"
                 onFocus={() => {
@@ -421,8 +405,7 @@ function FindPassword(props) {
               <p
                 className="btn2"
                 onClick={() => {
-                  if (btn.btn2 === true && btn.checkInput.length === 4) {
-                  }
+                  setPage(1);
                 }}
               >
                 &nbsp;&nbsp;&nbsp;확인&nbsp;&nbsp;&nbsp;
@@ -432,58 +415,55 @@ function FindPassword(props) {
         </div>
 
         <div className="page2">
-          {props.mode === "id" && <p className="result">{result.email}</p>}
+          <p className="subTitle">새로운 비밀번호</p>
+          <div className="first">
+            <label>
+              <input
+                type="password"
+                onChange={(e) => {
+                  setResult({ ...result, pw: e.target.value });
+                }}
+                onBlur={() => {
+                  setBlur({ ...blur, blur1: true });
+                }}
+              />
+            </label>
+          </div>
 
-          {props.mode === "pw" && (
-            <>
-              <p className="subTitle">새로운 비밀번호</p>
-              <div className="first">
-                <label>
-                  <input
-                    type="password"
-                    placeholder="인증번호를 입력해주세요"
-                    value={phoneNumber}
-                    onChange={(e) => {
-                      setResult({ ...result, pw: e.target.value });
-                    }}
-                    onBlur={() => {
-                      setBlur({ ...blur, blur1: true });
-                    }}
-                  />
-                </label>
-              </div>
-              {!regExp.test(result.pw) && blur.blur1 && (
-                <p className="warn1">특수문자 포함 10자 이상 작성해주세요</p>
-              )}
-              <p className="subTitle">비밀번호 확인</p>
-              <div className="second">
-                <label>
-                  <input
-                    type="password"
-                    placeholder="인증번호를 입력해주세요"
-                    onChange={(e) => {
-                      setResult({ ...result, pwCheck: e.target.value });
-                    }}
-                    onBlur={() => {
-                      setBlur({ ...blur, blur2: true });
-                    }}
-                  />
-                </label>
-              </div>
-              {result.pw !== result.pwCheck && blur.blur2 && (
-                <p className="warn2">비밀번호 불일치</p>
-              )}
-            </>
+          {!regExp.test(result.pw) && blur.blur1 && (
+            <p className="warn1">특수문자 포함 10자 이상 작성해주세요</p>
           )}
+          <p className="subTitle">비밀번호 확인</p>
+          <div className="second">
+            <label>
+              <input
+                type="password"
+                placeholder="인증번호를 입력해주세요"
+                onChange={(e) => {
+                  setResult({ ...result, pwCheck: e.target.value });
+                }}
+                onBlur={() => {
+                  setBlur({ ...blur, blur2: true });
+                }}
+              />
+            </label>
+          </div>
+          {result.pw !== result.pwCheck && blur.blur2 && (
+            <p className="warn2">비밀번호 불일치</p>
+          )}
+
           <p
             className="goLogin"
             onClick={() => {
-              if (result.pw !== result.pwCheck)
+              if (regExp.test(result.pw) && result.pw === result.pwCheck) {
+                alert("비밀번호 변경완료");
+                navigate("/");
+              } else if (result.pw !== result.pwCheck)
                 alert("입력하신 두 비밀번호가 다릅니다");
               else alert("비밀번호는 특수문자가 들어간 10자리이어야 합니다");
             }}
           >
-            {props.mode === "id" ? "로그인 하기" : "비밀번호 변경"}
+            비밀번호 변경
           </p>
         </div>
       </div>

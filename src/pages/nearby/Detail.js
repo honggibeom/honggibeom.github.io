@@ -53,9 +53,9 @@ const DetailCss = styled.div`
     height: 6vh;
     padding: 5px 0;
     position: ${(props) => (props.top > 0 ? "fixed" : "absolute")};
-    top: ${(props) => (props.top > 0 ? "81" : "-100")}px;
+    top: 0;
     ${(props) => props.top > 0 && "background:#ffffff"};
-    z-index: 1;
+    z-index: 10;
     text-decoration: none;
     .header_back,
     .header_menu {

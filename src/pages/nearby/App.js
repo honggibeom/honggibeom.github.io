@@ -77,64 +77,62 @@ function App() {
   }, []);
 
   return (
-    <Router basename={"nearby"}>
-      <AppCss>
-        <div className="nearbyapp">
-          <Routes>
-            <Route exact path="/" element={<Main />} />
-            <Route path="/signup" element={<SignUp />} /> {/*회원가입*/}
-            <Route path="/map" element={<Map />} />
-            <Route path="/event/review" element={<EventReviewList />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/signIn" element={<SignIn />} />
-            <Route path="/eventList" element={<EventList theme={false} />} />
-            {/*검색창*/}
-            <Route path="/search" element={<Search />} />
-            {/*아이디 찾기*/}
-            <Route path="/find/id" element={<FindId />} />
-            {/*비밀번호 찾기*/}
-            <Route path="/find/password" element={<FindPassword />} />
-            <Route path="/alarm" element={<Alarm />} />
-            {/* 마이페이지 */}
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/notice" element={<Notice />} />
-            {/* 설정 -> 공지사항 */}
-            <Route path="/user-service" element={<UserService />} />
-            {/* 설정 -> 고객센터 */}
-            <Route path="/alarm-setting" element={<AlarmSetting />} />
-            <Route path="/policys" element={<Policys />} />
-            <Route path="/tos" element={<Policy tos={0} />} />
-            <Route path="/policy" element={<Policy tos={1} />} />
-            {/* 설정 -> 약관 및 정책 */}
-            <Route path="/accountmanage" element={<AccountManage />} />
-            <Route path="/delete-account" element={<DeleteAccount />} />
-            <Route path="/report" element={<Report />} />
-            {/* 이벤트 상세 관련 추가 파일 */}
-            <Route path="/event/detail" element={<Detail />} />
-            <Route
-              path="/event/review-create"
-              element={<EventReviewCreateForm />}
-            />
-            {/* 이벤트 상세 */}
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/success" element={<SuccessPage />} />
-            <Route path="/fail" element={<FailPage />} />
-            {/* 결제 */}
-            <Route path="/bookmark" element={<Bookmark />} />
-            {/* 찜 내역 */}
-            <Route path="/reserve-ticket" element={<ReserveTicket />} />
-            <Route path="/recommend" element={<Recommend />} />
-            {/* 티켓 예매내역 */}
-            <Route
-              path="/reserve-ticket/detail"
-              element={<ReserveTicketDetail />}
-            />
-            <Route path="/order" element={<Order />} />
-            {/* 티켓 예매내역 */}
-          </Routes>
-        </div>
-      </AppCss>
-    </Router>
+    <AppCss>
+      <div className="nearbyapp">
+        <Routes>
+          <Route exact path="/" element={<Main />} />
+          <Route path="/signup" element={<SignUp />} /> {/*회원가입*/}
+          <Route path="/map" element={<Map />} />
+          <Route path="/event/review" element={<EventReviewList />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signIn" element={<SignIn />} />
+          <Route path="/eventList" element={<EventList theme={false} />} />
+          {/*검색창*/}
+          <Route path="/search" element={<Search />} />
+          {/*아이디 찾기*/}
+          <Route path="/find/id" element={<FindId />} />
+          {/*비밀번호 찾기*/}
+          <Route path="/find/password" element={<FindPassword />} />
+          <Route path="/alarm" element={<Alarm />} />
+          {/* 마이페이지 */}
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/notice" element={<Notice />} />
+          {/* 설정 -> 공지사항 */}
+          <Route path="/user-service" element={<UserService />} />
+          {/* 설정 -> 고객센터 */}
+          <Route path="/alarm-setting" element={<AlarmSetting />} />
+          <Route path="/policys" element={<Policys />} />
+          <Route path="/tos" element={<Policy tos={0} />} />
+          <Route path="/policy" element={<Policy tos={1} />} />
+          {/* 설정 -> 약관 및 정책 */}
+          <Route path="/accountmanage" element={<AccountManage />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
+          <Route path="/report" element={<Report />} />
+          {/* 이벤트 상세 관련 추가 파일 */}
+          <Route path="/event/detail" element={<Detail />} />
+          <Route
+            path="/event/review-create"
+            element={<EventReviewCreateForm />}
+          />
+          {/* 이벤트 상세 */}
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/fail" element={<FailPage />} />
+          {/* 결제 */}
+          <Route path="/bookmark" element={<Bookmark />} />
+          {/* 찜 내역 */}
+          <Route path="/reserve-ticket" element={<ReserveTicket />} />
+          <Route path="/recommend" element={<Recommend />} />
+          {/* 티켓 예매내역 */}
+          <Route
+            path="/reserve-ticket/detail"
+            element={<ReserveTicketDetail />}
+          />
+          <Route path="/order" element={<Order />} />
+          {/* 티켓 예매내역 */}
+        </Routes>
+      </div>
+    </AppCss>
   );
 }
 

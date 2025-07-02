@@ -29,9 +29,11 @@ const EventListCss = styled.div`
       border-radius: 100px;
       font-size: 12px;
       font-weight: 400;
+      cursor: pointer;
     }
 
     .icon {
+      cursor: pointer;
       margin: 0 4px;
     }
   }
@@ -46,7 +48,7 @@ const EventListCss = styled.div`
     flex-wrap: wrap;
   }
 `;
-function EventList(props) {
+function EventList() {
   const listRef = useRef("");
   const location = useLocation();
   const [event, setEvent] = useState([]);
@@ -68,7 +70,6 @@ function EventList(props) {
   });
 
   const [display, setDisplay] = useState(false);
-  const [theme, setTheme] = useState(props.theme);
   const [scroll, setScroll] = useState(30);
 
   return (
@@ -171,7 +172,7 @@ function EventList(props) {
         filter={filter}
         setFilter={setFilter}
       />
-      <Footer mode={2} setTheme={setTheme} />
+      <Footer mode={2} />
     </EventListCss>
   );
 }

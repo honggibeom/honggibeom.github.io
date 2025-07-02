@@ -23,7 +23,7 @@ const MainCss = styled.div`
   margin: 0;
   overflow: hidden;
   .mainContainer {
-    height: calc(100vh - 80px);
+    height: 100vh;
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100vw;
@@ -127,12 +127,12 @@ const MainCss = styled.div`
   .back {
     ${(props) => !props.popup && "display:none"};
     position: fixed;
-    top: 80px;
     height: 100vh;
     width: 100vw;
     max-width: 450px;
     background: rgba(8, 7, 8, 0.3);
     z-index: 11;
+    top: 0;
   }
   .popup {
     position: fixed;
