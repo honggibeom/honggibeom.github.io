@@ -244,7 +244,12 @@ function EventReviewComponent(props) {
 
 const EventReviewListCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   overflow: auto;
   .header {

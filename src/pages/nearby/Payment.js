@@ -19,7 +19,12 @@ const PaymentCSS = styled.div`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   width: 100vw;
   max-width: 450px;
 

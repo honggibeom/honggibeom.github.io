@@ -47,7 +47,12 @@ function Header(props) {
 
 const ReportCss = styled.div`
   width: 100vw;
-  height: ${(props) => props.vh * 100}px;
+  min-height: ${(props) => props.vh * 80}px;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      min-height: ${(props) => props.vh * 100}px;
+    }
+  }
   max-width: 450px;
 
   .text {

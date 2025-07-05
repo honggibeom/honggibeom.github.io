@@ -9,7 +9,12 @@ import notCheckedIcon from "./Img/Report/notChecked.svg";
 
 const DeleteAccountCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   min-height: ${window.screen.availHeight}px;
   max-width: 450px;
   .text {

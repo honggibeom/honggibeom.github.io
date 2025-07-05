@@ -73,7 +73,12 @@ function CustomMarker(props) {
 
 const MapCss = styled.div`
   overflow: hidden;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   min-height: ${(props) => props.vh * 100}px;
   max-width: 450px;
 

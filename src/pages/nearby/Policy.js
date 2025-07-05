@@ -8,7 +8,12 @@ import TOS from "./Function/TOS";
 
 const PolicyCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   overflow: auto;
 

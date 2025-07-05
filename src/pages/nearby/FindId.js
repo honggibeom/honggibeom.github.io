@@ -6,7 +6,12 @@ import { useNavigate } from "react-router-dom";
 const FindIdCss = styled.div`
   overflow: hidden;
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   min-height: ${(props) => props.vh * 100};
 

@@ -22,15 +22,20 @@ const MainCss = styled.div`
   padding: 0;
   margin: 0;
   overflow: hidden;
+
   .mainContainer {
-    height: 100vh;
+    height: 80vh;
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100vw;
     max-width: 450px;
     padding-bottom: 100px;
   }
-
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   .banner {
     overflow: hidden;
     width: 100%;

@@ -12,7 +12,12 @@ import PopUp from "./Component/PopUp";
 const ReserveTicketDetailCSS = styled.div`
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   overflow: auto;
   .header {

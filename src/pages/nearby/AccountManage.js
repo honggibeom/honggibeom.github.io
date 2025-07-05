@@ -6,9 +6,11 @@ import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 
 const AccountManageCss = styled.div`
   width: 100vw;
-  height: 100vh;
   max-width: 450px;
-
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    height: 100vh;
+  }
   .text {
     font-size: 12px;
     font-weight: 400;

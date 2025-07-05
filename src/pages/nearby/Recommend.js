@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 
 const RecommendCss = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   .back {
     font-size: 24px;

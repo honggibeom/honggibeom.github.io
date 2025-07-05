@@ -11,9 +11,13 @@ import filtering from "./Function/FilterFunctions";
 
 const EventListCss = styled.div`
   width: 100vw;
-  height: 100vh;
   max-width: 450px;
-
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   .header {
     display: flex;
     gap: 6px;

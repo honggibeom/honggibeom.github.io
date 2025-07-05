@@ -12,7 +12,12 @@ import userServiceIcon from "./Img/UserService/userService.svg";
 const UserServiceCss = styled.div`
   width: 100vw;
   max-width: 450px;
-  height: 100vh;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   overflow: auto;
 
   .header {

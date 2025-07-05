@@ -71,10 +71,10 @@ const SearchCss = styled.div`
   background: white;
   width: 100vw;
   max-width: 450px;
-  top: 0vh;
+  top: 0;
 
   .link {
-    text-decoretion: none;
+    text-decoration: none;
   }
 
   .searchBar {
@@ -135,7 +135,7 @@ const SearchCss = styled.div`
           font-weight: 600;
         }
         .delete {
-          diplay: flex;
+          display: flex;
           justify-content: center;
           width: 45%;
           text-align: right;

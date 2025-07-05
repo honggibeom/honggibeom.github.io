@@ -15,7 +15,12 @@ import cameraIcon from "./Img/EventReviewCreateForm/camera.svg";
 const EventReviewCreateFormCss = styled.div`
   width: 100vw;
   max-width: 450px;
-  height: calc(100vh-80px);
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   overflow-x: hidden;
   overflow-y: auto;
   .header {

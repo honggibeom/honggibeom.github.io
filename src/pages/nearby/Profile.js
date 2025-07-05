@@ -143,8 +143,12 @@ const ProfileCss = styled.form`
   overflow: hidden;
   width: 100vw;
   max-width: 450px;
-  min-height: ${(props) => props.vh * 100}px;
-
+  min-height: ${(props) => props.vh * 80}px;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      min-height: ${(props) => props.vh * 100}px;
+    }
+  }
   .link {
     text-decoration-line: none;
   }

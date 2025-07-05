@@ -9,7 +9,12 @@ import { TfiAngleLeft } from "react-icons/tfi";
 import { useRef } from "react";
 const SignInCss = styled.div`
   width: 100vw;
-  height: calc(100vh-80px);
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   max-width: 450px;
   overflow: hidden;
   background-image: url(${Background});

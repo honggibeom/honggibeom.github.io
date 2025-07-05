@@ -42,9 +42,14 @@ const DetailCss = styled.div`
   padding: 0;
   width: 100vw;
   max-width: 450px;
-  height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
+  height: 80vh;
+  @media only screen and (min-width: 1024px) {
+    .mainContainer {
+      height: 100vh;
+    }
+  }
   .header {
     display: flex;
     align-items: center;
