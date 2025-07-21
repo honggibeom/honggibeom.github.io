@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.096cb70b.css",
-    "main.js": "/static/js/main.a9247fa6.js",
+    "main.js": "/static/js/main.4fdacbab.js",
     "static/js/135.86b1bb24.chunk.js": "/static/js/135.86b1bb24.chunk.js",
     "static/js/453.cb75fa0a.chunk.js": "/static/js/453.cb75fa0a.chunk.js",
     "static/media/dummydata2.png": "/static/media/dummydata2.d82b0d233c495724fec2.png",
@@ -28,6 +28,7 @@
     "static/media/Pretendard-Thin.woff2": "/static/media/Pretendard-Thin.450b58933971c5b135f4.woff2",
     "static/media/dummyMusicalImg3.svg": "/static/media/dummyMusicalImg3.8840ddfdf23d8f822f1b87990470d377.svg",
     "static/media/dummydata7.jpg": "/static/media/dummydata7.ddd5399b909ecde08906.jpg",
+    "static/media/howai.jpg": "/static/media/howai.465464fc163cdeec33de.jpg",
     "static/media/nearby_cover.svg": "/static/media/nearby_cover.2ed8eb3c3d0224df039ca9bd14428361.svg",
     "static/media/Background.svg": "/static/media/Background.d86d261cbbaeebe7350f3654512fd9f2.svg",
     "static/media/dummynotice2.jpg": "/static/media/dummynotice2.51fa75bc43ff312da09a.jpg",
@@ -66,6 +67,7 @@
     "static/media/noAlarm.svg": "/static/media/noAlarm.e6238fde1fd1f2ff1c53211c96437795.svg",
     "static/media/KakaoLogo.svg": "/static/media/KakaoLogo.ab89e8c7f307e62f4118b53328727158.svg",
     "static/media/kakaoLogo.svg": "/static/media/kakaoLogo.dbcf2d5bac92fb3309f3f64885891176.svg",
+    "static/media/a.md": "/static/media/a.6619cffd129deae9f1a2.md",
     "static/media/popupstore.svg": "/static/media/popupstore.ed88bbdd818d44370ee917a3e5c4c73d.svg",
     "static/media/oneDayClassIcon.svg": "/static/media/oneDayClassIcon.4eecf04b2657a57d96d1c5ea57ab0720.svg",
     "static/media/festival.svg": "/static/media/festival.c73942502f4b1fa7dcf52cc3e586129a.svg",
@@ -74,7 +76,6 @@
     "static/media/userService.svg": "/static/media/userService.d1faaad48f4e7573b6338b5a73fdec23.svg",
     "static/media/exhibition.svg": "/static/media/exhibition.c9c1f79c748ae90818e40008512ae73e.svg",
     "static/media/ProfileImg.svg": "/static/media/ProfileImg.b0aefd02a2622f9dad06e2b0d9b213d3.svg",
-    "static/media/a.md": "/static/media/a.871e6e45b5da271a473c.md",
     "static/media/AppleLogo.svg": "/static/media/AppleLogo.95a2965429602f6732543d0aa6c081b8.svg",
     "static/media/Gps.svg": "/static/media/Gps.98bdd82a6352baafccab76ed22c99ec6.svg",
     "index.html": "/index.html",
@@ -108,11 +109,11 @@
     "static/media/notChecked.svg": "/static/media/notChecked.732b3360cf60025a9a3fa4b5015a59b8.svg",
     "static/media/checked.svg": "/static/media/checked.2e9ed568a26f9e759b3264d39c576733.svg",
     "main.096cb70b.css.map": "/static/css/main.096cb70b.css.map",
-    "main.a9247fa6.js.map": "/static/js/main.a9247fa6.js.map",
+    "main.4fdacbab.js.map": "/static/js/main.4fdacbab.js.map",
     "453.cb75fa0a.chunk.js.map": "/static/js/453.cb75fa0a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.096cb70b.css",
-    "static/js/main.a9247fa6.js"
+    "static/js/main.4fdacbab.js"
   ]
 }
