@@ -12,6 +12,11 @@ summary: This is the content of the post.
 ![javascript](https://img.shields.io/badge/javascript-F7DF1E?style=flat&logo=javascript&logoColor=white)
 ![css](https://img.shields.io/badge/css-1572B6?style=flat&logo=css3&logoColor=white)
 
+```python
+print('hello')
+a = 10
+```
+
 <img src="/posts/assets/a/nearby_cover.svg" width="100%"/>
 > BJ캘린더는 BJ들과 시청자 간의 간편하고 원활한 일정 공지를 위해 제작된 익스텐션입니다.
 
