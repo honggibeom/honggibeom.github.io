@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.ff0f9136.css",
-    "main.js": "/static/js/main.d7e33425.js",
+    "main.js": "/static/js/main.4bf12ac0.js",
+    "static/js/46.ce9d1a98.chunk.js": "/static/js/46.ce9d1a98.chunk.js",
     "static/js/453.cb75fa0a.chunk.js": "/static/js/453.cb75fa0a.chunk.js",
     "static/media/dummydata2.png": "/static/media/dummydata2.d82b0d233c495724fec2.png",
     "static/media/dummyMusicalImg6.svg": "/static/media/dummyMusicalImg6.a7197cd1ba6ec559c4dee2f7b3ffc5ec.svg",
@@ -69,6 +70,7 @@
     "static/media/popupstore.svg": "/static/media/popupstore.ed88bbdd818d44370ee917a3e5c4c73d.svg",
     "static/media/oneDayClassIcon.svg": "/static/media/oneDayClassIcon.4eecf04b2657a57d96d1c5ea57ab0720.svg",
     "static/media/festival.svg": "/static/media/festival.c73942502f4b1fa7dcf52cc3e586129a.svg",
+    "static/media/loading.svg": "/static/media/loading.47cda04c479fc4e4b8349ea49e655c49.svg",
     "static/media/ticket.svg": "/static/media/ticket.121031d385fa5202856f7fa96c1cc451.svg",
     "static/media/homepage.svg": "/static/media/homepage.53c664cfb3b661c66cf8e6220fc44888.svg",
     "static/media/userService.svg": "/static/media/userService.d1faaad48f4e7573b6338b5a73fdec23.svg",
@@ -107,11 +109,12 @@
     "static/media/notChecked.svg": "/static/media/notChecked.732b3360cf60025a9a3fa4b5015a59b8.svg",
     "static/media/checked.svg": "/static/media/checked.2e9ed568a26f9e759b3264d39c576733.svg",
     "main.ff0f9136.css.map": "/static/css/main.ff0f9136.css.map",
-    "main.d7e33425.js.map": "/static/js/main.d7e33425.js.map",
+    "main.4bf12ac0.js.map": "/static/js/main.4bf12ac0.js.map",
+    "46.ce9d1a98.chunk.js.map": "/static/js/46.ce9d1a98.chunk.js.map",
     "453.cb75fa0a.chunk.js.map": "/static/js/453.cb75fa0a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ff0f9136.css",
-    "static/js/main.d7e33425.js"
+    "static/js/main.4bf12ac0.js"
   ]
 }
