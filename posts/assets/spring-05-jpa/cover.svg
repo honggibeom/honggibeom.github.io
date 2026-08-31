@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6db33f"/>
+      <stop offset="100%" stop-color="#a8e063"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#1c232c" stroke-width="1">
+    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
+  </g>
+  <circle cx="600" cy="315" r="270" fill="#6db33f" opacity="0.06"/>
+  <text x="600" y="205" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#6b7785" letter-spacing="8">SPRING &#183; PART 05</text>
+  <text x="600" y="335" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="92" font-weight="bold" fill="url(#accent)">DATA JPA</text>
+  <rect x="540" y="390" width="120" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="600" y="465" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#9aa7b4">객체와 테이블 사이</text>
+</svg>

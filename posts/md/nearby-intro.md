@@ -1,6 +1,7 @@
 ---
 title: nearby - 내 주변의 전시와 공연을 찾는 위치 기반 티켓 서비스
-date: 2026-08-30
+date: 2025-07-07
+category: nearby
 src: cover.svg
 tags: [react, 프로젝트, nearby, 지도, 상태관리]
 summary: 주말에 뭘 볼지 검색하다 지친 경험에서 시작한 프로젝트. 지도 기반 탐색부터 필터, 예매, 결제까지 만들면서 부딪힌 문제들을 정리한다.

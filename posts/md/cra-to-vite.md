@@ -1,6 +1,7 @@
 ---
 title: CRA에서 Vite로, 블로그 빌드 환경을 갈아끼운 기록
 date: 2026-08-31
+category: frontend
 src: cover.svg
 tags: [vite, react, cra, 마이그레이션, 프론트엔드]
 summary: react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. 무엇이 걸림돌이었고, 어떤 코드를 어떻게 고쳤는지 순서대로 정리한다.

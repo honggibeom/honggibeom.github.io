@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#0c1a1f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#61dafb"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#1a2530" stroke-width="1">
+    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
+  </g>
+  <g opacity="0.55">
+    <g stroke="#61dafb" stroke-width="2" opacity="0.3" fill="none">
+      <path d="M840 180L950 250M840 320L950 250M840 180L840 320M950 250L1060 190M950 250L1060 320"/>
+    </g>
+    <g fill="#61dafb">
+      <circle cx="840" cy="180" r="9" opacity="0.55"/>
+      <circle cx="840" cy="320" r="9" opacity="0.4"/>
+      <circle cx="950" cy="250" r="13" opacity="0.7"/>
+      <circle cx="1060" cy="190" r="9" opacity="0.4"/>
+      <circle cx="1060" cy="320" r="9" opacity="0.3"/>
+    </g>
+    <path d="M812 400H1088" stroke="#a78bfa" stroke-width="3" opacity="0.35"/>
+  </g>
+  <text x="90" y="130" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="24" fill="#7d8b99" letter-spacing="7">FRONTEND TOOLING</text>
+  <text x="90" y="470" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="220" font-weight="bold" fill="#61dafb" opacity="0.09">01</text>
+  <g font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="66" font-weight="bold" fill="#e6edf3">
+    <text x="90" y="270">빌드 도구는</text>
+    <text x="90" y="355">왜 빨라졌나</text>
+  </g>
+  <rect x="90" y="400" width="110" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="90" y="475" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="26" fill="#9aa7b4">네이티브 ESM · Rust 툴체인 · 증분 캐시</text>
+  <text x="90" y="560" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#6b7785">PART 01 / 02</text>
+</svg>
