@@ -1,4 +1,4 @@
-import{G as O}from"./index-gACinlY5.js";const _="https://placehold.co/1200x800/e9eef5/6b7785?text=";function r(t,e,n){return{id:t,target:e,src:`${_}${encodeURIComponent(n)}`}}const L=[{id:12,title:"[공지] 2026년 상반기 긴급출동 서비스 이용 안내",content:`안녕하세요, 동행하는 사람들입니다.
+import{G as O}from"./index-CDiWPErT.js";const _="https://placehold.co/1200x800/e9eef5/6b7785?text=";function r(t,e,n){return{id:t,target:e,src:`${_}${encodeURIComponent(n)}`}}const L=[{id:12,title:"[공지] 2026년 상반기 긴급출동 서비스 이용 안내",content:`안녕하세요, 동행하는 사람들입니다.
 
 2026년 상반기 긴급출동 서비스 운영 시간과 접수 절차를 아래와 같이 안내드립니다.
 

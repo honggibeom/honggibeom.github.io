@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f0a500"/>
+      <stop offset="100%" stop-color="#ffd166"/>
+    </linearGradient>
+    <linearGradient id="scale" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff7b72"/>
+      <stop offset="50%" stop-color="#6b7785"/>
+      <stop offset="100%" stop-color="#4dd0b1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#1c232c" stroke-width="1">
+    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
+  </g>
+  <circle cx="600" cy="315" r="270" fill="#f0a500" opacity="0.06"/>
+  <text x="600" y="200" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#6b7785" letter-spacing="8">STOCKADVISOR</text>
+  <g text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="bold">
+    <text x="420" y="320" font-size="88" fill="#e6edf3">BERT</text>
+    <text x="600" y="315" font-size="60" fill="#6b7785">&#8594;</text>
+    <text x="790" y="320" font-size="88" fill="url(#accent)">ONNX</text>
+  </g>
+  <rect x="300" y="372" width="600" height="8" rx="4" fill="url(#scale)"/>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#9aa7b4">
+    <text x="300" y="412" text-anchor="start">악재 −1</text>
+    <text x="600" y="412" text-anchor="middle">중립</text>
+    <text x="900" y="412" text-anchor="end">호재 +1</text>
+  </g>
+  <text x="600" y="470" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#9aa7b4">뉴스 감성 분류 모델을 직접 학습해서 Spring 안에서 돌리기</text>
+</svg>
