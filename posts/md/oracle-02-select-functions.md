@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (2) - SELECT와 단일행 함수
+title: 오라클 SELECT 문과 단일행 함수 정리 - 실행 순서, NULL, 문자·날짜·변환 함수 (오라클 학습 노트 2)
 date: 2025-08-04
 category: oracle
 src: cover.svg

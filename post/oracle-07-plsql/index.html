@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리." />
+    <meta name="keywords" content="oracle, plsql, 프로시저, 트리거, 학습노트, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/oracle-07-plsql" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7) | Honggibeom's blog" />
+    <meta property="og:description" content="블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/oracle-07-plsql" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2025-10-15" />
+<meta property="article:section" content="Oracle" />
+<meta property="article:tag" content="oracle" />
+<meta property="article:tag" content="plsql" />
+<meta property="article:tag" content="프로시저" />
+<meta property="article:tag" content="트리거" />
+<meta property="article:tag" content="학습노트" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)","description":"블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리.","datePublished":"2025-10-15","dateModified":"2025-10-15","keywords":"oracle, plsql, 프로시저, 트리거, 학습노트","image":"https://honggibeom.github.io/posts/assets/oracle-07-plsql/cover.svg","url":"https://honggibeom.github.io/post/oracle-07-plsql","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/oracle-07-plsql"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Oracle","item":"https://honggibeom.github.io/categories/oracle"},{"@type":"ListItem","position":3,"name":"오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)","item":"https://honggibeom.github.io/post/oracle-07-plsql"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/oracle">Oracle</a></p>
+<h1>오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)</h1>
+<p class="pr-meta">2025.10.15 · <a href="/tags/oracle">#oracle</a> <a href="/tags/plsql">#plsql</a> <a href="/tags/%ED%94%84%EB%A1%9C%EC%8B%9C%EC%A0%80">#프로시저</a> <a href="/tags/%ED%8A%B8%EB%A6%AC%EA%B1%B0">#트리거</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
+<p>PL/SQL은 SQL에 절차적 문법을 얹은 언어다. 반복과 분기, 예외 처리가 필요한 로직을 <strong>DB 안에서</strong> 돌린다. 애플리케이션과 DB 사이를 여러 번 오가지 않아도 되므로, 대량 데이터 처리에서 성능 차이가 크게 난다.</p>
+<h2>블록 구조</h2>
+<p>PL/SQL의 모든 코드는 블록이다.</p>
+<pre><code class="language-sql">DECLARE
+  -- 선언부 (선택)
+BEGIN
+  -- 실행부 (필수)
+EXCEPTION
+  -- 예외부 (선택)
+END;
+/
+</code></pre>
+<p>이름이 없으면 익명 블록, 이름을 붙여 저장하면 프로시저·함수·패키지다.</p>
+<p><code>/</code>는 SQL*Plus에게 "여기까지가 한 블록이니 실행하라"는 신호다. 빼먹으면 아무 일도 일어나지 않는다.</p>
+<p>출력을 보려면 먼저 켜야 한다.</p>
+<pre><code class="language-sql">SET SERVEROUTPUT ON;
+
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('hello');
+END;
+/
+</code></pre>
+<h2>변수와 타입</h2>
+<pre><code class="language-sql">DECLARE
+  v_name     VARCHAR2(50) := '홍길동';
+  v_salary   NUMBER(9,2)  DEFAULT 0;
+  c_rate     CONSTANT NUMBER := 0.05;
+  v_hired    DATE         NOT NULL := SYSDATE;
+
+  -- 앵커드 선언: 컬럼 타입을 그대로 따라간다
+  v_emp_name employees.emp_name%TYPE;
+  -- 행 전체
+  v_emp      employees%ROWTYPE;
+BEGIN
+  SELECT * INTO v_emp FROM employees WHERE employee_id = 103;
+  DBMS_OUTPUT.PUT_LINE(v_emp.emp_name || ' / ' || v_emp.salary);
+END;
+/
+</code></pre>
+<p><code>%TYPE</code>과 <code>%ROWTYPE</code>은 습관으로 만들어두는 게 좋다. 테이블 컬럼 길이가 바뀌어도 코드를 안 고쳐도 된다.</p>
+<p>대입은 <code>:=</code>, 비교는 <code>=</code>다.</p>
+<h3>SELECT INTO</h3>
+<p>PL/SQL에서 값 하나를 읽어오는 기본 형태다. <strong>반드시 정확히 한 행</strong>이어야 한다.</p>
+<ul>
+<li>0행 → <code>NO_DATA_FOUND</code></li>
+<li>2행 이상 → <code>TOO_MANY_ROWS</code></li>
+</ul>
+<pre><code class="language-sql">BEGIN
+  SELECT salary INTO v_salary FROM employees WHERE employee_id = 999;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN v_salary := 0;
+END;
+</code></pre>
+<h2>조건과 반복</h2>
+<pre><code class="language-sql">IF v_salary >= 10000000 THEN
+  v_grade := 'A';
+ELSIF v_salary >= 5000000 THEN
+  v_grade := 'B';
+ELSE
+  v_grade := 'C';
+END IF;
+
+CASE
+  WHEN v_salary >= 10000000 THEN v_grade := 'A';
+  WHEN v_salary >=  5000000 THEN v_grade := 'B';
+  ELSE v_grade := 'C';
+END CASE;
+</code></pre>
+<p><code>ELSIF</code>다. <code>ELSEIF</code>가 아니다.</p>
+<pre><code class="language-sql">-- 기본 LOOP
+LOOP
+  i := i + 1;
+  EXIT WHEN i > 10;
+END LOOP;
+
+-- WHILE
+WHILE i &#x3C;= 10 LOOP
+  i := i + 1;
+END LOOP;
+
+-- FOR (범위는 정수만, REVERSE 가능)
+FOR i IN 1..10 LOOP
+  DBMS_OUTPUT.PUT_LINE(i);
+END LOOP;
+
+FOR i IN REVERSE 1..10 LOOP ... END LOOP;
+
+CONTINUE WHEN MOD(i, 2) = 0;   -- 11g부터
+</code></pre>
+<p><code>FOR</code> 루프의 인덱스 변수는 <strong>선언하지 않는다.</strong> 루프 안에서만 존재하고 읽기 전용이다.</p>
+<h2>커서</h2>
+<p>여러 행을 한 행씩 처리한다.</p>
+<h3>암시적 커서</h3>
+<p><code>SELECT INTO</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>를 실행하면 오라클이 내부적으로 커서를 연다. 그 결과는 <code>SQL%</code> 속성으로 확인한다.</p>
+<pre><code class="language-sql">BEGIN
+  UPDATE employees SET salary = salary * 1.05 WHERE department_id = 20;
+  DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || '건 수정');
+
+  IF SQL%NOTFOUND THEN
+    DBMS_OUTPUT.PUT_LINE('대상 없음');
+  END IF;
+END;
+/
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>속성</th><th>의미</th></tr></thead><tbody><tr><td><code>SQL%ROWCOUNT</code></td><td>영향받은 행 수</td></tr><tr><td><code>SQL%FOUND</code></td><td>1건 이상이면 TRUE</td></tr><tr><td><code>SQL%NOTFOUND</code></td><td>0건이면 TRUE</td></tr><tr><td><code>SQL%ISOPEN</code></td><td>암시적 커서는 항상 FALSE</td></tr></tbody></table>
+<p><strong><code>UPDATE</code>가 0건이어도 예외가 나지 않는다.</strong> <code>SELECT INTO</code>와 다른 점이다. 대상이 없는 걸 감지하려면 <code>SQL%ROWCOUNT</code>를 확인해야 한다.</p>
+<h3>명시적 커서</h3>
+<pre><code class="language-sql">DECLARE
+  CURSOR c_emp IS
+    SELECT employee_id, emp_name, salary FROM employees WHERE department_id = 20;
+  v_row c_emp%ROWTYPE;
+BEGIN
+  OPEN c_emp;
+  LOOP
+    FETCH c_emp INTO v_row;
+    EXIT WHEN c_emp%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_row.emp_name || ' ' || v_row.salary);
+  END LOOP;
+  CLOSE c_emp;
+END;
+/
+</code></pre>
+<p><code>EXIT WHEN c_emp%NOTFOUND;</code>를 <code>FETCH</code> <strong>바로 다음</strong>에 두는 게 중요하다. 순서를 바꾸면 마지막 행이 두 번 처리된다.</p>
+<h3>커서 FOR 루프 (권장)</h3>
+<p><code>OPEN</code>/<code>FETCH</code>/<code>CLOSE</code>를 알아서 해준다. 대부분의 경우 이걸 쓴다.</p>
+<pre><code class="language-sql">BEGIN
+  FOR r IN (SELECT emp_name, salary FROM employees WHERE department_id = 20) LOOP
+    DBMS_OUTPUT.PUT_LINE(r.emp_name || ' ' || r.salary);
+  END LOOP;
+END;
+/
+</code></pre>
+<p>레코드 변수 선언도 필요 없다. 코드가 짧아지고 커서를 안 닫는 실수도 사라진다.</p>
+<h3>파라미터 커서와 FOR UPDATE</h3>
+<pre><code class="language-sql">DECLARE
+  CURSOR c_emp (p_dept NUMBER) IS
+    SELECT employee_id, salary FROM employees
+    WHERE  department_id = p_dept
+    FOR UPDATE OF salary;
+BEGIN
+  FOR r IN c_emp(20) LOOP
+    UPDATE employees SET salary = salary * 1.1
+    WHERE  CURRENT OF c_emp;      -- 지금 fetch한 행
+  END LOOP;
+  COMMIT;
+END;
+/
+</code></pre>
+<h2>예외 처리</h2>
+<h3>미리 정의된 예외</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>예외</th><th>오류</th></tr></thead><tbody><tr><td><code>NO_DATA_FOUND</code></td><td>ORA-01403</td></tr><tr><td><code>TOO_MANY_ROWS</code></td><td>ORA-01422</td></tr><tr><td><code>DUP_VAL_ON_INDEX</code></td><td>ORA-00001</td></tr><tr><td><code>ZERO_DIVIDE</code></td><td>ORA-01476</td></tr><tr><td><code>INVALID_NUMBER</code></td><td>ORA-01722</td></tr><tr><td><code>VALUE_ERROR</code></td><td>ORA-06502</td></tr><tr><td><code>OTHERS</code></td><td>나머지 전부</td></tr></tbody></table>
+<pre><code class="language-sql">BEGIN
+  ...
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('없음');
+  WHEN DUP_VAL_ON_INDEX THEN
+    DBMS_OUTPUT.PUT_LINE('중복');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE(SQLCODE || ' : ' || SQLERRM);
+    DBMS_OUTPUT.PUT_LINE(DBMS_UTILITY.FORMAT_ERROR_BACKTRACE);
+    RAISE;   -- 다시 던진다
+END;
+</code></pre>
+<p><strong><code>WHEN OTHERS THEN NULL;</code>은 최악의 코드다.</strong> 모든 오류를 삼켜서 문제를 숨긴다. <code>OTHERS</code>를 잡았다면 최소한 로그를 남기고 <code>RAISE</code>로 다시 던진다.</p>
+<p><code>DBMS_UTILITY.FORMAT_ERROR_BACKTRACE</code>는 오류가 발생한 라인 번호를 알려준다. 디버깅에 필수다.</p>
+<h3>사용자 정의 예외</h3>
+<pre><code class="language-sql">DECLARE
+  e_invalid_salary EXCEPTION;
+  PRAGMA EXCEPTION_INIT(e_invalid_salary, -20001);
+BEGIN
+  IF v_salary &#x3C; 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, '급여는 음수일 수 없습니다: ' || v_salary);
+  END IF;
+END;
+</code></pre>
+<p><code>RAISE_APPLICATION_ERROR</code>의 번호는 <strong>-20000 ~ -20999</strong> 범위만 쓸 수 있다. 애플리케이션이 받는 메시지가 여기서 결정되므로, 무엇이 잘못됐는지 값까지 넣어주면 운영에서 큰 도움이 된다.</p>
+<p><code>PRAGMA EXCEPTION_INIT</code>으로 오라클 오류 번호에 이름을 붙일 수도 있다.</p>
+<pre><code class="language-sql">DECLARE
+  e_child_found EXCEPTION;
+  PRAGMA EXCEPTION_INIT(e_child_found, -2292);   -- FK 위반
+BEGIN
+  DELETE FROM departments WHERE department_id = 20;
+EXCEPTION
+  WHEN e_child_found THEN
+    RAISE_APPLICATION_ERROR(-20010, '소속 사원이 있어 삭제할 수 없습니다.');
+END;
+</code></pre>
+<h2>프로시저와 함수</h2>
+<h3>프로시저</h3>
+<pre><code class="language-sql">CREATE OR REPLACE PROCEDURE raise_salary (
+  p_emp_id   IN  employees.employee_id%TYPE,
+  p_pct      IN  NUMBER DEFAULT 5,
+  p_new_sal  OUT employees.salary%TYPE
+) IS
+BEGIN
+  UPDATE employees
+  SET    salary = salary * (1 + p_pct / 100)
+  WHERE  employee_id = p_emp_id
+  RETURNING salary INTO p_new_sal;
+
+  IF SQL%ROWCOUNT = 0 THEN
+    RAISE_APPLICATION_ERROR(-20002, '사원 없음: ' || p_emp_id);
+  END IF;
+END raise_salary;
+/
+</code></pre>
+<p>파라미터 모드는 세 가지다.</p>
+<ul>
+<li><code>IN</code> (기본) — 읽기 전용</li>
+<li><code>OUT</code> — 결과를 돌려줌. 들어올 때는 NULL</li>
+<li><code>IN OUT</code> — 받아서 바꿔 돌려줌</li>
+</ul>
+<p>호출은 위치 지정과 이름 지정 둘 다 된다. 파라미터가 많으면 이름 지정(<code>=></code>)이 안전하다.</p>
+<pre><code class="language-sql">DECLARE
+  v_sal NUMBER;
+BEGIN
+  raise_salary(p_emp_id => 103, p_pct => 10, p_new_sal => v_sal);
+  DBMS_OUTPUT.PUT_LINE(v_sal);
+END;
+/
+</code></pre>
+<h3>함수</h3>
+<p>값을 하나 반환한다. <code>RETURN</code>이 필수다.</p>
+<pre><code class="language-sql">CREATE OR REPLACE FUNCTION get_annual_salary (
+  p_emp_id IN employees.employee_id%TYPE
+) RETURN NUMBER
+IS
+  v_total NUMBER;
+BEGIN
+  SELECT salary * 12 * (1 + NVL(commission_pct, 0))
+  INTO   v_total
+  FROM   employees
+  WHERE  employee_id = p_emp_id;
+  RETURN v_total;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN RETURN NULL;
+END;
+/
+
+SELECT emp_name, get_annual_salary(employee_id) FROM employees;
+</code></pre>
+<p>SQL에서 호출하려면 DML을 하지 않아야 한다(자율 트랜잭션 제외).</p>
+<p><strong>주의</strong>: <code>SELECT</code> 안에서 함수를 부르면 행마다 실행된다. 함수 안에 또 쿼리가 있으면 10만 행 조회에 10만 번 쿼리가 나간다. 조인으로 풀 수 있으면 조인이 낫다. <code>DETERMINISTIC</code>을 붙이면 같은 입력에 대한 결과를 캐시하도록 힌트를 줄 수 있다.</p>
+<h3>컴파일 오류 확인</h3>
+<pre><code class="language-sql">SHOW ERRORS;
+SELECT * FROM user_errors WHERE name = 'RAISE_SALARY';
+SELECT object_name, status FROM user_objects WHERE status = 'INVALID';
+</code></pre>
+<h2>패키지</h2>
+<p>관련된 프로시저·함수·변수·타입을 묶는다. 명세(spec)와 본문(body)으로 나뉜다.</p>
+<pre><code class="language-sql">-- 명세: 외부에 공개할 것
+CREATE OR REPLACE PACKAGE emp_pkg IS
+  g_min_salary CONSTANT NUMBER := 2800000;
+
+  PROCEDURE hire (p_name VARCHAR2, p_job VARCHAR2, p_sal NUMBER, p_dept NUMBER);
+  FUNCTION  get_annual_salary (p_emp_id NUMBER) RETURN NUMBER;
+END emp_pkg;
+/
+
+-- 본문: 구현
+CREATE OR REPLACE PACKAGE BODY emp_pkg IS
+
+  -- 명세에 없으니 패키지 내부에서만 쓰인다 (private)
+  FUNCTION next_id RETURN NUMBER IS
+    v NUMBER;
+  BEGIN
+    SELECT NVL(MAX(employee_id), 0) + 1 INTO v FROM employees;
+    RETURN v;
+  END next_id;
+
+  PROCEDURE hire (p_name VARCHAR2, p_job VARCHAR2, p_sal NUMBER, p_dept NUMBER) IS
+  BEGIN
+    IF p_sal &#x3C; g_min_salary THEN
+      RAISE_APPLICATION_ERROR(-20003, '최저 급여 미만');
+    END IF;
+    INSERT INTO employees (employee_id, emp_name, hire_date, job_id, salary, department_id)
+    VALUES (next_id(), p_name, SYSDATE, p_job, p_sal, p_dept);
+  END hire;
+
+  FUNCTION get_annual_salary (p_emp_id NUMBER) RETURN NUMBER IS
+    v NUMBER;
+  BEGIN
+    SELECT salary * 12 INTO v FROM employees WHERE employee_id = p_emp_id;
+    RETURN v;
+  END get_annual_salary;
+
+END emp_pkg;
+/
+
+EXEC emp_pkg.hire('신입사원', 'DEV', 4000000, 20);
+</code></pre>
+<p>패키지를 쓰는 이유.</p>
+<ul>
+<li><strong>캡슐화</strong> — 명세에 없는 것은 밖에서 못 쓴다</li>
+<li><strong>의존성 격리</strong> — 본문만 고치면 이 패키지를 참조하는 다른 객체가 무효화되지 않는다</li>
+<li><strong>오버로딩</strong> — 같은 이름에 다른 시그니처를 여러 개 둘 수 있다</li>
+<li><strong>세션 상태</strong> — 패키지 변수는 세션 동안 값을 유지한다</li>
+</ul>
+<p>프로시저를 여러 개 만들 일이 생기면 처음부터 패키지로 묶는 편이 낫다.</p>
+<h2>트리거</h2>
+<p>특정 이벤트에 자동으로 실행된다.</p>
+<pre><code class="language-sql">CREATE OR REPLACE TRIGGER trg_emp_audit
+  BEFORE INSERT OR UPDATE OR DELETE ON employees
+  FOR EACH ROW
+DECLARE
+  v_action VARCHAR2(10);
+BEGIN
+  v_action := CASE WHEN INSERTING THEN 'INSERT'
+                   WHEN UPDATING  THEN 'UPDATE'
+                   ELSE 'DELETE' END;
+
+  INSERT INTO emp_audit (audit_id, emp_id, action, old_salary, new_salary, changed_at, changed_by)
+  VALUES (seq_audit.NEXTVAL,
+          NVL(:NEW.employee_id, :OLD.employee_id),
+          v_action, :OLD.salary, :NEW.salary, SYSDATE, USER);
+END;
+/
+</code></pre>
+<ul>
+<li><code>:OLD</code> — 변경 전 값 (<code>INSERT</code>에서는 NULL)</li>
+<li><code>:NEW</code> — 변경 후 값 (<code>DELETE</code>에서는 NULL)</li>
+<li><code>FOR EACH ROW</code>를 빼면 문장당 한 번만 실행된다(문장 트리거)</li>
+<li><code>BEFORE</code>에서만 <code>:NEW</code> 값을 바꿀 수 있다</li>
+</ul>
+<pre><code class="language-sql">-- 등록일시·등록자 자동 세팅
+CREATE OR REPLACE TRIGGER trg_emp_default
+  BEFORE INSERT ON employees FOR EACH ROW
+BEGIN
+  :NEW.hire_date := NVL(:NEW.hire_date, SYSDATE);
+END;
+/
+</code></pre>
+<h3>변경 테이블 오류</h3>
+<p>행 트리거 안에서 <strong>자기 테이블을 조회하면</strong> <code>ORA-04091: table is mutating</code>이 난다. 트리거가 도는 도중이라 테이블 상태가 불확정이기 때문이다.</p>
+<p>해결은 복합 트리거(11g)를 쓰거나, 애초에 그 로직을 트리거가 아니라 프로시저에 두는 것이다.</p>
+<p><strong>트리거는 아껴 쓰는 게 좋다.</strong> 코드를 읽어도 어디서 값이 바뀌는지 보이지 않아서 디버깅이 어렵다. 감사 로그처럼 부수 효과가 명확한 용도로 제한하는 편이 낫다.</p>
+<h2>컬렉션</h2>
+<h3>연관 배열 (해시맵)</h3>
+<pre><code class="language-sql">DECLARE
+  TYPE t_sal IS TABLE OF NUMBER INDEX BY VARCHAR2(50);
+  v_sal t_sal;
+BEGIN
+  v_sal('김대표') := 25000000;
+  v_sal('이개발') := 11000000;
+
+  DBMS_OUTPUT.PUT_LINE(v_sal('이개발'));
+  DBMS_OUTPUT.PUT_LINE(v_sal.COUNT);
+END;
+/
+</code></pre>
+<h3>중첩 테이블 / VARRAY</h3>
+<pre><code class="language-sql">DECLARE
+  TYPE t_names IS TABLE OF VARCHAR2(50);   -- 중첩 테이블
+  v_names t_names := t_names('A', 'B', 'C');
+BEGIN
+  v_names.EXTEND;
+  v_names(4) := 'D';
+
+  FOR i IN 1..v_names.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE(v_names(i));
+  END LOOP;
+END;
+/
+</code></pre>
+<p>주요 메서드: <code>COUNT</code>, <code>FIRST</code>, <code>LAST</code>, <code>NEXT(i)</code>, <code>PRIOR(i)</code>, <code>EXISTS(i)</code>, <code>EXTEND</code>, <code>TRIM</code>, <code>DELETE</code>.</p>
+<h2>BULK COLLECT와 FORALL</h2>
+<p>PL/SQL에서 성능이 갈리는 지점이다.</p>
+<p>PL/SQL 엔진과 SQL 엔진은 서로 다르고, 둘 사이를 오갈 때마다 <strong>컨텍스트 스위치</strong> 비용이 든다. 루프 안에서 한 행씩 <code>INSERT</code>하면 10만 번 왕복한다. 이걸 한 번으로 줄이는 게 벌크 연산이다.</p>
+<pre><code class="language-sql">DECLARE
+  TYPE t_emp IS TABLE OF employees%ROWTYPE;
+  v_emps t_emp;
+BEGIN
+  -- 여러 행을 컬렉션으로 한 번에 읽기
+  SELECT * BULK COLLECT INTO v_emps FROM employees WHERE department_id = 20;
+
+  -- 여러 행을 한 번에 쓰기
+  FORALL i IN 1..v_emps.COUNT
+    UPDATE employees SET salary = v_emps(i).salary * 1.1
+    WHERE  employee_id = v_emps(i).employee_id;
+
+  COMMIT;
+END;
+/
+</code></pre>
+<p>건수가 많으면 메모리를 다 쓸 수 있으므로 <code>LIMIT</code>으로 끊는다.</p>
+<pre><code class="language-sql">DECLARE
+  CURSOR c IS SELECT * FROM employees;
+  TYPE t_emp IS TABLE OF employees%ROWTYPE;
+  v_emps t_emp;
+BEGIN
+  OPEN c;
+  LOOP
+    FETCH c BULK COLLECT INTO v_emps LIMIT 1000;
+    EXIT WHEN v_emps.COUNT = 0;
+
+    FORALL i IN 1..v_emps.COUNT
+      INSERT INTO emp_backup VALUES v_emps(i);
+
+    COMMIT;
+  END LOOP;
+  CLOSE c;
+END;
+/
+</code></pre>
+<p><code>SAVE EXCEPTIONS</code>를 붙이면 중간에 오류가 나도 끝까지 진행하고, 실패 건은 <code>SQL%BULK_EXCEPTIONS</code>에서 확인한다.</p>
+<pre><code class="language-sql">FORALL i IN 1..v_emps.COUNT SAVE EXCEPTIONS
+  INSERT INTO emp_backup VALUES v_emps(i);
+EXCEPTION
+  WHEN OTHERS THEN
+    FOR i IN 1..SQL%BULK_EXCEPTIONS.COUNT LOOP
+      DBMS_OUTPUT.PUT_LINE(SQL%BULK_EXCEPTIONS(i).ERROR_INDEX || ' : ' ||
+                           SQLERRM(-SQL%BULK_EXCEPTIONS(i).ERROR_CODE));
+    END LOOP;
+END;
+</code></pre>
+<p>다만 가장 좋은 건 <strong>애초에 한 문장으로 처리하는 것</strong>이다. <code>INSERT ... SELECT</code>나 <code>MERGE</code>로 되는 일을 PL/SQL 루프로 푸는 건 거의 항상 손해다. 순서가 있다.</p>
+<ol>
+<li>한 문장 SQL로 되는가?</li>
+<li>안 되면 벌크 연산으로</li>
+<li>그래도 안 되면 행 단위 루프</li>
+</ol>
+<h2>동적 SQL</h2>
+<p>컴파일 시점에 문장이 정해지지 않을 때 쓴다. 테이블명이 변수이거나, 조건이 런타임에 조립되는 경우다.</p>
+<pre><code class="language-sql">DECLARE
+  v_cnt NUMBER;
+  v_sql VARCHAR2(200);
+BEGIN
+  v_sql := 'SELECT COUNT(*) FROM employees WHERE department_id = :b1';
+  EXECUTE IMMEDIATE v_sql INTO v_cnt USING 20;
+  DBMS_OUTPUT.PUT_LINE(v_cnt);
+
+  EXECUTE IMMEDIATE 'CREATE INDEX ix_tmp ON employees (email)';  -- DDL도 가능
+END;
+/
+</code></pre>
+<p><strong>값은 반드시 바인드 변수(<code>USING</code>)로 넘긴다.</strong> 문자열을 이어붙이면 SQL 인젝션이 열리고, 하드 파싱이 매번 일어나 공유 풀이 오염된다.</p>
+<pre><code class="language-sql">-- 위험
+v_sql := 'SELECT * FROM employees WHERE emp_name = ''' || p_name || '''';
+
+-- 안전
+v_sql := 'SELECT * FROM employees WHERE emp_name = :b1';
+</code></pre>
+<p>테이블명·컬럼명은 바인드 변수로 넘길 수 없으므로 이어붙일 수밖에 없는데, 이때는 <code>DBMS_ASSERT.SIMPLE_SQL_NAME</code> 같은 함수로 검증하거나 화이트리스트로 제한한다.</p>
+<h2>자율 트랜잭션</h2>
+<p>바깥 트랜잭션과 독립적으로 커밋한다. <strong>오류 로그</strong>를 남길 때 쓴다. 본 트랜잭션이 롤백되어도 로그는 남아야 하기 때문이다.</p>
+<pre><code class="language-sql">CREATE OR REPLACE PROCEDURE log_error (p_msg VARCHAR2) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  INSERT INTO error_log (log_id, msg, logged_at) VALUES (seq_log.NEXTVAL, p_msg, SYSDATE);
+  COMMIT;
+END;
+/
+</code></pre>
+<p>용도가 뚜렷한 기능이다. 일반 업무 로직에 쓰면 트랜잭션 경계가 무너진다.</p>
+<h2>정리</h2>
+<ul>
+<li>모든 코드는 <code>DECLARE / BEGIN / EXCEPTION / END</code> 블록</li>
+<li><code>%TYPE</code>, <code>%ROWTYPE</code>으로 타입을 테이블에 묶어둔다</li>
+<li><code>SELECT INTO</code>는 정확히 한 행 — 아니면 예외</li>
+<li><code>UPDATE</code>가 0건이어도 예외는 없다. <code>SQL%ROWCOUNT</code>로 확인</li>
+<li>커서는 대부분 커서 FOR 루프로 충분하다</li>
+<li><code>WHEN OTHERS THEN NULL</code>은 쓰지 않는다. 로그 남기고 <code>RAISE</code></li>
+<li>프로시저가 늘어나면 패키지로 묶는다</li>
+<li>트리거는 감사 로그 정도로 제한한다</li>
+<li>루프 안 단건 DML은 <code>BULK COLLECT</code> + <code>FORALL</code>로, 그전에 한 문장 SQL로 되는지 먼저 본다</li>
+<li>동적 SQL의 값은 반드시 바인드 변수</li>
+</ul>
+<p>마지막 편은 인덱스와 실행계획, 튜닝이다.</p>
+</article><section><h2>Oracle의 다른 글</h2><ul class="pr-list"><li><a href="/post/oracle-08-tuning">오라클 인덱스와 실행계획, SQL 튜닝 정리 - B*Tree, 조인 방식, 힌트, 안티패턴 (오라클 학습 노트 8)</a><p>B*Tree 인덱스가 동작하는 방식부터 실행계획 읽는 법, 조인 방식 세 가지, 통계정보와 힌트, 그리고 인덱스를 죽이는 안티패턴까지. 시리즈 마지막 편.</p><span class="pr-meta">2025.10.27</span></li><li><a href="/post/oracle-06-transaction">오라클 DML과 트랜잭션, 락, 스키마 객체 정리 - 커밋, 롤백, 읽기 일관성 (오라클 학습 노트 6)</a><p>INSERT/UPDATE/DELETE부터 커밋·롤백·세이브포인트, 오라클의 읽기 일관성과 락 동작, 그리고 시퀀스·뷰·시노님 같은 스키마 객체까지 정리한다.</p><span class="pr-meta">2025.10.02</span></li><li><a href="/post/oracle-05-analytic">오라클 분석 함수(윈도우 함수)와 CONNECT BY 계층 질의, PIVOT 정리 (오라클 학습 노트 5)</a><p>OVER 절의 구조부터 순위·누적·이전행 참조·이동평균까지, 그리고 CONNECT BY 계층 질의와 PIVOT/UNPIVOT을 정리한다. 오라클을 제대로 쓰기 시작하는 지점.</p><span class="pr-meta">2025.09.14</span></li><li><a href="/post/oracle-04-subquery">오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)</a><p>단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.</p><span class="pr-meta">2025.09.02</span></li><li><a href="/post/oracle-03-group-join">오라클 집계 함수와 GROUP BY, 조인 정리 - ROLLUP, CUBE, ANSI 조인 (오라클 학습 노트 3)</a><p>집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, 그리고 조인의 모든 형태를 ANSI 문법과 오라클 전통 문법으로 나란히 정리한다.</p><span class="pr-meta">2025.08.15</span></li><li><a href="/post/oracle-02-select-functions">오라클 SELECT 문과 단일행 함수 정리 - 실행 순서, NULL, 문자·날짜·변환 함수 (오라클 학습 노트 2)</a><p>SELECT 문의 실행 순서부터 WHERE 조건, NULL의 함정, 문자·숫자·날짜·변환·조건 함수까지. 오라클에서 매일 쓰게 되는 문법을 한 번에 정리한다.</p><span class="pr-meta">2025.08.04</span></li></ul></section></main></div>
+  </body>
+</html>

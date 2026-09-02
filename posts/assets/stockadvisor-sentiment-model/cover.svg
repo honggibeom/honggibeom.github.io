@@ -5,8 +5,8 @@
       <stop offset="100%" stop-color="#161b22"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#f0a500"/>
-      <stop offset="100%" stop-color="#ffd166"/>
+      <stop offset="0%" stop-color="#00b56e"/>
+      <stop offset="100%" stop-color="#34d399"/>
     </linearGradient>
     <linearGradient id="scale" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#ff7b72"/>
@@ -18,7 +18,7 @@
   <g stroke="#1c232c" stroke-width="1">
     <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
   </g>
-  <circle cx="600" cy="315" r="270" fill="#f0a500" opacity="0.06"/>
+  <circle cx="600" cy="315" r="270" fill="#00a362" opacity="0.08"/>
   <text x="600" y="200" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#6b7785" letter-spacing="8">STOCKADVISOR</text>
   <g text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="bold">
     <text x="420" y="320" font-size="88" fill="#e6edf3">BERT</text>

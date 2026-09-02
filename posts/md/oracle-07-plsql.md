@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (7) - PL/SQL 전반
+title: 오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)
 date: 2025-10-15
 category: oracle
 src: cover.svg

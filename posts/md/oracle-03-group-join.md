@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (3) - 집계, GROUP BY, 그리고 조인
+title: 오라클 집계 함수와 GROUP BY, 조인 정리 - ROLLUP, CUBE, ANSI 조인 (오라클 학습 노트 3)
 date: 2025-08-15
 category: oracle
 src: cover.svg

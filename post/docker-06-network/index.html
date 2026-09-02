@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="컨테이너가 어떻게 네트워크를 갖는지, 포트 매핑이 실제로 무엇을 하는지, 컨테이너끼리 이름으로 통신하는 원리와 localhost 함정, 그리고 네트워크 문제를 디버깅하는 방법을 정리한다." />
+    <meta name="keywords" content="docker, network, bridge, dns, 학습노트, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/docker-06-network" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6) | Honggibeom's blog" />
+    <meta property="og:description" content="컨테이너가 어떻게 네트워크를 갖는지, 포트 매핑이 실제로 무엇을 하는지, 컨테이너끼리 이름으로 통신하는 원리와 localhost 함정, 그리고 네트워크 문제를 디버깅하는 방법을 정리한다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/docker-06-network" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-01-25" />
+<meta property="article:section" content="Docker" />
+<meta property="article:tag" content="docker" />
+<meta property="article:tag" content="network" />
+<meta property="article:tag" content="bridge" />
+<meta property="article:tag" content="dns" />
+<meta property="article:tag" content="학습노트" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6)","description":"컨테이너가 어떻게 네트워크를 갖는지, 포트 매핑이 실제로 무엇을 하는지, 컨테이너끼리 이름으로 통신하는 원리와 localhost 함정, 그리고 네트워크 문제를 디버깅하는 방법을 정리한다.","datePublished":"2026-01-25","dateModified":"2026-01-25","keywords":"docker, network, bridge, dns, 학습노트","image":"https://honggibeom.github.io/posts/assets/docker-06-network/cover.svg","url":"https://honggibeom.github.io/post/docker-06-network","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/docker-06-network"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Docker","item":"https://honggibeom.github.io/categories/docker"},{"@type":"ListItem","position":3,"name":"도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6)","item":"https://honggibeom.github.io/post/docker-06-network"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/docker">Docker</a></p>
+<h1>도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6)</h1>
+<p class="pr-meta">2026.01.25 · <a href="/tags/docker">#docker</a> <a href="/tags/network">#network</a> <a href="/tags/bridge">#bridge</a> <a href="/tags/dns">#dns</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
+<blockquote>
+<p>도커 학습 노트 시리즈 6편.</p>
+</blockquote>
+<h2>컨테이너는 자기만의 네트워크를 갖는다</h2>
+<p>1편에서 본 net 네임스페이스가 여기서 전부다. 컨테이너는 자기만의 네트워크 인터페이스, IP, 라우팅 테이블, 포트 공간을 갖는다.</p>
+<p>기본 구성은 이렇다.</p>
+<pre><code>         호스트
+ ┌──────────────────────────────────────────┐
+ │  eth0 (192.168.0.10)                     │
+ │        │                                  │
+ │   [ iptables NAT ]                        │
+ │        │                                  │
+ │  docker0 브리지 (172.17.0.1)               │
+ │     │            │                        │
+ │   veth         veth       ← 가상 랜선 한 쌍  │
+ │     │            │                        │
+ │  ┌──┴──┐      ┌──┴──┐                     │
+ │  │eth0 │      │eth0 │                     │
+ │  │.0.2 │      │.0.3 │                     │
+ │  │ 컨A │      │ 컨B │                     │
+ │  └─────┘      └─────┘                     │
+ └──────────────────────────────────────────┘
+</code></pre>
+<p>컨테이너를 만들면 도커가 <strong>veth 쌍</strong>(가상 랜선 한 쌍)을 만들어 한쪽은 컨테이너의 네임스페이스에, 다른 쪽은 호스트의 브리지에 꽂는다. 브리지는 소프트웨어 스위치다.</p>
+<p>직접 확인해보자.</p>
+<pre><code class="language-bash">docker run -d --name a nginx:alpine
+docker exec a ip addr
+# eth0: 172.17.0.2/16
+
+ip addr show docker0
+# docker0: 172.17.0.1/16
+
+ip link | grep veth      # 호스트 쪽 veth 인터페이스가 보인다
+</code></pre>
+<h2>네트워크 드라이버</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>드라이버</th><th>용도</th></tr></thead><tbody><tr><td><code>bridge</code></td><td>기본값. 단일 호스트에서 컨테이너끼리 통신</td></tr><tr><td><code>host</code></td><td>호스트 네트워크를 그대로 사용. 격리 없음</td></tr><tr><td><code>none</code></td><td>루프백만. 완전 격리</td></tr><tr><td><code>overlay</code></td><td>여러 호스트에 걸친 네트워크 (Swarm)</td></tr><tr><td><code>macvlan</code> / <code>ipvlan</code></td><td>컨테이너에 물리 네트워크의 IP를 직접 부여</td></tr></tbody></table>
+<pre><code class="language-bash">docker network ls
+# NETWORK ID  NAME    DRIVER  SCOPE
+# ...         bridge  bridge  local   ← 기본 docker0
+# ...         host    host    local
+# ...         none    null    local
+</code></pre>
+<p>일상적으로 쓰는 건 <code>bridge</code>고, 나머지는 필요할 때 꺼내 쓴다.</p>
+<h2>기본 브리지와 사용자 정의 브리지</h2>
+<p>여기서 실무 차이가 크게 갈린다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>기본 <code>bridge</code></th><th>사용자 정의 브리지</th></tr></thead><tbody><tr><td><strong>컨테이너 이름으로 DNS 해석</strong></td><td><strong>안 된다</strong></td><td><strong>된다</strong></td></tr><tr><td>격리</td><td>모든 컨테이너가 한 네트워크에</td><td>네트워크 단위로 분리</td></tr><tr><td>실행 중 연결/해제</td><td>불가</td><td>가능</td></tr><tr><td><code>--link</code></td><td>레거시 방식으로만 가능</td><td>불필요</td></tr></tbody></table>
+<p><strong>결론: 기본 브리지는 쓰지 않는다.</strong> 컨테이너를 두 개 이상 쓰는 순간 반드시 사용자 정의 네트워크를 만든다.</p>
+<pre><code class="language-bash">docker network create appnet
+
+docker run -d --name api  --network appnet myapi:1.0
+docker run -d --name db   --network appnet -e POSTGRES_PASSWORD=secret postgres:16-alpine
+
+# api 컨테이너에서
+docker exec api ping -c1 db          # 이름으로 바로 통한다
+docker exec api sh -c 'nc -z db 5432 &#x26;&#x26; echo ok'
+</code></pre>
+<p><code>db</code>라는 이름이 컨테이너의 IP로 해석된다. IP를 코드에 박을 필요가 없다는 게 핵심이다. 컨테이너를 다시 만들면 IP는 바뀌지만 이름은 그대로다.</p>
+<h3>내장 DNS</h3>
+<p>이 이름 해석은 도커의 내장 DNS 서버가 한다. 컨테이너 안의 <code>/etc/resolv.conf</code>를 보면 알 수 있다.</p>
+<pre><code class="language-bash">docker exec api cat /etc/resolv.conf
+# nameserver 127.0.0.11
+</code></pre>
+<p><code>127.0.0.11</code>이 도커의 내장 DNS다. 컨테이너 이름과 네트워크 별칭을 먼저 찾고, 없으면 호스트의 DNS로 넘긴다.</p>
+<p>별칭을 여러 개 붙일 수도 있다.</p>
+<pre><code class="language-bash">docker run -d --name postgres-primary \
+  --network appnet --network-alias db --network-alias database \
+  postgres:16-alpine
+</code></pre>
+<p><code>db</code>, <code>database</code>, <code>postgres-primary</code> 셋 다 통한다. 컨테이너 교체 시 이름은 바꾸되 별칭은 유지하는 식으로 쓴다.</p>
+<h3>네트워크 관리</h3>
+<pre><code class="language-bash">docker network create --driver bridge \
+  --subnet 172.28.0.0/16 --gateway 172.28.0.1 appnet
+
+docker network inspect appnet      # 붙어 있는 컨테이너와 IP 목록
+docker network connect othernet api      # 실행 중에 추가 연결
+docker network disconnect appnet api
+docker network rm appnet
+docker network prune
+</code></pre>
+<p>컨테이너 하나가 여러 네트워크에 동시에 붙을 수 있다. 프런트/백엔드 망을 나누고 API만 양쪽에 붙이는 식으로 격리를 만든다.</p>
+<pre><code class="language-bash">docker network create frontnet
+docker network create backnet
+
+docker run -d --name web --network frontnet nginx:alpine
+docker run -d --name api --network frontnet myapi:1.0
+docker network connect backnet api
+docker run -d --name db  --network backnet postgres:16-alpine
+
+# web → db 는 통하지 않는다. api 만 양쪽에 있다
+</code></pre>
+<p><strong>DB를 백엔드 망에만 두면 웹 서버가 침해당해도 DB에 직접 접근할 수 없다.</strong> 포트를 호스트에 열지 않고도 서비스가 돌아간다는 게 컨테이너 네트워크의 큰 장점이다.</p>
+<h2>포트 매핑이 실제로 하는 일</h2>
+<pre><code class="language-bash">docker run -d -p 8080:80 --name web nginx:alpine
+</code></pre>
+<p>이 한 줄이 하는 일은 <strong>호스트에 NAT 규칙을 넣는 것</strong>이다.</p>
+<pre><code class="language-bash">sudo iptables -t nat -L DOCKER -n
+# DNAT tcp -- 0.0.0.0/0  0.0.0.0/0  tcp dpt:8080 to:172.17.0.2:80
+</code></pre>
+<p>호스트의 8080으로 들어온 패킷의 목적지를 컨테이너 IP:80으로 바꿔서 넘긴다. 일부 경우에는 <code>docker-proxy</code>라는 사용자 공간 프로세스가 대신 중계하기도 한다.</p>
+<p>문법을 정확히 알아두면 좋다.</p>
+<pre><code class="language-bash">-p 8080:80                  # 0.0.0.0:8080 → 컨테이너 80  (모든 인터페이스!)
+-p 127.0.0.1:8080:80        # 로컬호스트에서만
+-p 8080:80/udp              # UDP
+-p 80                       # 호스트 포트를 랜덤 배정
+-P                          # EXPOSE 된 포트 전부 랜덤 배정
+</code></pre>
+<p>순서는 항상 **<code>호스트:컨테이너</code>**다. 헷갈리면 "밖에서 안으로"라고 외운다.</p>
+<pre><code class="language-bash">docker port web             # 실제 매핑 확인
+</code></pre>
+<h3>방화벽을 우회하는 문제</h3>
+<p>리눅스에서 반드시 알아야 할 함정이다. 도커는 iptables의 <code>DOCKER</code> 체인에 직접 규칙을 넣기 때문에, <strong><code>ufw</code>로 막아둔 포트가 도커 컨테이너에서는 열린다.</strong></p>
+<pre><code class="language-bash">sudo ufw deny 5432
+docker run -d -p 5432:5432 postgres:16-alpine    # 외부에서 접속된다
+</code></pre>
+<p><code>ufw</code>는 <code>INPUT</code> 체인을 보고, 도커의 DNAT는 그보다 앞선 <code>PREROUTING</code>에서 처리되기 때문이다. 개발 서버를 클라우드에 띄우고 "방화벽 걸어놨으니 괜찮겠지" 했다가 DB가 통째로 노출되는 사고가 여기서 난다.</p>
+<p>대응은 셋 중 하나다.</p>
+<ul>
+<li><strong><code>-p 127.0.0.1:5432:5432</code>로 바인딩을 묶는다</strong> (가장 간단하고 확실하다)</li>
+<li>애초에 포트를 호스트에 열지 않고 컨테이너 네트워크 안에서만 통신한다</li>
+<li>클라우드의 보안 그룹/네트워크 ACL로 막는다 (호스트 방화벽보다 바깥이라 유효하다)</li>
+</ul>
+<p><code>daemon.json</code>에 <code>{"iptables": false}</code>를 넣는 방법도 있지만 컨테이너 네트워킹이 전반적으로 깨지므로 권장되지 않는다.</p>
+<h2>localhost 함정</h2>
+<p>가장 자주 나오는 질문이다.</p>
+<pre><code class="language-bash"># 컨테이너 안에서
+curl http://localhost:5432     # ← 자기 자신의 5432. DB 컨테이너가 아니다!
+</code></pre>
+<p><strong>컨테이너 안의 <code>localhost</code>는 그 컨테이너 자신이다.</strong> 각자 네트워크 네임스페이스가 다르므로 루프백도 각자 갖는다.</p>
+<p>상황별로 정리하면 이렇다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>어디서 → 어디로</th><th>주소</th></tr></thead><tbody><tr><td>컨테이너 → 같은 네트워크의 다른 컨테이너</td><td><strong>컨테이너 이름</strong> (<code>db:5432</code>)</td></tr><tr><td>호스트 → 컨테이너</td><td><code>localhost:호스트포트</code> (<code>-p</code>가 있어야 함)</td></tr><tr><td>컨테이너 → 호스트에서 도는 서비스</td><td><code>host.docker.internal</code> (맥/윈도우), 리눅스는 아래 참조</td></tr><tr><td>컨테이너 → 외부 인터넷</td><td>그냥 된다 (NAT)</td></tr></tbody></table>
+<p>컨테이너 간 통신에서는 <strong>호스트 포트가 아니라 컨테이너의 원래 포트</strong>를 쓴다는 점도 중요하다. <code>-p 5433:5432</code>로 띄운 DB에 다른 컨테이너가 붙을 때는 <code>db:5432</code>다. <code>5433</code>이 아니다.</p>
+<h3>컨테이너에서 호스트로</h3>
+<p>맥과 윈도우에서는 특수 호스트명이 준비되어 있다.</p>
+<pre><code class="language-bash">docker run --rm alpine ping -c1 host.docker.internal
+</code></pre>
+<p>리눅스에서는 기본 제공되지 않아서 명시적으로 추가한다.</p>
+<pre><code class="language-bash">docker run --add-host=host.docker.internal:host-gateway --rm alpine \
+  ping -c1 host.docker.internal
+</code></pre>
+<p><code>host-gateway</code>는 도커가 호스트 IP로 치환해주는 특수 값이다. Compose에서는 <code>extra_hosts</code>에 같은 값을 넣는다.</p>
+<h3>0.0.0.0으로 바인딩해야 한다</h3>
+<p>컨테이너 안의 애플리케이션이 <code>127.0.0.1</code>에만 바인딩하면, <strong>포트 매핑을 해도 밖에서 접속되지 않는다.</strong> 컨테이너의 루프백에만 붙어 있기 때문이다.</p>
+<pre><code># 안 됨
+app.listen(3000, '127.0.0.1')
+flask run --host=127.0.0.1
+
+# 됨
+app.listen(3000, '0.0.0.0')
+flask run --host=0.0.0.0
+python manage.py runserver 0.0.0.0:8000
+</code></pre>
+<p>"포트를 열었는데 connection refused"의 절반이 이것이다. 확인은 컨테이너 안에서 한다.</p>
+<pre><code class="language-bash">docker exec web netstat -tlnp    # 또는 ss -tlnp
+# 0.0.0.0:80 이어야 한다. 127.0.0.1:80 이면 밖에서 못 붙는다
+</code></pre>
+<h2>host 네트워크 모드</h2>
+<pre><code class="language-bash">docker run -d --network host nginx:alpine
+</code></pre>
+<p>네트워크 네임스페이스를 만들지 않고 <strong>호스트의 네트워크를 그대로 쓴다.</strong> <code>-p</code>가 무의미해지고(무시된다), 컨테이너가 호스트의 80 포트를 직접 잡는다.</p>
+<ul>
+<li>장점: NAT 오버헤드가 없다. 포트를 대량으로 여는 서비스에 유리하다</li>
+<li>단점: 격리가 없다. 포트 충돌이 나고, 다른 컨테이너와 포트를 나눠 쓸 수 없다</li>
+<li><strong>맥/윈도우에서는 기대대로 동작하지 않는다.</strong> 컨테이너가 붙는 "호스트"는 그 안의 리눅스 VM이다</li>
+</ul>
+<p>성능이 정말 문제가 되는 게 아니면 브리지를 쓴다.</p>
+<p><code>none</code>은 반대다. 루프백만 있고 외부와 완전히 단절된다. 네트워크가 필요 없는 배치 작업에 쓴다.</p>
+<pre><code class="language-bash">docker run --rm --network none alpine ip addr    # lo 만 있다
+</code></pre>
+<h2>여러 호스트에 걸친 네트워크</h2>
+<p>단일 호스트를 벗어나면 <code>overlay</code>다. Swarm 모드에서 VXLAN으로 호스트 간 가상 네트워크를 만든다.</p>
+<pre><code class="language-bash">docker swarm init
+docker network create -d overlay --attachable multinet
+</code></pre>
+<p>다만 실무에서 여러 노드를 다뤄야 하는 시점이면 대개 쿠버네티스로 간다. <code>overlay</code>는 "이런 게 있다" 정도로 알아두면 된다.</p>
+<p><code>macvlan</code>은 컨테이너에 물리 LAN의 IP를 직접 주는 방식이다. 레거시 애플리케이션이 자기 IP를 가져야 할 때 쓰는데, 스위치 설정과 promiscuous 모드가 필요해서 손이 많이 간다.</p>
+<h2>디버깅</h2>
+<p>네트워크 문제는 <strong>어느 구간에서 끊기는지</strong>를 좁히는 게 전부다.</p>
+<pre><code class="language-bash"># 1) 컨테이너가 그 네트워크에 붙어 있나
+docker inspect -f '{{json .NetworkSettings.Networks}}' api | python3 -m json.tool
+
+# 2) 이름이 해석되나
+docker exec api getent hosts db
+docker exec api nslookup db      # 없으면 아래 netshoot 사용
+
+# 3) 포트가 열려 있나
+docker exec api nc -zv db 5432
+
+# 4) 애플리케이션이 0.0.0.0 에 바인딩했나
+docker exec db ss -tlnp
+
+# 5) 호스트에서 매핑이 걸려 있나
+docker port web
+ss -tlnp | grep 8080
+</code></pre>
+<p>셸이나 도구가 없는 이미지라면 3편에서 본 netshoot을 붙인다.</p>
+<pre><code class="language-bash">docker run -it --rm --network container:api nicolaka/netshoot
+# 안에서 dig db / curl -v http://db:8080 / tcpdump -i any port 5432
+</code></pre>
+<p><code>--network container:api</code>는 <strong>대상 컨테이너의 네트워크 네임스페이스를 그대로 공유</strong>한다. 그래서 api 컨테이너에서 보는 것과 완전히 같은 시야를 얻는다.</p>
+<h2>자주 만나는 문제</h2>
+<p><strong>컨테이너 이름으로 접속이 안 된다</strong>
+: 기본 <code>bridge</code> 네트워크를 쓰고 있는 것이다. 사용자 정의 네트워크를 만들어 양쪽을 붙인다. Compose는 자동으로 만들어주므로 이 문제가 없다.</p>
+<p><strong>connection refused</strong>
+: 앱이 <code>127.0.0.1</code>에 바인딩했거나, 포트 번호가 틀렸거나(컨테이너 간에는 원래 포트), 앱이 아직 안 떴다. <code>docker logs</code>부터 본다.</p>
+<p><strong>connection timeout</strong>
+: 다른 네트워크에 있거나 방화벽/보안 그룹이 막고 있다. <code>refused</code>와 <code>timeout</code>은 원인이 다르니 구분해서 읽는다.</p>
+<p><strong>DB가 아직 준비되지 않았는데 앱이 먼저 붙는다</strong>
+: 컨테이너가 "떴다"와 "준비됐다"는 다르다. 헬스체크와 재시도 로직이 필요하다. 7편에서 다룬다.</p>
+<p><strong>컨테이너에서 외부 인터넷이 안 된다</strong>
+: 호스트의 IP 포워딩이 꺼져 있거나(<code>net.ipv4.ip_forward</code>), 사내 DNS 문제일 수 있다. <code>docker run --rm alpine ping -c1 8.8.8.8</code>(IP)과 <code>ping -c1 google.com</code>(도메인)을 나눠서 시험하면 네트워크 문제인지 DNS 문제인지 갈린다.</p>
+<p><strong>VPN을 켜면 도커 네트워크가 안 된다</strong>
+: 도커 기본 서브넷(<code>172.17.0.0/16</code>)이 사내망과 충돌한 경우다. <code>daemon.json</code>의 <code>default-address-pools</code>로 대역을 옮긴다.</p>
+<pre><code class="language-json">{
+  "default-address-pools": [
+    { "base": "10.201.0.0/16", "size": 24 }
+  ]
+}
+</code></pre>
+<h2>정리</h2>
+<p>이번 편에서 잡아야 할 것.</p>
+<ul>
+<li>컨테이너는 veth로 브리지에 연결된 자기만의 네트워크 네임스페이스를 갖는다</li>
+<li><strong>기본 <code>bridge</code>에는 이름 해석이 없다.</strong> 항상 사용자 정의 네트워크를 만든다</li>
+<li>컨테이너 이름이 곧 호스트명이다. IP를 코드에 박지 않는다</li>
+<li>포트 매핑은 iptables DNAT다. <code>-p 호스트:컨테이너</code> 순서</li>
+<li><code>-p 8080:80</code>은 모든 인터페이스에 연다. 내부용은 <code>-p 127.0.0.1:...</code>로 묶는다</li>
+<li><strong>도커는 <code>ufw</code>를 우회한다.</strong> 방화벽만 믿으면 안 된다</li>
+<li>컨테이너 안의 <code>localhost</code>는 자기 자신이다</li>
+<li>컨테이너 간 통신은 호스트 포트가 아니라 <strong>원래 포트</strong>를 쓴다</li>
+<li>앱은 <code>0.0.0.0</code>에 바인딩해야 밖에서 붙는다</li>
+<li>네트워크를 나눠서 DB를 백엔드 망에만 두면 격리가 생긴다</li>
+<li>디버깅은 이름 해석 → 포트 → 바인딩 주소 순으로 좁힌다</li>
+</ul>
+<p>다음 편에서는 지금까지 손으로 붙인 것들을 파일 하나로 묶는 Docker Compose를 정리한다.</p>
+</article><section><h2>Docker의 다른 글</h2><ul class="pr-list"><li><a href="/post/docker-08-optimize-operate">도커 멀티스테이지 빌드, 보안, 배포와 트러블슈팅 (도커 학습 노트 8)</a><p>1GB짜리 이미지를 수십 MB로 줄이는 멀티스테이지 빌드, 비루트·읽기전용·시크릿 관리 같은 보안 기본기, GitHub Actions로 빌드해 배포하는 흐름, 그리고 증상별 트러블슈팅 순서를 정리하며 시리즈를 마무리한다.</p><span class="pr-meta">2026.02.24</span></li><li><a href="/post/docker-07-compose">Docker Compose 정리 - 여러 컨테이너를 파일 하나로 묶기 (도커 학습 노트 7)</a><p>여러 컨테이너를 파일 하나로 정의하는 Compose. 서비스 정의 필드 전체와 depends_on의 헬스체크 조건, 환경변수 치환과 .env, 프로파일과 여러 파일 병합으로 개발·운영 환경을 나누는 방법까지 정리한다.</p><span class="pr-meta">2026.02.06</span></li><li><a href="/post/docker-05-volume-data">도커 볼륨과 바인드 마운트 정리 - 컨테이너 데이터를 지키는 법 (도커 학습 노트 5)</a><p>컨테이너를 지워도 데이터가 남게 하는 방법. 볼륨과 바인드 마운트와 tmpfs의 차이, node_modules가 사라지는 이유, UID 권한 문제, 볼륨 백업과 복원, DB 컨테이너 운영까지 정리한다.</p><span class="pr-meta">2026.01.09</span></li><li><a href="/post/docker-04-dockerfile">Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4)</a><p>Dockerfile의 모든 명령어를 용도별로 정리하고 COPY와 ADD, CMD와 ENTRYPOINT, ARG와 ENV의 차이를 짚는다. 빌드 컨텍스트와 .dockerignore, 레이어 캐시가 언제 깨지는지와 BuildKit 캐시 마운트까지 다룬다.</p><span class="pr-meta">2025.12.28</span></li><li><a href="/post/docker-03-run-lifecycle">docker run 옵션과 컨테이너 생명주기, 리소스 제한 정리 (도커 학습 노트 3)</a><p>docker run의 옵션을 갈래별로 정리하고, 컨테이너 상태 전이와 종료 시그널·종료 코드, 재시작 정책, 로그와 exec, CPU·메모리 제한과 OOM까지 실행과 운영에 필요한 것들을 정리한다.</p><span class="pr-meta">2025.12.12</span></li><li><a href="/post/docker-02-image-registry">도커 이미지와 레이어, 태그, 레지스트리 정리 - latest의 함정까지 (도커 학습 노트 2)</a><p>이미지가 레이어로 쌓이는 구조와 Copy-on-Write, 다이제스트와 태그의 차이, latest의 함정, 베이스 이미지 선택 기준, 레지스트리 사용법과 멀티 아키텍처 이미지까지 정리한다.</p><span class="pr-meta">2025.11.26</span></li></ul></section></main></div>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 ---
-title: 도커 학습 노트 (7) - Docker Compose로 여러 컨테이너 묶기
+title: Docker Compose 정리 - 여러 컨테이너를 파일 하나로 묶기 (도커 학습 노트 7)
 date: 2026-02-06
 category: docker
 src: cover.svg

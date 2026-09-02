@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법." />
+    <meta name="keywords" content="spring-boot, 자동설정, 프로파일, 로드맵, 백엔드, Spring, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/spring-04-boot" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4) | Honggibeom's blog" />
+    <meta property="og:description" content="Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/spring-04-boot" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-05-20" />
+<meta property="article:section" content="Spring" />
+<meta property="article:tag" content="spring-boot" />
+<meta property="article:tag" content="자동설정" />
+<meta property="article:tag" content="프로파일" />
+<meta property="article:tag" content="로드맵" />
+<meta property="article:tag" content="백엔드" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)","description":"Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법.","datePublished":"2026-05-20","dateModified":"2026-05-20","keywords":"spring-boot, 자동설정, 프로파일, 로드맵, 백엔드","image":"https://honggibeom.github.io/posts/assets/spring-04-boot/cover.svg","url":"https://honggibeom.github.io/post/spring-04-boot","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/spring-04-boot"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Spring","item":"https://honggibeom.github.io/categories/spring"},{"@type":"ListItem","position":3,"name":"Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)","item":"https://honggibeom.github.io/post/spring-04-boot"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/spring">Spring</a></p>
+<h1>Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)</h1>
+<p class="pr-meta">2026.05.20 · <a href="/tags/spring-boot">#spring-boot</a> <a href="/tags/%EC%9E%90%EB%8F%99%EC%84%A4%EC%A0%95">#자동설정</a> <a href="/tags/%ED%94%84%EB%A1%9C%ED%8C%8C%EC%9D%BC">#프로파일</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
+<blockquote>
+<p>Spring 공부 로드맵 시리즈 4편.</p>
+</blockquote>
+<h2>Boot는 무엇을 대신해주는가</h2>
+<p>Spring Boot는 별개의 프레임워크가 아니다. <strong>의존성 묶음 + 자동 설정 + 내장 서버</strong>를 얹어서, 원래는 손으로 하던 조립을 대신해주는 층이다. 그래서 Core와 MVC를 먼저 본 다음에 Boot를 보면 "아, 이걸 안 써도 되게 해준 거구나"가 명확해진다.</p>
+<h2>1. 자동 설정의 원리</h2>
+<ul>
+<li><code>@SpringBootApplication</code> = <code>@SpringBootConfiguration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code></li>
+<li><code>spring.factories</code> / <code>AutoConfiguration.imports</code> 로 후보 설정 클래스를 읽는다</li>
+<li><code>@Conditional</code> 계열이 "적용할지 말지"를 결정한다
+<ul>
+<li><code>@ConditionalOnClass</code> — 클래스패스에 그 라이브러리가 있으면</li>
+<li><code>@ConditionalOnMissingBean</code> — 내가 직접 등록한 빈이 없으면</li>
+<li><code>@ConditionalOnProperty</code> — 설정값이 특정 값이면</li>
+</ul>
+</li>
+<li><strong>내가 빈을 직접 등록하면 자동 설정이 물러난다</strong>는 규칙이 핵심이다</li>
+<li>무엇이 적용됐는지 확인하는 법: <code>--debug</code> 실행 시 나오는 Condition Evaluation Report</li>
+</ul>
+<h2>2. 스타터와 의존성</h2>
+<ul>
+<li><code>spring-boot-starter-web</code>, <code>-data-jpa</code>, <code>-security</code>, <code>-validation</code>, <code>-test</code></li>
+<li>스타터가 버전을 맞춰주는 방식 (BOM, <code>spring-boot-dependencies</code>)</li>
+<li>필요 없는 자동 설정 제외: <code>@SpringBootApplication(exclude = ...)</code></li>
+</ul>
+<h2>3. 설정 파일과 외부화</h2>
+<ul>
+<li><code>application.yml</code> / <code>application.properties</code></li>
+<li>설정 우선순위: 명령행 인자 > 환경 변수 > 프로파일별 파일 > 기본 파일</li>
+<li><code>@Value</code> vs <code>@ConfigurationProperties</code> — 묶음 설정은 후자가 낫다</li>
+<li>타입 안전 설정 + 검증 (<code>@Validated</code>)</li>
+<li><strong>민감 정보 관리</strong> — API 키를 yml에 그대로 커밋하지 않기, 환경 변수/시크릿 사용</li>
+</ul>
+<h2>4. 프로파일</h2>
+<ul>
+<li><code>@Profile</code>로 환경별 빈 분리</li>
+<li><code>application-local.yml</code>, <code>application-prod.yml</code></li>
+<li>활성화: <code>spring.profiles.active</code></li>
+<li>로컬은 H2, 운영은 MySQL 같은 구성 분리</li>
+</ul>
+<h2>5. 내장 서버와 실행</h2>
+<ul>
+<li>내장 Tomcat(또는 Undertow, Jetty) — WAR 배포와의 차이</li>
+<li>실행 가능한 JAR의 구조와 <code>java -jar</code></li>
+<li>포트, 컨텍스트 패스, 커넥션·스레드 풀 설정</li>
+<li>애플리케이션 기동 훅: <code>ApplicationRunner</code>, <code>CommandLineRunner</code></li>
+</ul>
+<h2>6. 로깅</h2>
+<ul>
+<li>Logback 기본 구성, 로그 레벨을 패키지별로 조정하기</li>
+<li>운영에서의 파일 롤링</li>
+<li><code>System.out.println</code> 대신 SLF4J를 쓰는 이유</li>
+</ul>
+<h2>7. 개발 편의</h2>
+<ul>
+<li>DevTools (자동 재시작)</li>
+<li>Actuator 맛보기 — <code>/actuator/health</code>, <code>/actuator/env</code> (자세한 건 운영 편에서)</li>
+<li>Lombok과 그 한계 (과용하지 않기)</li>
+</ul>
+<h2>체크리스트</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> <code>@SpringBootApplication</code>이 어떤 애노테이션들의 합인지 말할 수 있다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 자동 설정이 물러나는 조건(<code>@ConditionalOnMissingBean</code>)을 설명할 수 있다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>--debug</code>로 어떤 자동 설정이 적용됐는지 확인해봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 프로파일로 로컬/운영 DB 설정을 분리해봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>@ConfigurationProperties</code>로 설정 묶음을 타입 안전하게 받아봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 실행 가능한 JAR로 빌드해서 <code>java -jar</code>로 띄워봤다</li>
+</ul>
+<h2>다음 편</h2>
+<p>다음은 데이터 계층, Spring Data JPA다. 시간을 가장 많이 쓰게 될 구간이다.</p>
+</article><section><h2>Spring의 다른 글</h2><ul class="pr-list"><li><a href="/post/spring-10-ops">Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)</a><p>Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.</p><span class="pr-meta">2026.08.17</span></li><li><a href="/post/spring-09-batch">Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)</a><p>Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.</p><span class="pr-meta">2026.07.31</span></li><li><a href="/post/spring-08-test">Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)</a><p>Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.</p><span class="pr-meta">2026.07.19</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li><li><a href="/post/spring-06-transaction">Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)</a><p>Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다.</p><span class="pr-meta">2026.06.21</span></li><li><a href="/post/spring-05-jpa">Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)</a><p>Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.</p><span class="pr-meta">2026.06.05</span></li></ul></section></main></div>
+  </body>
+</html>

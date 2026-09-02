@@ -1,5 +1,5 @@
 ---
-title: 도커 학습 노트 (2) - 이미지와 레이어, 태그, 레지스트리
+title: 도커 이미지와 레이어, 태그, 레지스트리 정리 - latest의 함정까지 (도커 학습 노트 2)
 date: 2025-11-26
 category: docker
 src: cover.svg

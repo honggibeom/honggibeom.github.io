@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (1) IoC 컨테이너와 의존성 주입 - 프레임워크의 본체
+title: Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1)
 date: 2026-04-07
 category: spring
 src: cover.svg
 tags: [spring, di, ioc, bean, 로드맵, 백엔드]
-summary: 웹도 JPA도 전부 이 위에 얹혀 있다. 빈 등록과 주입 방식, 스코프와 생명주기, 순환 참조까지 Spring Core에서 반드시 짚어야 할 것들을 정리했다.
+summary: Spring IoC 컨테이너와 의존성 주입 정리. 빈 등록과 주입 방식, 스코프와 생명주기, 순환 참조까지 웹도 JPA도 그 위에 얹혀 있는 Spring Core의 핵심을 짚는다.
 ---
 
 > Spring 공부 로드맵 시리즈 1편.

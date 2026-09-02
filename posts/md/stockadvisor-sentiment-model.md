@@ -7,7 +7,14 @@ tags: [python, spring, bert, onnx, 감성분석, 파인튜닝, stockadvisor]
 summary: 뉴스 기사의 호재/악재 판정을 Gemini에서 자체 모델로 옮겼다. 왜 LLM이 아니라 BERT 분류기인지, 정답 데이터를 어떻게 만들고 어떻게 평가했는지, 그리고 파이썬 없이 Spring 안에서 ONNX로 추론하는 구조까지 실험 기록 그대로 남긴다.
 ---
 
-> StockAdvisor는 Spring Boot + React로 만든 주식 정보 서비스다. 뉴스 기사마다 "호재인지 악재인지"와 "어느 종목 얘기인지"를 붙여 주는데, 처음엔 Gemini API 한 번으로 둘 다 처리하다가 호출 제한과 환각 때문에 둘 다 자체 구현으로 바꿨다. 종목 쪽은 [사전 매칭 글](#/post/StockAdvisor%20뉴스에서%20종목%20뽑아내기%20-%20Gemini%20대신%20사전%20매칭으로)에 정리했고, 이 글은 **감성 모델** 얘기다. 결론부터 말하면 한국어 BERT 계열 모델을 직접 파인튜닝해서, Spring 안에서 ONNX Runtime으로 추론하는 구조가 됐다.
+> StockAdvisor는 Spring Boot + React로 만든 주식 정보 서비스다. 뉴스 기사마다 "호재인지 악재인지"와 "어느 종목 얘기인지"를 붙여 주는데, 처음엔 Gemini API 한 번으로 둘 다 처리하다가 호출 제한과 환각 때문에 둘 다 자체 구현으로 바꿨다. 종목 쪽은 [사전 매칭 글](/post/stockadvisor-ticker-extraction)에 정리했고, 이 글은 **감성 모델** 얘기다. 결론부터 말하면 한국어 BERT 계열 모델을 직접 파인튜닝해서, Spring 안에서 ONNX Runtime으로 추론하는 구조가 됐다.
+
+**한눈에 보기**
+
+- 3분류 문제에는 생성 모델이 아니라 **BERT 인코더 + 분류 헤드**. 자바에서는 ONNX Runtime으로 추론, 파이썬 의존성 0
+- 정답 데이터는 Gemini 라벨을 쓰지 않고 **직접 라벨링한 gold 740건**. 라벨 기준을 "주가 영향"에서 "회사에 좋은 소식인가"로 한 번 뒤집었다
+- 다수결 기준선과 5-fold 교차검증 없이는 숫자를 믿을 수 없었다. 최종 **klue/roberta-large 81.0% ± 3.8, 방향 정확도 97.8%**
+- "금리 = 악재"처럼 단어에 붙은 편향은 규칙이 아니라 **반례 데이터**로 고쳤다
 
 ## 1. 모델 선택 - mini GPT가 아니라 BERT
 
@@ -61,7 +68,7 @@ BERT 계열 **인코더**는 문장 전체를 한 번에 읽어서 각 토큰의
 
 ### 점수를 하나로 접기
 
-확률 3개를 그대로 화면에 뿌리진 않는다. **`score = p[pos] − p[neg]`** 로 −1~+1 사이 값 하나를 만들고, `|score| < 밴드`면 중립으로 표시한다.
+확률 3개를 그대로 화면에 뿌리진 않는다. **`score = p[pos] − p[neg]`**로 −1~+1 사이 값 하나를 만들고, `|score| < 밴드`면 중립으로 표시한다.
 
 <svg viewBox="0 0 640 120" width="100%" style="max-width:640px;display:block;margin:20px auto" role="img" aria-label="−1부터 +1까지의 점수 축과 가운데 중립 밴드">
   <defs><linearGradient id="sa-scale" x1="0" x2="1"><stop offset="0" stop-color="#e5534b"/><stop offset="0.5" stop-color="var(--color-border-strong)"/><stop offset="1" stop-color="var(--color-accent)"/></linearGradient></defs>
@@ -92,7 +99,7 @@ BERT 계열 **인코더**는 문장 전체를 한 번에 읽어서 각 토큰의
 
 ### Gemini 라벨을 정답으로 쓰면 안 되는 이유
 
-DB에는 이미 Gemini가 붙여 둔 감성 라벨이 수천 건 있었다. 이걸 정답으로 학습하면 빠르긴 한데, 그러면 **Gemini의 습관을 그대로 배운다.** Gemini가 "출시"를 무조건 호재로 찍었다면 내 모델도 그렇게 찍고, Gemini가 틀린 건 내 모델도 틀린다. 잘해야 Gemini만큼이고, Gemini를 걷어내려는 이유(오판)는 하나도 해결이 안 된다.
+DB에는 이미 Gemini가 붙여 둔 감성 라벨이 수천 건 있었다. 이걸 정답으로 학습하면 빠르긴 한데, 그러면 **Gemini의 습관을 그대로 배운다.** Gemini가 "출시"를 무조건 호재로 찍었다면 내 모델도 그렇게 찍고, Gemini가 틀린 건 내 모델도 틀린다. 잘해야 Gemini만큼이고, Gemini를 걷어내려던 이유 중 하나인 오판은 하나도 해결이 안 된다.
 
 그래서 **기사를 뽑아서 사람(여기선 Claude)이 다시 라벨을 달아 gold 데이터셋**을 만들었다. 흐름은 `export_for_review.py`로 검수 대상을 추출하고 → 라벨을 달고 → `import_labels.py`로 gold에 병합한다. 검수 대상은 무작위로도, 특정 키워드가 들어간 것만 골라서도 뽑을 수 있다. 이게 뒤에서 편향을 잡을 때 요긴했다.
 

@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (10) 운영과 성능 - 느려지거나 죽으면 어디를 보나
+title: Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)
 date: 2026-08-17
 category: spring
 src: cover.svg
 tags: [spring-boot, actuator, 성능, 캐시, 배포, 로드맵]
-summary: 기능을 다 만든 뒤부터가 진짜다. 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM, 그리고 배포까지 운영에서 실제로 손대게 되는 것들을 정리했다.
+summary: Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.
 ---
 
 > Spring 공부 로드맵 시리즈 10편(마지막).

@@ -1,5 +1,5 @@
 ---
-title: 도커 학습 노트 (3) - 컨테이너 실행과 생명주기, 리소스 제한
+title: docker run 옵션과 컨테이너 생명주기, 리소스 제한 정리 (도커 학습 노트 3)
 date: 2025-12-12
 category: docker
 src: cover.svg

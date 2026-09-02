@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Spring IoC 컨테이너와 의존성 주입 정리. 빈 등록과 주입 방식, 스코프와 생명주기, 순환 참조까지 웹도 JPA도 그 위에 얹혀 있는 Spring Core의 핵심을 짚는다." />
+    <meta name="keywords" content="spring, di, ioc, bean, 로드맵, 백엔드, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/spring-01-core-di" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1) | Honggibeom's blog" />
+    <meta property="og:description" content="Spring IoC 컨테이너와 의존성 주입 정리. 빈 등록과 주입 방식, 스코프와 생명주기, 순환 참조까지 웹도 JPA도 그 위에 얹혀 있는 Spring Core의 핵심을 짚는다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/spring-01-core-di" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-04-07" />
+<meta property="article:section" content="Spring" />
+<meta property="article:tag" content="spring" />
+<meta property="article:tag" content="di" />
+<meta property="article:tag" content="ioc" />
+<meta property="article:tag" content="bean" />
+<meta property="article:tag" content="로드맵" />
+<meta property="article:tag" content="백엔드" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1)","description":"Spring IoC 컨테이너와 의존성 주입 정리. 빈 등록과 주입 방식, 스코프와 생명주기, 순환 참조까지 웹도 JPA도 그 위에 얹혀 있는 Spring Core의 핵심을 짚는다.","datePublished":"2026-04-07","dateModified":"2026-04-07","keywords":"spring, di, ioc, bean, 로드맵, 백엔드","image":"https://honggibeom.github.io/posts/assets/spring-01-core-di/cover.svg","url":"https://honggibeom.github.io/post/spring-01-core-di","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/spring-01-core-di"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Spring","item":"https://honggibeom.github.io/categories/spring"},{"@type":"ListItem","position":3,"name":"Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1)","item":"https://honggibeom.github.io/post/spring-01-core-di"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/spring">Spring</a></p>
+<h1>Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1)</h1>
+<p class="pr-meta">2026.04.07 · <a href="/tags/spring">#spring</a> <a href="/tags/di">#di</a> <a href="/tags/ioc">#ioc</a> <a href="/tags/bean">#bean</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
+<blockquote>
+<p>Spring 공부 로드맵 시리즈 1편.</p>
+</blockquote>
+<h2>이 단계가 본체다</h2>
+<p>Spring의 정체는 사실 <strong>객체를 대신 만들어 관리해주는 컨테이너</strong>다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.</p>
+<h2>1. IoC와 컨테이너</h2>
+<ul>
+<li><strong>제어의 역전(IoC)</strong>: 객체 생성과 조립의 권한을 내 코드가 아니라 컨테이너가 갖는다</li>
+<li><code>BeanFactory</code>와 <code>ApplicationContext</code>의 관계 — 실제로 쓰는 건 후자</li>
+<li>컨테이너가 하는 일: 빈 정의 읽기 → 인스턴스 생성 → 의존성 주입 → 초기화 콜백 → 사용 → 소멸</li>
+<li>빈(Bean)이란 무엇인가 — 그냥 컨테이너가 관리하는 객체</li>
+</ul>
+<h2>2. 빈 등록하는 세 가지 방법</h2>
+<ol>
+<li><strong>컴포넌트 스캔</strong>: <code>@Component</code>와 그 파생인 <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code></li>
+<li><strong>자바 설정</strong>: <code>@Configuration</code> 클래스 안의 <code>@Bean</code> 메서드 — 외부 라이브러리 객체를 등록할 때 필수</li>
+<li><strong>XML</strong>: 레거시 프로젝트를 읽을 때만 필요</li>
+</ol>
+<p><code>@ComponentScan</code>의 기본 범위가 어디인지(= <code>@SpringBootApplication</code>이 붙은 패키지 하위)를 반드시 알아둬야 한다. 빈을 못 찾는 문제의 절반이 여기서 나온다.</p>
+<p><code>@Configuration</code> 클래스가 프록시로 감싸져서 <code>@Bean</code> 메서드를 여러 번 호출해도 같은 객체가 나오는 것(<code>proxyBeanMethods</code>)도 확인해볼 만하다.</p>
+<h2>3. 의존성 주입 방식</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>방식</th><th>권장</th><th>이유</th></tr></thead><tbody><tr><td>생성자 주입</td><td>O</td><td>불변성 보장, 필수 의존성 명시, 테스트 쉬움, 순환참조를 기동 시점에 잡아줌</td></tr><tr><td>세터 주입</td><td>선택적 의존성에만</td><td>런타임에 바뀔 수 있는 값</td></tr><tr><td>필드 주입</td><td>X</td><td>테스트에서 갈아끼우기 어렵고 의존성이 숨는다</td></tr></tbody></table>
+<ul>
+<li>생성자가 하나면 <code>@Autowired</code>를 생략할 수 있다 → Lombok <code>@RequiredArgsConstructor</code>와 조합</li>
+<li>같은 타입 빈이 여러 개일 때: <code>@Qualifier</code>, <code>@Primary</code></li>
+<li>리스트/맵으로 같은 타입 빈을 전부 주입받는 패턴 (전략 패턴 구현에 유용)</li>
+<li><code>@Value</code>로 설정값 주입, <code>@ConfigurationProperties</code>로 묶어서 받기</li>
+</ul>
+<h2>4. 스코프와 생명주기</h2>
+<ul>
+<li><strong>스코프</strong>: singleton(기본), prototype, request, session, application</li>
+<li>싱글턴 빈에 <strong>상태를 두면 안 되는 이유</strong> — 모든 요청이 같은 인스턴스를 공유한다</li>
+<li>싱글턴이 프로토타입을 주입받을 때 생기는 문제와 해법 (<code>ObjectProvider</code>, <code>@Lookup</code>)</li>
+<li>생명주기 콜백: <code>@PostConstruct</code> / <code>@PreDestroy</code>, <code>InitializingBean</code> / <code>DisposableBean</code></li>
+<li><code>@Lazy</code>가 필요한 경우</li>
+</ul>
+<h2>5. 순환 참조</h2>
+<p>A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 실패한다. 이건 Spring의 결함이 아니라 <strong>설계가 잘못됐다는 신호</strong>다.</p>
+<ul>
+<li>왜 생기는지 (양방향 의존)</li>
+<li>푸는 법: 공통 로직을 제3의 빈으로 분리, 이벤트(<code>ApplicationEventPublisher</code>)로 뒤집기, 정말 급하면 <code>@Lazy</code></li>
+<li><code>spring.main.allow-circular-references=true</code>는 해결이 아니라 유예다</li>
+</ul>
+<h2>6. 그 밖에</h2>
+<ul>
+<li><code>ApplicationEventPublisher</code>와 <code>@EventListener</code> — 모듈 간 결합을 낮추는 도구</li>
+<li><code>Environment</code>와 프로파일별 빈 등록 (<code>@Profile</code>)</li>
+<li><code>@Conditional</code> 계열 — Boot 자동 설정의 기반이 된다</li>
+</ul>
+<h2>체크리스트</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 왜 필드 주입을 쓰지 말라고 하는지 설명할 수 있다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 같은 타입 빈이 둘일 때 구분하는 방법을 안다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 싱글턴 빈에 상태를 두면 왜 위험한지 예시로 설명할 수 있다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 순환 참조를 일부러 만들어 에러 메시지를 읽어봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>@Bean</code>과 <code>@Component</code>를 각각 언제 쓰는지 안다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>@ConfigurationProperties</code>로 설정 묶음을 받아봤다</li>
+</ul>
+<h2>다음 편</h2>
+<p>다음은 AOP와 프록시다. 컨테이너가 관리하는 빈이 "내가 짠 그 객체가 아닐 수도 있다"는 이야기를 한다.</p>
+</article><section><h2>Spring의 다른 글</h2><ul class="pr-list"><li><a href="/post/spring-10-ops">Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)</a><p>Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.</p><span class="pr-meta">2026.08.17</span></li><li><a href="/post/spring-09-batch">Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)</a><p>Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.</p><span class="pr-meta">2026.07.31</span></li><li><a href="/post/spring-08-test">Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)</a><p>Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.</p><span class="pr-meta">2026.07.19</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li><li><a href="/post/spring-06-transaction">Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)</a><p>Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다.</p><span class="pr-meta">2026.06.21</span></li><li><a href="/post/spring-05-jpa">Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)</a><p>Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.</p><span class="pr-meta">2026.06.05</span></li></ul></section></main></div>
+  </body>
+</html>

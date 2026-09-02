@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (5) - 분석 함수와 계층 질의
+title: 오라클 분석 함수(윈도우 함수)와 CONNECT BY 계층 질의, PIVOT 정리 (오라클 학습 노트 5)
 date: 2025-09-14
 category: oracle
 src: cover.svg

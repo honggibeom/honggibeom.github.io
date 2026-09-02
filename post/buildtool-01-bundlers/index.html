@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="CRA가 느렸던 이유와 Vite가 빠른 이유를 원리에서부터 정리한다. 네이티브 ESM 개발 서버, Go·Rust 툴체인, 증분 캐시라는 세 축으로 esbuild·SWC·Rollup·Rolldown·Rspack·Turbopack·Bun까지 2026년 현재의 지형을 그린다." />
+    <meta name="keywords" content="vite, webpack, esbuild, rolldown, 번들러, 프론트엔드, Frontend, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/buildtool-01-bundlers" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도 | Honggibeom's blog" />
+    <meta property="og:description" content="CRA가 느렸던 이유와 Vite가 빠른 이유를 원리에서부터 정리한다. 네이티브 ESM 개발 서버, Go·Rust 툴체인, 증분 캐시라는 세 축으로 esbuild·SWC·Rollup·Rolldown·Rspack·Turbopack·Bun까지 2026년 현재의 지형을 그린다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/buildtool-01-bundlers" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-08-15" />
+<meta property="article:section" content="Frontend" />
+<meta property="article:tag" content="vite" />
+<meta property="article:tag" content="webpack" />
+<meta property="article:tag" content="esbuild" />
+<meta property="article:tag" content="rolldown" />
+<meta property="article:tag" content="번들러" />
+<meta property="article:tag" content="프론트엔드" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도","description":"CRA가 느렸던 이유와 Vite가 빠른 이유를 원리에서부터 정리한다. 네이티브 ESM 개발 서버, Go·Rust 툴체인, 증분 캐시라는 세 축으로 esbuild·SWC·Rollup·Rolldown·Rspack·Turbopack·Bun까지 2026년 현재의 지형을 그린다.","datePublished":"2026-08-15","dateModified":"2026-08-15","keywords":"vite, webpack, esbuild, rolldown, 번들러, 프론트엔드","image":"https://honggibeom.github.io/posts/assets/buildtool-01-bundlers/cover.svg","url":"https://honggibeom.github.io/post/buildtool-01-bundlers","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/buildtool-01-bundlers"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Frontend","item":"https://honggibeom.github.io/categories/frontend"},{"@type":"ListItem","position":3,"name":"프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도","item":"https://honggibeom.github.io/post/buildtool-01-bundlers"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/frontend">Frontend</a></p>
+<h1>프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도</h1>
+<p class="pr-meta">2026.08.15 · <a href="/tags/vite">#vite</a> <a href="/tags/webpack">#webpack</a> <a href="/tags/esbuild">#esbuild</a> <a href="/tags/rolldown">#rolldown</a> <a href="/tags/%EB%B2%88%EB%93%A4%EB%9F%AC">#번들러</a> <a href="/tags/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C">#프론트엔드</a></p>
+<h2>이 글에 대해</h2>
+<p>"요즘은 CRA 대신 Vite를 쓴다"까지는 다들 안다. 그런데 <strong>왜</strong> 빠른지, Vite 말고 뭐가 있는지, 그것들이 서로 어떤 관계인지는 정리된 걸 보기 어렵다. 이름만 늘어놓으면 이렇다.</p>
+<blockquote>
+<p>webpack, Vite, esbuild, SWC, Rollup, Rolldown, Parcel, Turbopack, Rspack, Rsbuild, Bun, Oxc, Biome...</p>
+</blockquote>
+<p>이걸 한 줄에 늘어놓으면 뭐가 뭔지 알 수 없다. 층이 다른 것들이 섞여 있기 때문이다. 그래서 두 편으로 나눈다.</p>
+<ul>
+<li><strong>1편(이 글)</strong> — <strong>빌드 도구</strong>. 소스 코드를 브라우저가 실행할 파일로 바꾸는 층. 왜 빨라졌는지를 원리에서부터 본다</li>
+<li><strong>2편</strong> — <strong>메타 프레임워크</strong>. Next.js, Astro, SvelteKit처럼 렌더링 방식과 라우팅까지 정해주는 층</li>
+</ul>
+<p>먼저 이 둘을 구분해야 한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>빌드 도구</th><th>메타 프레임워크</th></tr></thead><tbody><tr><td>무엇을 정해주나</td><td>번들링, 트랜스파일, dev 서버, HMR</td><td>라우팅, 렌더링 방식(SSR/SSG), 데이터 로딩, 배포</td></tr><tr><td>예</td><td>webpack, Vite, Rspack, Parcel</td><td>Next.js, Nuxt, SvelteKit, Astro</td></tr><tr><td>관계</td><td>아래 층</td><td>위 층 — <strong>내부에서 빌드 도구를 쓴다</strong></td></tr></tbody></table>
+<p>Astro는 Vite 위에 얹혀 있고, Next.js는 Turbopack을 쓴다. 그러니까 "Vite와 Next.js 중에 뭘 쓸까"는 사실 성립하지 않는 질문이다. 층이 다르다.</p>
+<h2>번들러는 왜 생겼나</h2>
+<p>빠른 이유를 이해하려면 원래 뭘 하고 있었는지부터 봐야 한다.</p>
+<p>브라우저에는 오랫동안 모듈 시스템이 없었다. <code>&#x3C;script></code> 태그를 순서대로 나열하고 전역 변수로 소통하던 시절이 있었고, Node의 CommonJS(<code>require</code>)는 브라우저에서 돌지 않았다. 그래서 **"여러 파일을 하나로 합쳐서 브라우저가 이해하는 형태로 만들어주는 도구"**가 필요했다. 그게 번들러다.</p>
+<p>여기에 요구사항이 계속 붙었다.</p>
+<ul>
+<li>JSX, TypeScript처럼 <strong>브라우저가 모르는 문법</strong>을 변환해야 한다 (트랜스파일)</li>
+<li>최신 문법을 구형 브라우저용으로 낮춰야 한다 (Babel, polyfill)</li>
+<li>CSS, 이미지, 폰트도 import 하고 싶다 (로더)</li>
+<li>안 쓰는 코드를 지워야 한다 (트리 셰이킹)</li>
+<li>파일이 커지면 나눠서 필요할 때만 받아야 한다 (코드 스플리팅)</li>
+<li>파일을 고치면 새로고침 없이 화면에 반영돼야 한다 (HMR)</li>
+</ul>
+<p>webpack이 이걸 전부 해냈다. 그래서 10년 가까이 표준이었다. 문제는 <strong>이 모든 걸 JavaScript로 하고 있었다</strong>는 것이다.</p>
+<h2>느렸던 이유 세 가지</h2>
+<h3>1. 개발 서버를 띄우려고 전부 번들링했다</h3>
+<p>전통적인 번들러의 dev 서버는 이렇게 동작한다.</p>
+<pre><code>진입점 파일 → import 따라가며 전체 그래프 탐색
+           → 전부 트랜스파일
+           → 하나(또는 몇 개)의 번들로 합침
+           → 그제서야 서버 시작
+</code></pre>
+<p>파일이 100개면 100개를 다 처리하고 나서야 브라우저가 첫 화면을 볼 수 있다. <strong>프로젝트가 커질수록 시작 시간이 선형으로 늘어난다.</strong> 화면 하나만 보고 싶어도 앱 전체를 빌드해야 한다.</p>
+<h3>2. 도구 자체가 JavaScript로 쓰여 있었다</h3>
+<p>webpack도 Babel도 JavaScript다. 그리고 JavaScript는 이런 종류의 작업에 불리하다.</p>
+<ul>
+<li><strong>싱글 스레드가 기본이다.</strong> 파일 100개를 병렬로 파싱하기 어렵다</li>
+<li><strong>GC가 있다.</strong> 파싱 중에 만들어지는 수많은 AST 객체가 계속 메모리를 오가며 GC를 부른다</li>
+<li><strong>JIT 워밍업이 필요하다.</strong> 짧게 끝나는 CLI 작업에서는 최적화가 붙기도 전에 끝난다</li>
+</ul>
+<p>파싱과 문자열 처리를 수만 번 반복하는 작업에서 이 셋은 전부 손해다.</p>
+<h3>3. 캐시가 거칠었다</h3>
+<p>파일 하나를 고쳤을 때 다시 해야 할 일이 그 파일만이 아니었다. 의존성 그래프를 다시 계산하고, 청크를 다시 만들고, 상당 부분을 다시 처리했다. 재빌드가 초기 빌드만큼 걸리는 일이 흔했다.</p>
+<h2>빨라진 이유 ① 번들링을 안 하는 개발 서버</h2>
+<p>2020년 전후로 상황이 바뀌었다. <strong>모든 최신 브라우저가 네이티브 ES 모듈(<code>&#x3C;script type="module"></code>)을 지원</strong>하게 됐다. 브라우저가 스스로 <code>import</code>를 따라갈 수 있다면, 개발 중에 번들링을 할 이유가 없다.</p>
+<p>Vite의 dev 서버가 이걸 한다.</p>
+<pre><code>[ 전통 방식 ]
+전체 번들링 → 서버 시작 → 브라우저 요청 → 완성된 번들 전달
+   (느림)
+
+[ Vite 방식 ]
+서버 즉시 시작 → 브라우저가 /src/main.jsx 요청
+              → 그 파일만 변환해서 전달
+              → 브라우저가 import 를 보고 다음 파일 요청
+              → 그 파일만 변환해서 전달  ...
+</code></pre>
+<p><strong>화면에 실제로 필요한 파일만, 요청이 들어온 순간에 변환한다.</strong> 프로젝트가 아무리 커도 dev 서버 기동 시간이 거의 일정하다. 파일 100개짜리 프로젝트에서 첫 화면에 30개만 쓴다면 30개만 처리한다.</p>
+<p>HMR도 같은 원리로 빨라진다. 파일 하나를 고치면 <strong>그 파일 하나만 다시 변환해서 교체</strong>한다. 번들을 다시 만들 필요가 없으니 프로젝트 크기와 무관하게 즉각적이다.</p>
+<h3>그런데 의존성은 미리 번들링한다</h3>
+<p>여기서 예외가 하나 있다. <code>node_modules</code>는 미리 번들로 묶어둔다(dependency pre-bundling). 이유가 둘이다.</p>
+<ul>
+<li><strong>요청 폭발</strong> — lodash 같은 라이브러리는 내부 모듈이 수백 개다. 그대로 두면 브라우저가 HTTP 요청을 수백 번 날린다. 하나로 묶으면 요청 하나다</li>
+<li><strong>CommonJS 변환</strong> — 아직 CommonJS로만 배포되는 패키지가 많다. 브라우저는 <code>require</code>를 모르므로 ESM으로 바꿔줘야 한다</li>
+</ul>
+<p>의존성은 자주 안 바뀌므로 한 번 묶어두고 캐시한다. <code>node_modules/.vite</code>가 그 캐시다. 패키지를 새로 깔았는데 뭔가 이상하면 이 디렉터리를 지우거나 <code>--force</code>로 다시 만들면 된다.</p>
+<h3>dev와 build가 달랐던 문제</h3>
+<p>Vite의 약점이 오랫동안 여기 있었다. <strong>개발은 번들링을 안 하는데 프로덕션 빌드는 번들링을 한다.</strong> 코드 스플리팅, 트리 셰이킹, 캐시 최적화 때문에 프로덕션에서는 여전히 번들이 필요하다.</p>
+<p>그래서 Vite는 <strong>두 개의 다른 도구</strong>를 썼다. 개발 중 변환은 esbuild(Go), 프로덕션 빌드는 Rollup(JavaScript). 도구가 다르니 미묘한 차이가 났다. 개발에선 되는데 빌드하면 깨지는 일이 여기서 나왔다.</p>
+<p>이 문제를 정리한 게 뒤에 나올 <strong>Rolldown</strong>이다.</p>
+<h2>빨라진 이유 ② Go와 Rust</h2>
+<p>2020년 esbuild가 등장하면서 판이 바뀌었다. Go로 쓴 번들러였고, 같은 작업을 webpack보다 <strong>10~100배</strong> 빠르게 했다. 만든 사람(Evan Wallace)이 정리한 이유는 대략 이렇다.</p>
+<ul>
+<li><strong>네이티브 코드다.</strong> JIT 워밍업이 없다</li>
+<li><strong>병렬 처리를 제대로 한다.</strong> 파싱·링크·코드 생성을 CPU 코어 수만큼 나눠서 돌린다</li>
+<li><strong>AST를 한 번만 만든다.</strong> 기존 도구 체인은 Babel이 만든 AST를 webpack이 다시 파싱하는 식으로 같은 코드를 여러 번 파싱했다</li>
+<li><strong>메모리를 아껴 쓴다.</strong> 문자열 복사를 최소화하고 GC 압박을 줄인다</li>
+</ul>
+<p>이후 흐름은 Rust로 넘어갔다. SWC, Rspack, Turbopack, Rolldown, Oxc가 전부 Rust다. Go보다 GC가 없고(소유권 모델), WASM으로 컴파일해 어디서나 돌릴 수 있다는 점이 컸다.</p>
+<p><strong>핵심은 언어 자체가 마법이라서가 아니라, 이 작업이 원래 네이티브 언어에 유리한 종류의 작업이었다는 것이다.</strong> 파싱, 문자열 처리, 트리 순회를 수만 번 반복하는 일이다.</p>
+<h2>빨라진 이유 ③ 증분 캐시</h2>
+<p>세 번째 축은 <strong>다시 하지 않는 것</strong>이다.</p>
+<p>Turbopack이 이 방향을 가장 밀어붙였다. 함수 호출 단위로 결과를 기억해뒀다가, 입력이 안 바뀌었으면 다시 실행하지 않는다. 파일 하나를 고치면 그 파일에서 파생되는 계산만 다시 한다.</p>
+<p>여기에 <strong>영속 캐시</strong>가 붙는다. 캐시를 메모리에만 두면 dev 서버를 껐다 켤 때마다 처음부터 다시 한다. 디스크에 저장해두면 재시작해도 캐시가 살아 있다. Turbopack의 파일시스템 캐시(Next.js 16 기준 베타), Vite의 <code>node_modules/.vite</code>, webpack 5의 <code>cache: { type: 'filesystem' }</code>이 전부 같은 아이디어다.</p>
+<h2>층으로 나눠 보기</h2>
+<p>이제 이름들을 제자리에 놓을 수 있다. <strong>같은 층에 있는 것끼리만 비교하면 된다.</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│ 메타 프레임워크   Next.js  Nuxt  SvelteKit  Astro        │  ← 2편
+├─────────────────────────────────────────────────────────┤
+│ 빌드 도구        Vite   Rsbuild   Parcel   Bun          │  개발 서버 + 설정 + 플러그인
+├─────────────────────────────────────────────────────────┤
+│ 번들러           Rolldown  Rspack  Turbopack  webpack   │  모듈 그래프, 코드 스플리팅
+│                  Rollup   esbuild                        │
+├─────────────────────────────────────────────────────────┤
+│ 파서/변환기      Oxc   SWC   esbuild   Babel            │  JSX/TS 변환, minify
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+<p>esbuild가 두 층에 걸쳐 있는 게 헷갈리는 지점인데, 실제로 그렇다. esbuild는 변환기이면서 번들러이기도 하다. Vite는 그중 변환기 역할만 오래 썼다.</p>
+<h2>도구별로 보기</h2>
+<h3>webpack — 여전히 5.x, 여전히 살아 있다</h3>
+<p>2026년 8월 기준 최신은 5.107.x다. 6은 아직 안 나왔고 로드맵 단계다.</p>
+<p>죽은 도구는 아니다. 아직도 가장 많은 프로젝트가 이걸로 돌아가고, 로더/플러그인 생태계는 여전히 가장 두껍다. <strong>Module Federation</strong>(여러 앱이 런타임에 모듈을 주고받는 마이크로 프론트엔드 방식)처럼 다른 데는 없는 기능도 있다.</p>
+<p>다만 새로 시작하는 프로젝트가 webpack을 고를 이유는 거의 없어졌다. 대안들이 webpack의 설정 형식을 그대로 받아들이는 쪽으로 갔기 때문이다.</p>
+<h3>esbuild — Go, 아직도 0.x</h3>
+<p>2026년 8월 기준 v0.28.x. 나온 지 6년이 됐는데 아직 1.0이 아니다(만든 사람이 의도적으로 신중한 편이다).</p>
+<p>"엄청나게 빠르지만 기능은 최소한"이라는 포지션을 유지한다. 코드 스플리팅과 CSS 처리가 Rollup만큼 정교하지 않고, 플러그인 API도 제한적이다. 그래서 <strong>최종 번들러보다는 다른 도구 안에서 변환기로 쓰이는 경우</strong>가 많다. Vitest, Angular의 빌드 시스템, 그리고 Vite 7까지의 개발 중 변환이 전부 esbuild였다.</p>
+<h3>SWC — Rust, Babel 자리를 가져갔다</h3>
+<p>Babel과 같은 일(JSX/TS 변환, 문법 낮추기, 플러그인)을 Rust로 한다. Next.js가 Babel을 걷어내고 SWC로 간 게 결정적이었고, Parcel과 Deno도 쓴다.</p>
+<p>Babel이 완전히 죽지는 않았다. <strong>React Compiler처럼 Babel 플러그인으로만 나오는 것들이 아직 있다.</strong> Next.js도 Babel 설정이 있으면 자동으로 Babel을 켠다.</p>
+<h3>Rollup — 라이브러리 번들링의 기준</h3>
+<p>깔끔한 ESM 출력과 트리 셰이킹으로 유명하다. 오랫동안 Vite의 프로덕션 빌드를 담당했고, 지금도 4.x가 유지보수되고 있다.</p>
+<p>애플리케이션보다 <strong>라이브러리를 배포할 때</strong> 여전히 좋은 선택이다. 출력이 사람이 읽을 수 있을 만큼 깔끔하고, <code>es</code>/<code>cjs</code>/<code>umd</code> 여러 포맷을 동시에 뽑기 좋다.</p>
+<h3>Vite — 그리고 Rolldown</h3>
+<p>지금 프론트엔드 빌드 도구의 기본값이다. Vue를 만든 Evan You가 시작했고, 지금은 VoidZero라는 회사가 전담 팀을 두고 개발한다.</p>
+<p>가장 큰 변화가 <strong>Vite 8</strong>(2026년 3월)이다. esbuild + Rollup 이원 구조를 버리고 <strong>Rolldown 하나로 통합</strong>했다.</p>
+<ul>
+<li><strong>Rolldown</strong> — Rust로 쓴 번들러. Rollup의 플러그인 API를 그대로 채택해서 기존 플러그인이 대부분 그대로 돈다. 2026년 5월 1.0이 나왔다</li>
+<li><strong>Oxc</strong> — Rolldown이 내부에서 쓰는 파서·변환기·minifier 툴체인. 역시 Rust</li>
+<li>공식 발표 기준 <strong>빌드가 최대 10~30배 빨라졌다</strong>고 한다. 사례로 Linear의 빌드가 46초에서 6초로 줄었다는 수치가 함께 나왔다</li>
+<li><code>@vitejs/plugin-react</code> v6부터는 React Refresh 변환도 Babel 대신 Oxc를 쓴다</li>
+</ul>
+<p>의미가 큰 건 속도보다 <strong>dev와 build가 같은 번들러를 쓰게 됐다</strong>는 점이다. 앞에서 말한 "개발에선 되는데 빌드하면 깨진다"의 구조적 원인이 사라졌다.</p>
+<p>Node 요구사항은 20.19+ / 22.12+다. 다만 <strong>Environment API</strong>(SSR·워커·엣지 등 여러 실행 환경을 하나의 설정으로 다루는 새 API)는 아직 완전히 stable은 아니다. 메타 프레임워크들이 이걸 기다리고 있다.</p>
+<h3>Rspack / Rsbuild — webpack 설정을 그대로 가져가고 싶다면</h3>
+<p>ByteDance가 만든 Rust 번들러. <strong>webpack의 설정과 로더·플러그인을 거의 그대로 받아들이는 것</strong>이 존재 이유다. 2026년 4월에 2.0이 나왔다.</p>
+<p>webpack 설정 파일이 수백 줄인 오래된 프로젝트에서 가장 현실적인 탈출구다. Vite로 가려면 설정을 처음부터 다시 써야 하지만, Rspack은 <code>webpack.config.js</code>를 거의 그대로 두고 시작할 수 있다.</p>
+<p>주변 도구가 한 세트로 붙어 있다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>Rspack</td><td>번들러 (webpack 대체)</td></tr><tr><td>Rsbuild</td><td>설정 없이 바로 쓰는 빌드 도구 (Vite 대체 포지션)</td></tr><tr><td>Rslib</td><td>라이브러리 빌드</td></tr><tr><td>Rspress</td><td>정적 사이트·문서 생성기</td></tr><tr><td>Rsdoctor</td><td>빌드 분석</td></tr></tbody></table>
+<h3>Turbopack — Next.js 안에서만</h3>
+<p>Vercel이 만든 Rust 번들러. webpack을 만든 Tobias Koppers가 참여했다.</p>
+<p><strong>Next.js 16부터 dev와 build 모두 stable이 됐고 기본 번들러가 됐다.</strong> 공식 수치로 프로덕션 빌드 2~5배, Fast Refresh 최대 10배 빠르다고 한다. webpack으로 돌아가려면 <code>next build --webpack</code>을 쓴다.</p>
+<p>주의할 점은 <strong>아직 Next.js 밖에서 독립적으로 쓸 수 없다</strong>는 것이다. "프레임워크 독립 번들러"를 목표로 시작했지만 2026년 현재 그 단계에 도달하지 않았다. 그래서 Vite나 Rspack과 나란히 놓고 "뭘 고를까" 하는 대상이 아니다. <strong>Next.js를 고르면 딸려 오는 것</strong>에 가깝다.</p>
+<h3>Parcel — 설정 제로였지만</h3>
+<p><code>parcel index.html</code> 한 줄로 끝나는 무설정 번들러였고, 아이디어가 좋았다. 다만 2026년 8월 기준 마지막 릴리스가 2025년 2월이라 활동이 눈에 띄게 줄었다. 새 프로젝트에 권하기는 어렵다.</p>
+<h3>Bun — 런타임이면서 번들러</h3>
+<p>Zig로 쓴 JavaScript 런타임인데, <strong>패키지 매니저 + 테스트 러너 + 번들러</strong>를 한 바이너리에 다 넣었다. 2026년 8월 기준 1.4.x다.</p>
+<p>1.3부터 <code>bun build</code>에 프로덕션 빌드, 단일 실행파일 컴파일(<code>--compile</code>), 그리고 <strong>React Fast Refresh를 포함한 HMR 개발 서버</strong>가 들어왔다. 도구 개수를 줄이고 싶다면 매력적인 선택지다.</p>
+<p>다만 생태계 성숙도는 Vite와 차이가 있다. Vite 플러그인이 그대로 돌지 않고, 오래된 Node 전용 패키지에서 호환 문제를 만날 수 있다.</p>
+<h3>곁가지: 린터와 포매터도 같은 흐름</h3>
+<p>빌드 도구는 아니지만 같은 이유로 같은 변화가 일어났다.</p>
+<ul>
+<li><strong>Biome</strong> — Rust. 포매터 + 린터 통합. Prettier와 97% 호환에 훨씬 빠르다고 주장한다</li>
+<li><strong>oxlint</strong> — Rust. ESLint 대비 수십 배 빠르다고 한다. Oxc 프로젝트의 일부라 Vite/Rolldown과 같은 툴체인을 공유한다</li>
+</ul>
+<p>둘 다 ESLint를 완전히 대체하진 못한다. 커스텀 규칙과 플러그인 생태계가 아직 ESLint 쪽이 압도적이다. 실무에서는 <strong>빠른 린터로 대부분을 걸러내고, ESLint는 필요한 규칙만 남기는</strong> 병행 구성을 많이 쓴다.</p>
+<h2>2026년 8월 현재 정리</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>도구</th><th>버전</th><th>언어</th><th>위치</th></tr></thead><tbody><tr><td>webpack</td><td>5.107.x</td><td>JS</td><td>레거시의 기준. 6은 로드맵</td></tr><tr><td>esbuild</td><td>0.28.x</td><td>Go</td><td>초고속 변환기. 다른 도구 안에서</td></tr><tr><td>SWC</td><td>1.15.x</td><td>Rust</td><td>Babel 대체 변환기. Next.js가 사용</td></tr><tr><td>Rollup</td><td>4.62.x</td><td>JS</td><td>라이브러리 번들링</td></tr><tr><td>Rolldown</td><td>1.0</td><td>Rust</td><td>Rollup의 후계. Vite 8의 코어</td></tr><tr><td>Oxc / oxlint</td><td>oxlint 1.x</td><td>Rust</td><td>파서·변환기·린터 툴체인</td></tr><tr><td><strong>Vite</strong></td><td><strong>8.x</strong></td><td>Rust 코어</td><td><strong>사실상의 기본값</strong></td></tr><tr><td>Rspack</td><td>2.0</td><td>Rust</td><td>webpack 호환 대체재</td></tr><tr><td>Rsbuild</td><td>2.x</td><td>Rust</td><td>Rspack 기반 즉시 사용 도구</td></tr><tr><td>Turbopack</td><td>Next.js 16 기본</td><td>Rust</td><td>Next.js 전용</td></tr><tr><td>Parcel</td><td>2.16.x</td><td>JS</td><td>활동 저조</td></tr><tr><td>Bun</td><td>1.4.x</td><td>Zig</td><td>런타임 + 번들러 통합</td></tr><tr><td>Biome</td><td>2.x</td><td>Rust</td><td>포매터 + 린터</td></tr></tbody></table>
+<h2>그래서 뭘 고르나</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>상황</th><th>선택</th></tr></thead><tbody><tr><td>새 React/Vue/Svelte 앱 (SPA)</td><td><strong>Vite</strong></td></tr><tr><td>Next.js를 쓴다</td><td>Turbopack이 딸려 온다. 고민할 게 없다</td></tr><tr><td>webpack 설정이 수백 줄인 레거시</td><td><strong>Rspack</strong> — 설정을 거의 그대로 옮긴다</td></tr><tr><td>설정을 하기 싫다</td><td><strong>Rsbuild</strong> 또는 Vite</td></tr><tr><td>npm에 배포할 라이브러리</td><td><strong>Rollup</strong>(또는 tsup/Rslib)</td></tr><tr><td>도구 개수를 줄이고 싶다</td><td><strong>Bun</strong> — 단, 생태계 호환을 먼저 확인</td></tr><tr><td>Node/CI 스크립트를 빠르게 묶기</td><td><strong>esbuild</strong> 직접 사용</td></tr></tbody></table>
+<p><strong>모르겠으면 Vite다.</strong> 이건 게으른 답이 아니라, Vue·Svelte·Solid·Qwik·Astro·Nuxt·SvelteKit·SolidStart가 전부 Vite 위에 서 있어서 생태계가 가장 두껍기 때문이다.</p>
+<h2>벤치마크 숫자를 읽는 법</h2>
+<p>"10배 빠르다", "30배 빠르다" 같은 수치를 볼 때 몇 가지를 확인하는 게 좋다.</p>
+<ul>
+<li><strong>누가 측정했나</strong> — 대부분 도구를 만든 쪽이 낸 수치다. 틀렸다는 게 아니라, 자기 도구에 유리한 조건일 가능성이 높다</li>
+<li><strong>무엇을 쟀나</strong> — 콜드 스타트인지, HMR인지, 프로덕션 빌드인지. 세 숫자는 서로 다르고 개선 폭도 다르다</li>
+<li><strong>어떤 프로젝트인가</strong> — 파일 100개짜리와 10,000개짜리는 결과가 완전히 다르다. 작은 프로젝트에서는 어느 도구를 써도 체감 차이가 없다</li>
+<li><strong>무엇과 비교했나</strong> — "webpack 대비"인지 "이전 버전 대비"인지</li>
+</ul>
+<p><strong>그리고 정말 중요한 건 총 빌드 시간이 아니라 HMR 지연이다.</strong> 하루에 프로덕션 빌드는 몇 번 돌리지만, 파일 저장은 수백 번 한다. 저장하고 화면이 바뀌기까지 200ms인지 3초인지가 실제 생산성을 가른다.</p>
+<p>가장 정확한 벤치마크는 <strong>내 프로젝트에서 직접 재보는 것</strong>이다.</p>
+<pre><code class="language-bash"># dev 서버 콜드 스타트
+rm -rf node_modules/.vite &#x26;&#x26; time npx vite --port 5199 &#x26;
+# HMR 은 브라우저 콘솔의 [vite] hot updated 로그 타임스탬프로 확인
+
+# 프로덕션 빌드 (캐시 없이)
+rm -rf node_modules/.vite dist &#x26;&#x26; time npm run build
+</code></pre>
+<h2>CRA는 왜 사라졌나</h2>
+<p><code>create-react-app</code>은 2025년에 공식적으로 deprecated 됐다. 지금 React 공식 문서에는 CRA가 아예 언급되지 않는다.</p>
+<p>이유는 속도만이 아니었다.</p>
+<ul>
+<li><strong>관리가 멈췄다.</strong> <code>react-scripts</code>가 물고 있는 webpack 4/5 계열 의존성 때문에 설치할 때마다 취약점 경고가 쏟아졌다</li>
+<li><strong>설정을 못 건드린다.</strong> <code>eject</code> 아니면 <code>craco</code> 같은 우회로가 필요했다</li>
+<li><strong>SSR도, 라우팅도, 데이터 로딩도 없었다.</strong> 실제 앱에는 결국 다 필요한 것들이다</li>
+</ul>
+<p>지금 React 공식 문서가 권하는 순서는 이렇다.</p>
+<ol>
+<li><strong>프레임워크를 먼저 고른다</strong> — Next.js, React Router v7, Expo(네이티브)</li>
+<li>프레임워크가 필요 없다면 <strong>Vite / Rsbuild / Parcel로 직접 구성</strong>한다</li>
+</ol>
+<p>두 번째가 명백히 비주류 취급이라는 게 흥미로운 지점이다. 왜 React 팀이 "프레임워크 먼저"라고 말하게 됐는지가 2편의 주제다.</p>
+<h2>정리</h2>
+<ul>
+<li>빌드 도구와 메타 프레임워크는 층이 다르다. Vite와 Next.js는 비교 대상이 아니다</li>
+<li>느렸던 이유는 셋이었다 — 전부 번들링하고 시작, JS로 쓰인 도구, 거친 캐시</li>
+<li>빨라진 이유도 셋이다 — <strong>네이티브 ESM 개발 서버</strong>, <strong>Go/Rust 툴체인</strong>, <strong>증분·영속 캐시</strong></li>
+<li>Vite의 dev 서버는 필요한 파일만 그때그때 변환한다. 그래서 프로젝트 크기와 무관하게 빠르다</li>
+<li>의존성만은 미리 번들링한다(요청 폭발 + CommonJS 변환)</li>
+<li><strong>Vite 8부터 esbuild + Rollup이 Rolldown 하나로 통합됐다.</strong> dev와 build가 같은 번들러를 쓴다</li>
+<li>Turbopack은 Next.js 안에서만 쓴다. 독립 도구가 아니다</li>
+<li>webpack 레거시의 현실적인 탈출구는 Rspack이다</li>
+<li>벤치마크는 총 빌드 시간보다 HMR 지연을 본다. 그리고 내 프로젝트에서 직접 잰다</li>
+<li>CRA는 끝났고, React는 이제 "프레임워크를 먼저 고르라"고 말한다</li>
+</ul>
+<p>다음 편에서는 그 프레임워크들 — Next.js, Nuxt, SvelteKit, Astro가 무엇을 다르게 하는지, 렌더링 방식이라는 축으로 정리한다.</p>
+<h2>참고</h2>
+<ul>
+<li><a href="https://vite.dev/blog/announcing-vite8">Vite 8.0 is out!</a></li>
+<li><a href="https://voidzero.dev/posts/announcing-rolldown-1-0">Rolldown 1.0 (VoidZero)</a></li>
+<li><a href="https://www.rspack.dev/blog/announcing-2-0">Rspack 2.0</a></li>
+<li><a href="https://nextjs.org/blog/next-16">Next.js 16 — Turbopack stable</a></li>
+<li><a href="https://github.com/evanw/esbuild/releases">esbuild 릴리스</a></li>
+<li><a href="https://webpack.js.org/blog/2026-02-04-roadmap-2026/">webpack 2026 로드맵</a></li>
+<li><a href="https://bun.com/blog/bun-v1.3">Bun 1.3 릴리스 노트</a></li>
+<li><a href="https://react.dev/learn/creating-a-react-app">React 공식 — Creating a React App</a></li>
+</ul>
+</article><section><h2>Frontend의 다른 글</h2><ul class="pr-list"><li><a href="/post/cra-to-vite">CRA에서 Vite로, 블로그 빌드 환경을 갈아끼운 기록</a><p>react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. 무엇이 걸림돌이었고, 어떤 코드를 어떻게 고쳤는지 순서대로 정리한다.</p><span class="pr-meta">2026.08.31</span></li><li><a href="/post/buildtool-02-meta-frameworks">프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식</a><p>Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지.</p><span class="pr-meta">2026.08.29</span></li></ul></section></main></div>
+  </body>
+</html>

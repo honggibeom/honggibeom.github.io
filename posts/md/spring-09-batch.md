@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (9) Spring Batch와 스케줄링 - 대량 처리를 안전하게
+title: Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)
 date: 2026-07-31
 category: spring
 src: cover.svg
 tags: [spring-batch, 스케줄링, 배치, 로드맵, 백엔드]
-summary: 매일 새벽에 수십만 건을 처리해야 한다면 for문으로는 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.
+summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.
 ---
 
 > Spring 공부 로드맵 시리즈 9편.

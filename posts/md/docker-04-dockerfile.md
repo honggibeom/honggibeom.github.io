@@ -1,5 +1,5 @@
 ---
-title: 도커 학습 노트 (4) - Dockerfile 완전 정리와 빌드 캐시
+title: Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4)
 date: 2025-12-28
 category: docker
 src: cover.svg

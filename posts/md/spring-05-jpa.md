@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (5) Spring Data JPA - 객체와 테이블 사이
+title: Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)
 date: 2026-06-05
 category: spring
 src: cover.svg
 tags: [spring, jpa, hibernate, orm, querydsl, 로드맵]
-summary: 로드맵에서 시간을 가장 많이 잡아먹는 구간. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 순서대로 정리했다.
+summary: Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.
 ---
 
 > Spring 공부 로드맵 시리즈 5편.

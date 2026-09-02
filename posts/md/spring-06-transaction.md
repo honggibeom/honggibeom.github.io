@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (6) 트랜잭션 - 언제 커밋되고 언제 롤백되나
+title: Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)
 date: 2026-06-21
 category: spring
 src: cover.svg
 tags: [spring, transaction, jpa, 로드맵, 백엔드]
-summary: "@Transactional 한 줄 뒤에 숨은 것들. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우를 정리했다."
+summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다."
 ---
 
 > Spring 공부 로드맵 시리즈 6편.

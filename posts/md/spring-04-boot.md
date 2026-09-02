@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (4) Spring Boot - 설정을 안 했는데 왜 동작하나
+title: Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)
 date: 2026-05-20
 category: spring
 src: cover.svg
 tags: [spring-boot, 자동설정, 프로파일, 로드맵, 백엔드]
-summary: Boot는 새로운 프레임워크가 아니라 Spring을 자동으로 조립해주는 껍데기다. 자동 설정의 원리와 설정 파일·프로파일 관리, 그리고 자동 설정을 되돌리는 방법까지 정리했다.
+summary: Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법.
 ---
 
 > Spring 공부 로드맵 시리즈 4편.

@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (4) - 서브쿼리, 집합 연산, WITH, MERGE
+title: 오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)
 date: 2025-09-02
 category: oracle
 src: cover.svg

@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (2) AOP와 프록시 - 내가 안 짠 코드가 왜 끼어드나
+title: Spring AOP와 프록시 정리 - 내가 안 짠 코드가 왜 끼어드나 (Spring 로드맵 2)
 date: 2026-04-20
 category: spring
 src: cover.svg
 tags: [spring, aop, proxy, 로드맵, 백엔드]
-summary: 트랜잭션도 보안도 캐시도 전부 AOP 위에 서 있다. 프록시 기반이라는 사실 하나만 제대로 알아도 Spring에서 겪는 이상 현상의 절반이 설명된다.
+summary: Spring AOP와 프록시 정리. 트랜잭션, 보안, 캐시가 전부 AOP 위에 서 있다. 프록시 기반이라는 사실 하나만 제대로 알아도 Spring에서 겪는 이상 현상의 절반이 설명된다.
 ---
 
 > Spring 공부 로드맵 시리즈 2편.

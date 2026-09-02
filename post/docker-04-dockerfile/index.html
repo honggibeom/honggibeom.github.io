@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Dockerfile의 모든 명령어를 용도별로 정리하고 COPY와 ADD, CMD와 ENTRYPOINT, ARG와 ENV의 차이를 짚는다. 빌드 컨텍스트와 .dockerignore, 레이어 캐시가 언제 깨지는지와 BuildKit 캐시 마운트까지 다룬다." />
+    <meta name="keywords" content="docker, dockerfile, buildkit, 빌드, 학습노트, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/docker-04-dockerfile" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4) | Honggibeom's blog" />
+    <meta property="og:description" content="Dockerfile의 모든 명령어를 용도별로 정리하고 COPY와 ADD, CMD와 ENTRYPOINT, ARG와 ENV의 차이를 짚는다. 빌드 컨텍스트와 .dockerignore, 레이어 캐시가 언제 깨지는지와 BuildKit 캐시 마운트까지 다룬다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/docker-04-dockerfile" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2025-12-28" />
+<meta property="article:section" content="Docker" />
+<meta property="article:tag" content="docker" />
+<meta property="article:tag" content="dockerfile" />
+<meta property="article:tag" content="buildkit" />
+<meta property="article:tag" content="빌드" />
+<meta property="article:tag" content="학습노트" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4)","description":"Dockerfile의 모든 명령어를 용도별로 정리하고 COPY와 ADD, CMD와 ENTRYPOINT, ARG와 ENV의 차이를 짚는다. 빌드 컨텍스트와 .dockerignore, 레이어 캐시가 언제 깨지는지와 BuildKit 캐시 마운트까지 다룬다.","datePublished":"2025-12-28","dateModified":"2025-12-28","keywords":"docker, dockerfile, buildkit, 빌드, 학습노트","image":"https://honggibeom.github.io/posts/assets/docker-04-dockerfile/cover.svg","url":"https://honggibeom.github.io/post/docker-04-dockerfile","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/docker-04-dockerfile"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Docker","item":"https://honggibeom.github.io/categories/docker"},{"@type":"ListItem","position":3,"name":"Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4)","item":"https://honggibeom.github.io/post/docker-04-dockerfile"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/docker">Docker</a></p>
+<h1>Dockerfile 명령어 완전 정리와 빌드 캐시 - COPY vs ADD, CMD vs ENTRYPOINT (도커 학습 노트 4)</h1>
+<p class="pr-meta">2025.12.28 · <a href="/tags/docker">#docker</a> <a href="/tags/dockerfile">#dockerfile</a> <a href="/tags/buildkit">#buildkit</a> <a href="/tags/%EB%B9%8C%EB%93%9C">#빌드</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
+<blockquote>
+<p>도커 학습 노트 시리즈 4편.</p>
+</blockquote>
+<h2>빌드할 때 실제로 무슨 일이 일어나나</h2>
+<pre><code class="language-bash">docker build -t myapp:1.0 .
+</code></pre>
+<p>마지막 <code>.</code>은 <strong>빌드 컨텍스트</strong>다. 파일 경로가 아니라 "이 디렉터리 전체를 빌더에게 통째로 보낸다"는 뜻이다.</p>
+<pre><code>[ 내 디렉터리 ]  ──(컨텍스트 전송)──▶ [ 빌더 ]
+                                        │
+                                   Dockerfile 한 줄씩 실행
+                                        │
+                                   레이어를 쌓아 이미지 생성
+</code></pre>
+<p>여기서 두 가지가 따라온다.</p>
+<ol>
+<li><strong>컨텍스트에 있는 것만 <code>COPY</code> 할 수 있다.</strong> <code>COPY ../shared/lib .</code>은 동작하지 않는다. 컨텍스트 밖이기 때문이다.</li>
+<li><strong>컨텍스트가 크면 빌드가 느려진다.</strong> <code>node_modules</code>, <code>.git</code>, 빌드 산출물이 그대로 들어가면 수백 MB를 매번 전송하게 된다.</li>
+</ol>
+<p>빌드 첫 줄에 뜨는 이 메시지가 컨텍스트 크기다.</p>
+<pre><code>=> transferring context: 312.45MB
+</code></pre>
+<p>이게 수백 MB면 <code>.dockerignore</code>부터 손봐야 한다.</p>
+<h3>.dockerignore</h3>
+<p><code>.gitignore</code>와 같은 문법이고, Dockerfile 옆에 둔다.</p>
+<pre><code class="language-gitignore">.git
+.gitignore
+node_modules
+dist
+build
+*.log
+.env
+.env.*
+coverage
+.DS_Store
+**/__pycache__
+*.pyc
+.venv
+Dockerfile*
+docker-compose*.yml
+README.md
+.vscode
+.idea
+</code></pre>
+<p>효과가 셋이다. <strong>컨텍스트 전송이 빨라지고, 캐시가 덜 깨지고, <code>.env</code>나 <code>.git</code> 같은 게 이미지에 실수로 들어가는 걸 막는다.</strong></p>
+<p>특히 <code>.git</code>은 반드시 넣는다. 브랜치 히스토리 전체가 이미지에 들어가면 크기도 문제지만, 과거 커밋에 있던 비밀값까지 같이 들어간다.</p>
+<h3>BuildKit</h3>
+<p>요즘 도커는 BuildKit이 기본 빌더다. 병렬 빌드, 캐시 마운트, 시크릿 마운트를 지원한다. 혹시 꺼져 있다면,</p>
+<pre><code class="language-bash">DOCKER_BUILDKIT=1 docker build -t myapp:1.0 .
+</code></pre>
+<p>또는 <code>daemon.json</code>에 <code>{"features": {"buildkit": true}}</code>.</p>
+<h2>명령어 전체</h2>
+<h3>FROM — 시작점</h3>
+<pre><code class="language-dockerfile">FROM node:20.11-alpine3.19
+FROM node:20.11-alpine3.19 AS builder    # 멀티스테이지용 이름
+FROM scratch                             # 완전히 빈 이미지
+</code></pre>
+<p>한 Dockerfile에 여러 번 나올 수 있고, 그때마다 새 스테이지가 시작된다(8편).</p>
+<h3>RUN — 빌드 시점에 명령 실행</h3>
+<pre><code class="language-dockerfile">RUN apk add --no-cache curl              # 셸 형식
+RUN ["apk", "add", "--no-cache", "curl"] # exec 형식
+</code></pre>
+<p><code>RUN</code> 하나가 레이어 하나다. 그래서 <strong>관련된 것끼리 묶는다.</strong></p>
+<pre><code class="language-dockerfile"># 나쁨 — 레이어 3개, 캐시 목록이 오래된 상태로 굳는다
+RUN apt-get update
+RUN apt-get install -y curl
+RUN rm -rf /var/lib/apt/lists/*
+
+# 좋음 — 레이어 1개, 정리까지 같은 레이어에서
+RUN apt-get update \
+ &#x26;&#x26; apt-get install -y --no-install-recommends curl ca-certificates \
+ &#x26;&#x26; rm -rf /var/lib/apt/lists/*
+</code></pre>
+<p><code>apt-get update</code>를 별도 레이어로 두면 안 되는 이유가 있다. 그 줄은 캐시되고 <code>install</code> 줄만 바뀌면, <strong>몇 달 전의 패키지 목록으로 설치를 시도해서</strong> 404가 난다. 이걸 캐시 무효화 문제(stale cache)라고 부른다. 항상 같은 <code>RUN</code>에 붙인다.</p>
+<p>알파인이면 <code>apk add --no-cache</code>, 데비안 계열이면 <code>--no-install-recommends</code> + 목록 삭제가 기본이다.</p>
+<h3>COPY / ADD — 파일 넣기</h3>
+<pre><code class="language-dockerfile">COPY package.json package-lock.json ./
+COPY src/ /app/src/
+COPY --chown=appuser:appgroup . /app
+COPY --from=builder /app/dist /usr/share/nginx/html   # 다른 스테이지에서
+</code></pre>
+<p><code>ADD</code>는 <code>COPY</code>에 두 기능이 더 있다.</p>
+<ul>
+<li>URL에서 다운로드</li>
+<li>로컬 tar 파일을 자동으로 압축 해제</li>
+</ul>
+<p>그런데 URL 다운로드는 검증도 캐시 제어도 어렵고, 자동 압축 해제는 의도치 않게 동작할 때가 있다. **기본은 <code>COPY</code>, tar를 풀어야 할 때만 <code>ADD</code>**로 두면 된다. 다운로드가 필요하면 <code>RUN curl</code>이 낫다(체크섬 검증을 붙일 수 있다).</p>
+<pre><code class="language-dockerfile"># 이렇게 하면 검증도 되고 같은 레이어에서 정리도 된다
+RUN curl -fsSL https://example.com/tool.tar.gz -o /tmp/tool.tar.gz \
+ &#x26;&#x26; echo "abc123...  /tmp/tool.tar.gz" | sha256sum -c - \
+ &#x26;&#x26; tar -xzf /tmp/tool.tar.gz -C /usr/local \
+ &#x26;&#x26; rm /tmp/tool.tar.gz
+</code></pre>
+<p><code>COPY</code>에서 자주 걸리는 점.</p>
+<ul>
+<li>소스 디렉터리를 지정하면 <strong>디렉터리 자체가 아니라 그 내용</strong>이 복사된다. <code>COPY src/ /app/</code>은 <code>/app/</code>에 src의 내용물이 들어간다.</li>
+<li>대상 경로가 <code>/</code>로 끝나면 디렉터리로 취급한다. 헷갈리면 항상 <code>/</code>를 붙인다.</li>
+<li>와일드카드는 셸이 아니라 Go의 패턴 매칭이라 동작이 조금 다르다.</li>
+</ul>
+<h3>WORKDIR — 작업 디렉터리</h3>
+<pre><code class="language-dockerfile">WORKDIR /app
+</code></pre>
+<p>없으면 만들어준다. <code>RUN cd /app</code>은 그 줄에서만 유효하고 다음 줄로 이어지지 않으므로, <strong>디렉터리 이동은 항상 <code>WORKDIR</code>로 한다.</strong></p>
+<h3>ENV / ARG — 변수</h3>
+<p>둘의 차이가 자주 헷갈린다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th><code>ARG</code></th><th><code>ENV</code></th></tr></thead><tbody><tr><td>유효 범위</td><td><strong>빌드 시점만</strong></td><td>빌드 + <strong>런타임</strong></td></tr><tr><td>이미지에 남는가</td><td>남지 않는다</td><td>남는다 (<code>docker inspect</code>에 보임)</td></tr><tr><td>외부에서 주입</td><td><code>--build-arg</code></td><td><code>docker run -e</code></td></tr></tbody></table>
+<pre><code class="language-dockerfile">ARG NODE_VERSION=20.11
+FROM node:${NODE_VERSION}-alpine       # FROM 앞의 ARG는 FROM에서만 쓸 수 있다
+
+ARG APP_ENV=production                  # FROM 뒤에 다시 선언해야 이후 줄에서 쓸 수 있다
+ENV NODE_ENV=${APP_ENV}
+ENV TZ=Asia/Seoul
+</code></pre>
+<p><code>FROM</code> 앞에 선언한 <code>ARG</code>는 스테이지 안에서 안 보인다. 필요하면 <code>FROM</code> 뒤에서 <strong>다시 선언</strong>해야 한다. 자주 걸리는 함정이다.</p>
+<p><strong><code>ARG</code>로 비밀값을 넘기면 안 된다.</strong> <code>docker history</code>에 그대로 남는다.</p>
+<pre><code class="language-bash">docker build --build-arg NPM_TOKEN=secret .   # 이미지 히스토리에 노출된다
+docker history myapp:1.0 --no-trunc | grep -i token
+</code></pre>
+<p>시크릿은 BuildKit의 <code>--secret</code>을 쓴다(아래에서 다룬다).</p>
+<h3>CMD / ENTRYPOINT — 무엇을 실행할 것인가</h3>
+<p>가장 헷갈리는 짝이다. 규칙은 두 줄로 요약된다.</p>
+<ul>
+<li><strong><code>ENTRYPOINT</code>는 실행할 프로그램</strong>, <strong><code>CMD</code>는 그 프로그램에 넘길 기본 인자</strong></li>
+<li><code>docker run</code> 뒤에 붙인 명령은 <strong><code>CMD</code>를 덮어쓴다.</strong> <code>ENTRYPOINT</code>는 <code>--entrypoint</code>로만 바뀐다</li>
+</ul>
+<p>조합을 표로 보면 명확하다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Dockerfile</th><th><code>docker run img</code></th><th><code>docker run img echo hi</code></th></tr></thead><tbody><tr><td><code>CMD ["node","app.js"]</code></td><td><code>node app.js</code></td><td><code>echo hi</code></td></tr><tr><td><code>ENTRYPOINT ["node"]</code></td><td><code>node</code></td><td><code>node echo hi</code></td></tr><tr><td><code>ENTRYPOINT ["node"]</code> + <code>CMD ["app.js"]</code></td><td><code>node app.js</code></td><td><code>node echo hi</code></td></tr></tbody></table>
+<p>그래서 용도가 갈린다.</p>
+<pre><code class="language-dockerfile"># 서비스 — 인자를 통째로 갈아끼울 수 있게
+CMD ["node", "server.js"]
+
+# CLI 도구처럼 쓸 이미지 — 프로그램은 고정, 인자만 받게
+ENTRYPOINT ["curl"]
+CMD ["--help"]
+# docker run myimg https://example.com  →  curl https://example.com
+</code></pre>
+<h4>exec 형식과 셸 형식</h4>
+<pre><code class="language-dockerfile">CMD ["node", "app.js"]     # exec 형식 — 앱이 PID 1
+CMD node app.js            # 셸 형식 — /bin/sh -c "node app.js", sh가 PID 1
+</code></pre>
+<p>3편에서 본 대로 셸 형식은 <strong>SIGTERM이 앱에 전달되지 않는다.</strong> 기본은 exec 형식이다.</p>
+<p>다만 exec 형식에서는 셸이 없으므로 환경변수 치환이나 파이프가 동작하지 않는다.</p>
+<pre><code class="language-dockerfile">CMD ["sh", "-c", "node app.js --port=$PORT"]   # 환경변수가 필요하면 명시적으로 sh
+</code></pre>
+<p>더 나은 방법은 진입 스크립트를 쓰되 마지막에 <code>exec</code>를 붙이는 것이다.</p>
+<pre><code class="language-bash">#!/bin/sh
+set -e
+# 마이그레이션 등 준비 작업
+python manage.py migrate
+# exec 로 넘겨야 PID 1 자리를 물려받아 시그널을 받는다
+exec "$@"
+</code></pre>
+<pre><code class="language-dockerfile">COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "manage.py", "runserver"]
+</code></pre>
+<p><code>exec "$@"</code>의 <code>exec</code>가 핵심이다. 이게 없으면 스크립트가 PID 1로 남아서 시그널을 삼킨다.</p>
+<h3>USER — 실행 유저</h3>
+<p>기본은 root다. <strong>컨테이너의 root는 호스트 root와 완전히 같지는 않지만, 그래도 root로 돌릴 이유가 없다.</strong></p>
+<pre><code class="language-dockerfile"># 데비안 계열
+RUN groupadd -r app &#x26;&#x26; useradd -r -g app -d /app -s /sbin/nologin app
+# 알파인
+RUN addgroup -S app &#x26;&#x26; adduser -S -G app app
+
+RUN chown -R app:app /app
+USER app
+</code></pre>
+<p><code>USER</code> 이후의 <code>RUN</code>, <code>CMD</code>, <code>ENTRYPOINT</code>가 그 유저로 실행된다. 순서가 중요하다. 패키지 설치는 <code>USER</code> 앞에, 애플리케이션 실행은 뒤에 둔다.</p>
+<p><strong>1024 미만 포트는 root가 아니면 바인딩할 수 없다.</strong> 그래서 비루트 컨테이너는 8080 같은 포트를 쓰고, 포트 매핑(<code>-p 80:8080</code>)으로 밖에서 80을 맞춘다.</p>
+<h3>EXPOSE — 문서화</h3>
+<pre><code class="language-dockerfile">EXPOSE 8080
+</code></pre>
+<p><strong>포트를 여는 게 아니다.</strong> "이 이미지는 8080을 쓴다"는 메타데이터일 뿐이다. 실제 공개는 <code>docker run -p</code>가 한다. <code>-P</code>(대문자)를 쓰면 <code>EXPOSE</code>된 포트를 랜덤 호스트 포트에 자동 매핑한다.</p>
+<h3>VOLUME — 마운트 지점 선언</h3>
+<pre><code class="language-dockerfile">VOLUME /var/lib/postgresql/data
+</code></pre>
+<p>이 경로에 아무것도 마운트하지 않고 컨테이너를 만들면 <strong>익명 볼륨이 자동 생성된다.</strong> 편해 보이지만 이름 없는 볼륨이 계속 쌓여 디스크를 먹는 원인이 되기도 한다. 애플리케이션 이미지에는 잘 쓰지 않고, DB 같은 이미지에서 실수 방지용으로 쓰는 편이다(5편).</p>
+<h3>HEALTHCHECK</h3>
+<pre><code class="language-dockerfile">HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+  CMD wget -qO- http://localhost:8080/health || exit 1
+
+HEALTHCHECK NONE    # 베이스 이미지의 헬스체크를 끄기
+</code></pre>
+<p>종료 코드 0은 healthy, 1은 unhealthy다. <code>--start-period</code>는 기동이 느린 앱(스프링 부트, JVM)에 꼭 필요하다. 그 시간 안의 실패는 재시도 횟수에 세지 않는다.</p>
+<h3>LABEL — 메타데이터</h3>
+<pre><code class="language-dockerfile">LABEL org.opencontainers.image.source="https://github.com/honggibeom/myapp" \
+      org.opencontainers.image.version="1.4.2" \
+      org.opencontainers.image.revision="a1b2c3d"
+</code></pre>
+<p>OCI 표준 라벨을 쓰면 GHCR이 저장소와 이미지를 자동으로 연결해준다. CI에서 커밋 SHA와 빌드 시각을 넣어두면 나중에 "지금 도는 이미지가 어느 커밋인지" 추적할 수 있다.</p>
+<h3>나머지</h3>
+<pre><code class="language-dockerfile">STOPSIGNAL SIGQUIT     # docker stop 시 보낼 시그널 (nginx는 SIGQUIT가 graceful)
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]   # 셸 형식 RUN이 쓸 셸 교체
+ONBUILD COPY . /app    # 이 이미지를 FROM 으로 쓰는 하위 빌드에서 실행 (거의 안 씀)
+</code></pre>
+<p><code>SHELL</code>로 <code>pipefail</code>을 켜두면 파이프 중간의 실패를 놓치지 않는다. 기본 <code>sh -c</code>는 마지막 명령의 종료 코드만 보기 때문에, <code>RUN curl ... | tar x</code> 에서 curl이 실패해도 빌드가 성공해버린다.</p>
+<h2>빌드 캐시</h2>
+<p>여기가 빌드 시간을 좌우한다.</p>
+<h3>캐시가 깨지는 규칙</h3>
+<ul>
+<li>각 명령을 순서대로 실행하면서, <strong>이전 레이어가 같고 명령도 같으면</strong> 캐시를 재사용한다</li>
+<li><strong>한 줄이 깨지면 그 아래는 전부 다시 실행된다</strong></li>
+<li><code>RUN</code>은 <strong>명령 문자열</strong>이 같은지만 본다. 문자열이 같으면 결과가 달라질 수 있어도 캐시를 쓴다 (<code>apt-get update</code> 문제의 원인)</li>
+<li><code>COPY</code>/<code>ADD</code>는 <strong>복사 대상 파일의 내용 체크섬</strong>을 본다. 내용이 바뀌면 캐시가 깨진다</li>
+</ul>
+<p>세 번째 규칙 때문에 강제로 다시 받고 싶을 때는 <code>--no-cache</code>를 쓴다.</p>
+<pre><code class="language-bash">docker build --no-cache -t myapp:1.0 .
+docker build --pull -t myapp:1.0 .     # 베이스 이미지도 최신으로 다시 받기
+</code></pre>
+<h3>순서를 바꾸는 것만으로 몇 분이 줄어든다</h3>
+<pre><code class="language-dockerfile"># 나쁨 — 소스 한 줄만 고쳐도 npm ci 를 다시 한다
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+RUN npm ci
+CMD ["node", "server.js"]
+</code></pre>
+<pre><code class="language-dockerfile"># 좋음 — 의존성 파일이 안 바뀌면 npm ci 는 캐시에서
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+CMD ["node", "server.js"]
+</code></pre>
+<p>원칙은 하나다. <strong>자주 바뀌지 않는 것을 위에, 자주 바뀌는 것을 아래에.</strong> 소스 코드는 거의 항상 맨 아래다.</p>
+<p>같은 원칙이 다른 생태계에도 그대로 적용된다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>언어</th><th>먼저 복사할 파일</th><th>그다음 명령</th></tr></thead><tbody><tr><td>Node</td><td><code>package.json</code>, <code>package-lock.json</code></td><td><code>npm ci</code></td></tr><tr><td>Python</td><td><code>requirements.txt</code> 또는 <code>pyproject.toml</code>+<code>poetry.lock</code></td><td><code>pip install -r</code></td></tr><tr><td>Java (Gradle)</td><td><code>build.gradle</code>, <code>settings.gradle</code>, <code>gradle/</code></td><td><code>gradle dependencies</code></td></tr><tr><td>Java (Maven)</td><td><code>pom.xml</code></td><td><code>mvn -B dependency:go-offline</code></td></tr><tr><td>Go</td><td><code>go.mod</code>, <code>go.sum</code></td><td><code>go mod download</code></td></tr><tr><td>Rust</td><td><code>Cargo.toml</code>, <code>Cargo.lock</code></td><td>더미 <code>main.rs</code>로 의존성만 빌드</td></tr></tbody></table>
+<h3>BuildKit 캐시 마운트</h3>
+<p>의존성 캐시를 레이어에 넣지 않고 빌더에 보관한다. 이미지는 안 커지는데 재빌드는 빨라진다.</p>
+<pre><code class="language-dockerfile"># syntax=docker/dockerfile:1
+
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+</code></pre>
+<pre><code class="language-dockerfile">RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update &#x26;&#x26; apt-get install -y --no-install-recommends curl
+</code></pre>
+<pre><code class="language-dockerfile">RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B package -DskipTests
+</code></pre>
+<p>첫 줄의 <code># syntax=docker/dockerfile:1</code> 주석이 있어야 최신 문법이 활성화된다.</p>
+<h3>빌드 시크릿</h3>
+<p><code>ARG</code>로 토큰을 넘기면 이미지에 남는다고 했다. BuildKit의 <code>--secret</code>은 <strong>빌드 중에만 파일로 마운트되고 레이어에 남지 않는다.</strong></p>
+<pre><code class="language-dockerfile">RUN --mount=type=secret,id=npmtoken \
+    NPM_TOKEN=$(cat /run/secrets/npmtoken) npm ci
+</code></pre>
+<pre><code class="language-bash">docker build --secret id=npmtoken,src=./npm_token.txt -t myapp:1.0 .
+</code></pre>
+<p>사설 git 저장소를 받아야 하면 SSH 에이전트를 그대로 넘길 수도 있다.</p>
+<pre><code class="language-dockerfile">RUN --mount=type=ssh git clone git@github.com:org/private.git
+</code></pre>
+<pre><code class="language-bash">docker build --ssh default -t myapp:1.0 .
+</code></pre>
+<h3>캐시를 CI에서 공유하기</h3>
+<p>CI 러너는 매번 새 머신이라 로컬 캐시가 없다. 레지스트리에 캐시를 올려두고 받아 쓴다.</p>
+<pre><code class="language-bash">docker buildx build \
+  --cache-from type=registry,ref=ghcr.io/honggibeom/myapp:buildcache \
+  --cache-to   type=registry,ref=ghcr.io/honggibeom/myapp:buildcache,mode=max \
+  -t ghcr.io/honggibeom/myapp:1.4.2 --push .
+</code></pre>
+<p>GitHub Actions에서는 <code>type=gha</code>를 쓰면 더 간단하다.</p>
+<h2>실전 예제</h2>
+<h3>Node.js</h3>
+<pre><code class="language-dockerfile"># syntax=docker/dockerfile:1
+FROM node:20.11-alpine3.19
+
+ENV NODE_ENV=production TZ=Asia/Seoul
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+COPY . .
+
+RUN addgroup -S app &#x26;&#x26; adduser -S -G app app &#x26;&#x26; chown -R app:app /app
+USER app
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+  CMD wget -qO- http://localhost:8080/health || exit 1
+
+CMD ["node", "server.js"]
+</code></pre>
+<h3>Spring Boot</h3>
+<pre><code class="language-dockerfile"># syntax=docker/dockerfile:1
+FROM eclipse-temurin:21-jre-alpine
+
+RUN addgroup -S app &#x26;&#x26; adduser -S -G app app
+WORKDIR /app
+
+COPY build/libs/*.jar app.jar
+RUN chown -R app:app /app
+USER app
+
+EXPOSE 8080
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseContainerSupport"
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+</code></pre>
+<p><code>MaxRAMPercentage</code>를 지정하는 이유는 3편에서 본 대로다. 컨테이너 메모리 한도를 기준으로 힙을 잡게 한다.</p>
+<h3>Python</h3>
+<pre><code class="language-dockerfile"># syntax=docker/dockerfile:1
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update \
+ &#x26;&#x26; apt-get install -y --no-install-recommends libpq5 \
+ &#x26;&#x26; rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
+
+COPY . .
+
+RUN useradd -r -u 1001 app &#x26;&#x26; chown -R app:app /app
+USER app
+
+EXPOSE 8000
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:application"]
+</code></pre>
+<p><code>PYTHONUNBUFFERED=1</code>은 반드시 넣는다. 없으면 파이썬이 출력을 버퍼링해서 <strong><code>docker logs</code>에 로그가 한참 뒤에 몰려서 나온다.</strong></p>
+<h2>자주 하는 실수</h2>
+<ul>
+<li><strong><code>.dockerignore</code>가 없다</strong> — 컨텍스트가 수백 MB가 되고 캐시가 매번 깨진다</li>
+<li><strong><code>COPY . .</code>을 맨 위에 둔다</strong> — 의존성 설치 캐시가 항상 무효화된다</li>
+<li><strong><code>RUN apt-get update</code>를 따로 둔다</strong> — 오래된 패키지 목록으로 설치가 실패한다</li>
+<li><strong><code>CMD</code>를 셸 형식으로 쓴다</strong> — SIGTERM이 앱에 안 간다</li>
+<li><strong>비밀값을 <code>ARG</code>나 <code>COPY</code>로 넣는다</strong> — 히스토리와 레이어에 영구히 남는다</li>
+<li><strong>root로 실행한다</strong> — 사고 시 피해 범위가 커진다</li>
+<li><strong><code>EXPOSE</code>만 하고 포트가 열렸다고 생각한다</strong> — 실제 공개는 <code>-p</code>가 한다</li>
+<li><strong><code>latest</code> 베이스 이미지를 쓴다</strong> — 어제 되던 빌드가 오늘 깨진다</li>
+<li><strong>컨테이너 안에 로그 파일을 쌓는다</strong> — stdout으로 내보낸다</li>
+<li><strong><code>ENV</code>에 비밀값을 넣는다</strong> — <code>docker inspect</code>에 그대로 보인다</li>
+</ul>
+<h2>정리</h2>
+<p>이번 편에서 잡아야 할 것.</p>
+<ul>
+<li>빌드 컨텍스트는 통째로 전송된다. <code>.dockerignore</code>는 선택이 아니다</li>
+<li><code>COPY</code>가 기본, <code>ADD</code>는 tar 풀 때만, 다운로드는 <code>RUN curl</code> + 체크섬</li>
+<li><code>ENTRYPOINT</code>는 프로그램, <code>CMD</code>는 기본 인자. <code>docker run</code>의 인자는 <code>CMD</code>를 덮는다</li>
+<li>exec 형식(JSON 배열)이 기본. 진입 스크립트는 마지막에 <code>exec "$@"</code></li>
+<li><code>ARG</code>는 빌드 시점만, <code>ENV</code>는 런타임까지. 둘 다 비밀값을 담으면 안 된다</li>
+<li><code>FROM</code> 앞의 <code>ARG</code>는 스테이지 안에서 다시 선언해야 보인다</li>
+<li>캐시는 위에서 아래로 깨진다 → 의존성 파일 먼저, 소스는 마지막에</li>
+<li><code>RUN</code>은 문자열만 비교한다 → <code>apt-get update &#x26;&#x26; install</code>은 한 줄에</li>
+<li>BuildKit의 <code>--mount=type=cache</code>로 의존성 캐시를, <code>--secret</code>으로 토큰을 다룬다</li>
+<li><code>EXPOSE</code>는 문서일 뿐이고, <code>USER</code>로 비루트 실행을 기본으로 삼는다</li>
+</ul>
+<p>다음 편에서는 컨테이너를 지워도 데이터가 남게 하는 방법 — 볼륨과 바인드 마운트를 정리한다.</p>
+</article><section><h2>Docker의 다른 글</h2><ul class="pr-list"><li><a href="/post/docker-08-optimize-operate">도커 멀티스테이지 빌드, 보안, 배포와 트러블슈팅 (도커 학습 노트 8)</a><p>1GB짜리 이미지를 수십 MB로 줄이는 멀티스테이지 빌드, 비루트·읽기전용·시크릿 관리 같은 보안 기본기, GitHub Actions로 빌드해 배포하는 흐름, 그리고 증상별 트러블슈팅 순서를 정리하며 시리즈를 마무리한다.</p><span class="pr-meta">2026.02.24</span></li><li><a href="/post/docker-07-compose">Docker Compose 정리 - 여러 컨테이너를 파일 하나로 묶기 (도커 학습 노트 7)</a><p>여러 컨테이너를 파일 하나로 정의하는 Compose. 서비스 정의 필드 전체와 depends_on의 헬스체크 조건, 환경변수 치환과 .env, 프로파일과 여러 파일 병합으로 개발·운영 환경을 나누는 방법까지 정리한다.</p><span class="pr-meta">2026.02.06</span></li><li><a href="/post/docker-06-network">도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6)</a><p>컨테이너가 어떻게 네트워크를 갖는지, 포트 매핑이 실제로 무엇을 하는지, 컨테이너끼리 이름으로 통신하는 원리와 localhost 함정, 그리고 네트워크 문제를 디버깅하는 방법을 정리한다.</p><span class="pr-meta">2026.01.25</span></li><li><a href="/post/docker-05-volume-data">도커 볼륨과 바인드 마운트 정리 - 컨테이너 데이터를 지키는 법 (도커 학습 노트 5)</a><p>컨테이너를 지워도 데이터가 남게 하는 방법. 볼륨과 바인드 마운트와 tmpfs의 차이, node_modules가 사라지는 이유, UID 권한 문제, 볼륨 백업과 복원, DB 컨테이너 운영까지 정리한다.</p><span class="pr-meta">2026.01.09</span></li><li><a href="/post/docker-03-run-lifecycle">docker run 옵션과 컨테이너 생명주기, 리소스 제한 정리 (도커 학습 노트 3)</a><p>docker run의 옵션을 갈래별로 정리하고, 컨테이너 상태 전이와 종료 시그널·종료 코드, 재시작 정책, 로그와 exec, CPU·메모리 제한과 OOM까지 실행과 운영에 필요한 것들을 정리한다.</p><span class="pr-meta">2025.12.12</span></li><li><a href="/post/docker-02-image-registry">도커 이미지와 레이어, 태그, 레지스트리 정리 - latest의 함정까지 (도커 학습 노트 2)</a><p>이미지가 레이어로 쌓이는 구조와 Copy-on-Write, 다이제스트와 태그의 차이, latest의 함정, 베이스 이미지 선택 기준, 레지스트리 사용법과 멀티 아키텍처 이미지까지 정리한다.</p><span class="pr-meta">2025.11.26</span></li></ul></section></main></div>
+  </body>
+</html>

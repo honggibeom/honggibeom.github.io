@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지." />
+    <meta name="keywords" content="nextjs, astro, sveltekit, ssr, rsc, 프론트엔드, Frontend, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/buildtool-02-meta-frameworks" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식 | Honggibeom's blog" />
+    <meta property="og:description" content="Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/buildtool-02-meta-frameworks" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-08-29" />
+<meta property="article:section" content="Frontend" />
+<meta property="article:tag" content="nextjs" />
+<meta property="article:tag" content="astro" />
+<meta property="article:tag" content="sveltekit" />
+<meta property="article:tag" content="ssr" />
+<meta property="article:tag" content="rsc" />
+<meta property="article:tag" content="프론트엔드" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식","description":"Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지.","datePublished":"2026-08-29","dateModified":"2026-08-29","keywords":"nextjs, astro, sveltekit, ssr, rsc, 프론트엔드","image":"https://honggibeom.github.io/posts/assets/buildtool-02-meta-frameworks/cover.svg","url":"https://honggibeom.github.io/post/buildtool-02-meta-frameworks","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/buildtool-02-meta-frameworks"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Frontend","item":"https://honggibeom.github.io/categories/frontend"},{"@type":"ListItem","position":3,"name":"프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식","item":"https://honggibeom.github.io/post/buildtool-02-meta-frameworks"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/frontend">Frontend</a></p>
+<h1>프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식</h1>
+<p class="pr-meta">2026.08.29 · <a href="/tags/nextjs">#nextjs</a> <a href="/tags/astro">#astro</a> <a href="/tags/sveltekit">#sveltekit</a> <a href="/tags/ssr">#ssr</a> <a href="/tags/rsc">#rsc</a> <a href="/tags/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C">#프론트엔드</a></p>
+<blockquote>
+<p>프론트엔드 빌드 도구 시리즈 2편. 1편에서 빌드 도구 층을 봤다면, 이번엔 그 위에 얹히는 층이다.</p>
+</blockquote>
+<h2>왜 다시 서버로 갔나</h2>
+<p>2015년부터 한동안 방향은 명확했다. <strong>전부 클라이언트로 옮기자.</strong> 서버는 JSON만 주고, 화면은 브라우저에서 React가 그린다. 페이지 이동에 새로고침이 없고, 백엔드와 프론트엔드가 깔끔하게 분리된다.</p>
+<p>그런데 대가가 따라왔다.</p>
+<ul>
+<li><strong>첫 화면이 늦다.</strong> HTML은 <code>&#x3C;div id="root">&#x3C;/div></code> 한 줄이고, JS 번들을 전부 받아서 실행해야 뭔가 보인다</li>
+<li><strong>번들이 계속 커진다.</strong> 기능을 넣을수록 사용자가 받아야 할 JS가 늘어난다</li>
+<li><strong>SEO와 공유가 곤란하다.</strong> 크롤러와 링크 미리보기가 빈 HTML을 본다</li>
+<li><strong>데이터 폭포가 생긴다.</strong> JS 로드 → 렌더 → API 요청 → 다시 렌더. 요청이 컴포넌트 안에 있으면 이게 중첩된다</li>
+<li><strong>느린 기기에서 특히 나쁘다.</strong> JS 파싱과 실행은 CPU를 쓴다. 저가 안드로이드에서 체감 차이가 크다</li>
+</ul>
+<p>메타 프레임워크는 이 문제들에 대한 답으로 나왔다. **"서버에서 할 수 있는 건 서버에서 하자"**가 공통된 방향이고, 프레임워크마다 그 방법이 다르다. 그 차이를 이해하는 게 이 글의 목적이다.</p>
+<h2>렌더링 방식 사전</h2>
+<p>이름이 많아 보이지만 축은 두 개뿐이다. <strong>HTML을 언제 만드는가</strong>, 그리고 <strong>만든 뒤 JS로 무엇을 하는가</strong>.</p>
+<h3>CSR (Client-Side Rendering)</h3>
+<pre><code>서버 → 빈 HTML + JS 번들
+브라우저 → JS 실행 → DOM 생성 → API 호출 → 화면
+</code></pre>
+<p>전통적인 SPA다. CRA로 만든 앱, 그리고 이 블로그가 여기 해당한다. 서버가 필요 없어서 정적 호스팅(GitHub Pages 같은)에 올릴 수 있다는 게 가장 큰 장점이다.</p>
+<h3>SSR (Server-Side Rendering)</h3>
+<pre><code>서버 → 요청마다 컴포넌트 실행 → 완성된 HTML
+브라우저 → HTML 즉시 표시 → JS 받아서 하이드레이션 → 인터랙션 가능
+</code></pre>
+<p>첫 화면이 빠르고 SEO가 된다. 대신 요청마다 서버가 렌더링하므로 <strong>서버가 필요하고 비용이 든다.</strong></p>
+<h3>SSG (Static Site Generation)</h3>
+<pre><code>빌드 시점 → 모든 페이지의 HTML을 미리 생성
+요청 시    → 그냥 파일 전달 (CDN)
+</code></pre>
+<p>가장 빠르고 가장 싸다. 대신 <strong>내용이 바뀌면 다시 빌드해야 한다.</strong> 페이지가 10만 개면 빌드가 몇십 분씩 걸린다.</p>
+<h3>ISR (Incremental Static Regeneration)</h3>
+<p>SSG와 SSR의 절충. 정적으로 만들어두되 일정 시간이 지나면 백그라운드에서 다시 만든다. 사용자는 항상 캐시된 페이지를 즉시 받고, 갱신은 뒤에서 일어난다. 커머스 상품 페이지처럼 <strong>자주 바뀌지만 실시간일 필요는 없는</strong> 것에 맞는다.</p>
+<h3>스트리밍 SSR</h3>
+<p>SSR의 문제는 <strong>가장 느린 데이터 하나가 전체를 막는다</strong>는 것이다. 페이지에 추천 목록이 있고 그게 2초 걸리면, 나머지가 준비돼도 2초 뒤에 HTML이 나간다.</p>
+<p>스트리밍은 준비된 부분부터 먼저 보낸다.</p>
+<pre><code>0.1초: 헤더, 사이드바, 본문 HTML 전송 + 추천 자리에 스켈레톤
+2.0초: 추천 목록 HTML을 이어서 전송 → 스켈레톤 자리에 채워짐
+</code></pre>
+<p>React의 <code>&#x3C;Suspense></code>가 이 경계를 표시하는 도구다.</p>
+<h3>PPR (Partial Pre-Rendering)</h3>
+<p>한 페이지 안에서 <strong>정적인 부분과 동적인 부분을 나눈다.</strong> 껍데기(레이아웃, 네비게이션, 상품 설명)는 빌드 시점에 만들어 CDN에서 즉시 주고, 개인화된 부분(장바구니 개수, 추천)만 요청 시점에 스트리밍으로 채운다.</p>
+<p>"이 페이지는 정적이냐 동적이냐"라는 이분법을 없앤 것이 핵심이다. Next.js가 이 방향을 Cache Components라는 이름으로 정리했다.</p>
+<h3>아일랜드 (Islands)</h3>
+<p>Astro가 대중화한 방식이다. <strong>기본은 순수 HTML, 인터랙션이 필요한 컴포넌트만 섬처럼 따로 하이드레이션한다.</strong></p>
+<pre><code>[ 정적 HTML — JS 0 ]
+   헤더 · 본문 · 푸터
+
+   ┌──────────────┐  ← 이 섬만 JS 를 받고 하이드레이션
+   │ 검색 자동완성 │
+   └──────────────┘
+
+   ┌──────────────┐  ← 이 섬은 화면에 보일 때 로드
+   │ 댓글 위젯     │
+   └──────────────┘
+</code></pre>
+<p>블로그나 문서 사이트는 화면의 95%가 그냥 텍스트다. 그 95%에 JS를 보낼 이유가 없다는 게 아이디어다. 섬마다 로드 시점을 따로 정할 수 있다(즉시 / 유휴 시간 / 화면에 보일 때 / 특정 화면 크기에서만).</p>
+<h3>리주머빌리티 (Resumability)</h3>
+<p>Qwik의 방식이고, 아일랜드보다 한 걸음 더 간다. 아일랜드도 각 섬은 결국 하이드레이션을 한다. Qwik은 <strong>하이드레이션 자체를 없앤다.</strong></p>
+<p>서버가 렌더링하면서 <strong>실행 상태와 이벤트 리스너 정보를 HTML 안에 직렬화해 넣는다.</strong> 브라우저는 아무것도 재실행하지 않고, 사용자가 버튼을 누르는 순간에야 그 버튼에 필요한 코드 조각만 받아 온다. 이론상 초기 JS가 거의 0이다.</p>
+<h3>정리</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>방식</th><th>HTML 생성 시점</th><th>초기 JS</th><th>서버 필요</th><th>잘 맞는 곳</th></tr></thead><tbody><tr><td>CSR</td><td>브라우저</td><td>전체</td><td>아니오</td><td>로그인 뒤 대시보드, 사내 툴</td></tr><tr><td>SSG</td><td>빌드 시점</td><td>전체(하이드레이션)</td><td>아니오</td><td>문서, 마케팅 페이지</td></tr><tr><td>SSR</td><td>요청마다</td><td>전체(하이드레이션)</td><td>예</td><td>개인화된 콘텐츠</td></tr><tr><td>ISR</td><td>빌드 + 주기적 갱신</td><td>전체</td><td>예</td><td>커머스 상품 목록</td></tr><tr><td>스트리밍 SSR</td><td>요청마다(분할 전송)</td><td>전체</td><td>예</td><td>느린 데이터가 섞인 페이지</td></tr><tr><td>PPR</td><td>빌드 + 요청 시 채움</td><td>전체</td><td>예</td><td>껍데기는 같고 일부만 개인화</td></tr><tr><td>아일랜드</td><td>빌드 또는 요청</td><td><strong>섬만</strong></td><td>선택</td><td>콘텐츠 중심 사이트</td></tr><tr><td>리주머빌리티</td><td>요청</td><td><strong>거의 0</strong></td><td>예</td><td>읽기 위주, 인터랙션 드문 사이트</td></tr></tbody></table>
+<h2>하이드레이션이라는 비용</h2>
+<p>SSR/SSG에서 계속 나오는 이 단어를 짚고 가야 한다.</p>
+<p>서버가 HTML을 만들어 보내면 화면은 보인다. 하지만 그건 <strong>그림</strong>이다. 버튼을 눌러도 아무 일이 없다. 이벤트 핸들러가 붙어 있지 않기 때문이다.</p>
+<p>그래서 브라우저가 JS를 받아서 <strong>같은 컴포넌트 트리를 한 번 더 만들고, 서버가 만든 DOM과 맞춰본 뒤, 이벤트 핸들러를 붙인다.</strong> 이게 하이드레이션이다.</p>
+<p>여기서 두 가지 문제가 나온다.</p>
+<ol>
+<li><strong>같은 일을 두 번 한다.</strong> 서버에서 렌더링하고 클라이언트에서 또 렌더링한다</li>
+<li><strong>"보이는데 안 눌리는" 구간이 생긴다.</strong> HTML이 뜬 시점부터 하이드레이션이 끝날 때까지, 사용자는 다 된 화면을 보면서 아무것도 못 한다. 이걸 <strong>uncanny valley</strong>라고 부른다</li>
+</ol>
+<p>게다가 하이드레이션을 하려면 <strong>결국 그 컴포넌트의 JS를 전부 받아야 한다.</strong> SSR을 붙여도 번들 크기 문제는 그대로 남는다는 뜻이다.</p>
+<p>2020년대 프레임워크 경쟁의 상당 부분이 <strong>이 비용을 어떻게 줄이느냐</strong>의 싸움이다. 아일랜드는 하이드레이션 범위를 줄이고, 리주머빌리티는 아예 없애고, RSC는 클라이언트로 갈 코드 자체를 줄인다.</p>
+<h2>RSC — SSR과 뭐가 다른가</h2>
+<p>React Server Components는 가장 많이 오해받는 개념이다. <strong>"서버에서 렌더링한다"는 점이 SSR과 같아 보이지만 목적이 다르다.</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>SSR</th><th>RSC</th></tr></thead><tbody><tr><td>목적</td><td>첫 화면 HTML을 빨리 주기</td><td><strong>클라이언트 번들에서 코드를 빼기</strong></td></tr><tr><td>컴포넌트 JS</td><td>클라이언트로 간다 (하이드레이션 필요)</td><td><strong>클라이언트로 가지 않는다</strong></td></tr><tr><td>실행 시점</td><td>요청마다 서버에서 1회 + 클라이언트에서 1회</td><td><strong>서버에서만</strong></td></tr><tr><td>상태·이벤트</td><td>가질 수 있다</td><td>가질 수 없다</td></tr></tbody></table>
+<p>서버 컴포넌트는 서버에서 실행되고, 그 <strong>결과</strong>(직렬화된 UI 트리)만 클라이언트로 간다. 컴포넌트 코드 자체는 번들에 들어가지 않는다.</p>
+<pre><code class="language-jsx">// 서버 컴포넌트 — 기본값 (Next.js App Router)
+// 이 파일의 코드도, markdown 라이브러리도 클라이언트 번들에 안 들어간다
+import { renderMarkdown } from "heavy-markdown-lib";
+
+export default async function Post({ id }) {
+  const post = await db.post.findById(id);   // DB 를 직접 호출한다
+  return &#x3C;article>{renderMarkdown(post.body)}&#x3C;/article>;
+}
+</code></pre>
+<pre><code class="language-jsx">"use client";   // 여기서부터 클라이언트. 이 경계 아래는 번들에 들어간다
+
+export function LikeButton({ initial }) {
+  const [n, setN] = useState(initial);
+  return &#x3C;button onClick={() => setN(n + 1)}>{n}&#x3C;/button>;
+}
+</code></pre>
+<p><code>"use client"</code>가 <strong>경계선</strong>이다. 그 위는 서버, 아래는 클라이언트. 무거운 라이브러리(마크다운 파서, 날짜 포맷터, 구문 강조기)를 서버 쪽에 두면 사용자는 그걸 다운로드하지 않는다.</p>
+<p>대가도 분명하다. 서버와 클라이언트의 경계를 늘 의식해야 하고(<code>useState</code>를 쓰려면 <code>"use client"</code>, 그러면 그 아래 전부가 번들에 들어간다), 서버 런타임이 필요하고, 디버깅이 어려워진다. <strong>2026년 현재 RSC는 표준이 아니라 React 진영의 한 선택지다.</strong> 아래에서 보듯 그 반대 방향으로 간 프레임워크도 있다.</p>
+<h2>프레임워크별로</h2>
+<h3>Next.js — 사실상의 기본값</h3>
+<p>2026년 8월 기준 최신은 <strong>16.3</strong>이고, 메이저 16은 2025년 10월에 나왔다.</p>
+<ul>
+<li><strong>Turbopack이 dev/build 모두 기본 번들러</strong>가 됐다. webpack으로 돌아가려면 <code>--webpack</code></li>
+<li><strong>Cache Components</strong> — <code>"use cache"</code> 지시자 기반의 새 캐싱 모델. 예전 App Router의 암묵적 캐싱이 혼란스러웠던 걸 정리해서, <strong>기본은 전부 요청 시점 실행이고 캐싱은 명시적으로 opt-in</strong>하는 방향으로 뒤집었다. 실험적이던 PPR 플래그는 이 모델로 흡수되며 제거됐다</li>
+<li><code>middleware.ts</code>가 <code>proxy.ts</code>로 이름이 바뀌었다(기존은 deprecated)</li>
+<li>React 19.2 기반. View Transitions, <code>&#x3C;Activity></code>, <code>useEffectEvent</code> 사용 가능</li>
+<li><code>next lint</code>가 제거됐다. ESLint나 Biome을 직접 쓴다</li>
+</ul>
+<p><strong>가장 강한 것</strong>: 필요한 렌더링 방식이 전부 있고(SSG/SSR/ISR/PPR), 생태계와 채용 시장이 가장 크고, Vercel 배포가 매끄럽다.</p>
+<p><strong>약한 것</strong>: 복잡도. 캐싱 모델이 버전마다 바뀌어서 "이게 지금 캐시되는 건가"를 계속 확인하게 된다. Vercel 밖에 배포하면 손이 더 간다.</p>
+<h3>Nuxt — Vue 진영의 Next.js</h3>
+<p><strong>4.5</strong>가 최신(2026년 7월)이고, Nuxt 3는 2026년 7월 말로 지원이 끝났다.</p>
+<ul>
+<li>내부 빌드는 <strong>Vite 8</strong>(Rolldown 기반). Rspack도 선택 가능</li>
+<li><strong>Nitro</strong>가 특징이다. Nuxt와 별개로 존재하는 서버 엔진인데, 같은 코드를 Node·Cloudflare Workers·Vercel·Deno 등 여러 배포 타깃으로 어댑터만 바꿔서 내보낸다. 배포처에 덜 묶인다는 게 Next.js와 비교되는 지점이다</li>
+<li>라우트 단위 하이브리드 렌더링(이 경로는 정적, 저 경로는 SSR)이 설정 한 곳에서 된다</li>
+</ul>
+<p><strong>가장 강한 것</strong>: 자동 임포트와 파일 기반 규칙이 촘촘해서 보일러플레이트가 적다. 배포 유연성.</p>
+<h3>SvelteKit — 컴파일러가 런타임을 지운다</h3>
+<p>SvelteKit 2.7x / Svelte 5.5x가 현재 라인이다. Svelte 6는 아직 없다.</p>
+<p>Svelte의 접근은 다르다. <strong>가상 DOM이 없다.</strong> 컴파일 시점에 "이 값이 바뀌면 이 DOM 노드를 이렇게 고친다"는 코드를 직접 생성한다. 그래서 런타임으로 딸려가는 프레임워크 코드가 적고 번들이 작다.</p>
+<p>Svelte 5의 <strong>runes</strong>(<code>$state</code>, <code>$derived</code>, <code>$effect</code>)가 반응성 모델을 명시적으로 바꿨고, 이제 이게 표준이다.</p>
+<p><strong>가장 강한 것</strong>: 번들 크기와 코드량. 같은 화면을 만들 때 쓰는 줄 수가 눈에 띄게 적다.</p>
+<p><strong>약한 것</strong>: 생태계 규모와 채용 시장이 React보다 작다.</p>
+<h3>Astro — 콘텐츠 사이트라면 여기부터</h3>
+<p><strong>Astro 6</strong>이 2026년 3월에 나왔다. Vite 위에서 돈다.</p>
+<ul>
+<li><strong>아일랜드</strong>가 기본 모델이다. 기본 출력은 JS 0</li>
+<li><strong>React, Vue, Svelte, Solid 컴포넌트를 한 프로젝트에서 섞어 쓸 수 있다.</strong> 각 섬이 자기 프레임워크를 쓴다</li>
+<li><strong>Server Islands</strong> — 정적 껍데기 안에 서버 렌더링된 섬을 스트리밍으로 끼워 넣는다. 페이지는 CDN에서 즉시 오고 개인화 영역만 뒤늦게 채워진다</li>
+<li><strong>Content Layer</strong> — 마크다운/CMS/API를 같은 방식으로 다루는 콘텐츠 API. Astro 6부터는 이게 유일한 방식이고 예전 방식은 제거됐다</li>
+</ul>
+<p><strong>가장 강한 것</strong>: 블로그, 문서, 마케팅 사이트. State of JS 2025에서 메타 프레임워크 중 만족도 1위였다.</p>
+<p><strong>약한 것</strong>: 화면 대부분이 인터랙티브한 앱(대시보드, 에디터)에는 안 맞는다. 그건 애초에 대상이 아니다.</p>
+<h3>React Router v7 — Remix가 여기로 왔다</h3>
+<p>Remix와 React Router가 합쳐졌다. <strong>Remix의 프레임워크 기능이 React Router v7에 흡수됐고</strong>, 지금 React Router v7이 그 자리를 잇는다. Vite 기반이다.</p>
+<p>React 팀이 CRA 대신 권하는 두 선택지 중 하나가 이것이다. Next.js보다 얇고, 웹 표준(<code>Request</code>/<code>Response</code>/<code>FormData</code>)에 가깝게 설계돼 있다.</p>
+<p>여기서 흥미로운 사건이 하나 있다. <strong>Remix v3는 React를 버렸다.</strong> Preact 포크 위에서 훅 대신 명령형 API를 쓰는, 웹 표준 중심의 완전히 새로운 것으로 다시 쓰이고 있다(2026년 8월 기준 아직 정식 출시는 아니다). RSC로 몰려가는 흐름에서 정반대로 걸어나간 유일한 사례라 눈여겨볼 만하다.</p>
+<h3>TanStack Start — 클라이언트 우선의 대안</h3>
+<p>TanStack Router/Query 팀이 만든 풀스택 React 프레임워크. Vite 기반이고, 2025년 9월 1.0 RC를 거쳐 현재 1.x가 활발히 나오고 있다.</p>
+<p>특징은 <strong>타입 안전성</strong>과 <strong>클라이언트 우선</strong> 태도다. 서버 함수(isomorphic server functions)를 쓰되, 기본 사고방식은 SPA에 가깝다. RSC 지원은 개발 중이다.</p>
+<p>Next.js의 서버 중심 복잡도에 피로를 느낀 쪽에서 관심이 크다. State of React 2025에서도 "Next.js의 클라이언트 우선 대안"으로 자주 언급됐다.</p>
+<h3>Qwik — 하이드레이션을 없앤다</h3>
+<p>앞에서 설명한 리주머빌리티가 이 프레임워크의 전부다. 1.x가 프로덕션 라인이고 2.0이 베타다.</p>
+<p>접근이 급진적인 만큼 생태계는 작다. 다만 "하이드레이션이 정말 필요한가"라는 질문을 던졌다는 점에서 다른 프레임워크에도 영향을 줬다.</p>
+<h3>SolidStart — Vite 8 위에서 다시 태어났다</h3>
+<p><strong>SolidStart 2가 2026년 8월에 정식 출시됐다.</strong> 1년 넘게 25번의 알파/베타/RC를 거쳤다.</p>
+<p>주목할 점은 <strong>Vite 8의 Environment API 위에 직접 올라탔다</strong>는 것이다(예전에는 Vinxi라는 추상화 계층을 거쳤다). 1편에서 말한 Environment API를 메타 프레임워크들이 기다린 이유가 이것이다. SSR·워커·엣지 같은 여러 실행 환경을 프레임워크마다 따로 만들지 않고 Vite에 맡길 수 있게 된다.</p>
+<p>Solid 자체는 <strong>JSX를 쓰되 가상 DOM이 없고 세밀한 반응성(fine-grained reactivity)으로 동작한다.</strong> React 문법에 Svelte에 가까운 성능이라고 보면 대체로 맞는다.</p>
+<h3>Angular — 조용히 많이 바뀌었다</h3>
+<p><strong>v22</strong>가 2026년 6월에 나왔다.</p>
+<ul>
+<li><strong>zoneless가 기본</strong>이다(v21부터). Zone.js 없이 signals로 변경 감지를 한다. v22에서는 OnPush가 기본 전략이 됐다</li>
+<li><strong>Signal Forms</strong>와 <code>resource</code>/<code>httpResource</code>가 정식 기능이 됐다</li>
+<li>빌드는 <strong>esbuild 기반</strong>이고, 테스트 러너 기본값이 Karma/Jasmine에서 <strong>Vitest</strong>로 바뀌었다. webpack 지원은 deprecated</li>
+</ul>
+<p>"Angular는 무겁고 옛날 것"이라는 인상이 있다면 최근 몇 년을 안 본 것이다. 대규모 조직에서 DI·테스트·구조가 강제되는 게 장점인 상황이 분명히 있다.</p>
+<h3>Vue — Vapor Mode는 아직 RC</h3>
+<p>Vue는 3.5.x가 안정 버전이고, <strong>Vapor Mode가 들어가는 3.6은 아직 RC</strong>다.</p>
+<p>Vapor Mode는 컴파일된 컴포넌트에서 가상 DOM을 걷어내는 것이다. 방향이 Svelte와 같다. 다만 생태계(Nuxt, Vue Router, Pinia)가 따라와야 실제로 쓸 수 있다.</p>
+<h3>그 밖에</h3>
+<ul>
+<li><strong>RedwoodSDK</strong> — Cloudflare Workers 전용 React 프레임워크. RSC 우선이고 D1/R2/Durable Objects를 그대로 쓴다</li>
+<li><strong>Waku</strong> — RSC를 최소한으로 체험해보기 위한 가벼운 React 프레임워크</li>
+</ul>
+<h2>한 장으로</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>프레임워크</th><th>버전(2026-08)</th><th>기반 언어/뷰</th><th>빌드 도구</th><th>주 렌더링</th></tr></thead><tbody><tr><td>Next.js</td><td>16.3</td><td>React</td><td>Turbopack</td><td>RSC + SSR/ISR/PPR</td></tr><tr><td>Nuxt</td><td>4.5</td><td>Vue</td><td>Vite 8 + Nitro</td><td>SSR/SSG 하이브리드</td></tr><tr><td>SvelteKit</td><td>2.7x (Svelte 5)</td><td>Svelte</td><td>Vite</td><td>SSR/SSG/CSR</td></tr><tr><td>Astro</td><td>6</td><td>무관(섞어 씀)</td><td>Vite</td><td>아일랜드 + SSG/SSR</td></tr><tr><td>React Router</td><td>v7</td><td>React</td><td>Vite</td><td>SSR/SSG/SPA</td></tr><tr><td>TanStack Start</td><td>1.x</td><td>React</td><td>Vite</td><td>SPA 우선 + 서버 함수</td></tr><tr><td>Qwik</td><td>1.x (2.0 베타)</td><td>Qwik</td><td>Vite</td><td>리주머빌리티</td></tr><tr><td>SolidStart</td><td>2</td><td>Solid</td><td>Vite 8</td><td>SSR/SSG/CSR</td></tr><tr><td>Angular</td><td>v22</td><td>Angular</td><td>esbuild</td><td>SSR/SSG</td></tr></tbody></table>
+<p><strong>빌드 도구 칸을 보면 1편이 왜 필요했는지가 보인다.</strong> Turbopack을 쓰는 Next.js를 빼면 전부 Vite다.</p>
+<h2>무엇을 고를 것인가</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>만들려는 것</th><th>선택</th></tr></thead><tbody><tr><td>블로그, 문서, 랜딩 페이지</td><td><strong>Astro</strong> — JS를 거의 안 보낸다</td></tr><tr><td>SEO가 중요한 서비스 (커머스, 미디어)</td><td><strong>Next.js</strong> / Nuxt — ISR·PPR이 여기서 값을 한다</td></tr><tr><td>로그인 뒤 대시보드, 사내 관리 도구</td><td><strong>Vite + React Router</strong>(SPA) 또는 TanStack Start. SEO가 필요 없으면 SSR도 필요 없다</td></tr><tr><td>Vue를 쓴다</td><td><strong>Nuxt</strong></td></tr><tr><td>번들 크기가 최우선</td><td><strong>SvelteKit</strong></td></tr><tr><td>큰 조직, 긴 수명, 강한 규약</td><td><strong>Angular</strong></td></tr><tr><td>정적 호스팅(GitHub Pages 등)만 가능</td><td>SSG 또는 그냥 SPA</td></tr></tbody></table>
+<p>한 가지만 덧붙이면, <strong>SSR은 공짜가 아니다.</strong> 서버가 늘고, 캐싱 전략을 설계해야 하고, "이 코드가 서버에서 도는가 브라우저에서 도는가"를 늘 신경 써야 하고, 배포가 복잡해진다. <strong>SEO도 필요 없고 첫 화면이 0.5초 늦어도 되는 사내 도구라면 SPA가 더 나은 선택이다.</strong> 도구의 유행과 내 요구사항은 다른 문제다.</p>
+<h2>2026년의 분위기</h2>
+<p>State of JS 2025와 State of React 2025의 결과가 흥미롭다.</p>
+<ul>
+<li><strong>Next.js는 사용률 1위지만 만족도에서는 밀린다.</strong> 만족도 1위는 Astro였다</li>
+<li>가장 많이 나온 불만이 **"과도한 복잡도"**였다</li>
+<li>그런데 <strong>실제 프로덕션에서는 여전히 SPA가 SSR 앱보다 많다</strong></li>
+</ul>
+<p>정리하면 이렇다. <strong>프레임워크 쪽의 혁신은 서버 방향으로 몰려 있지만, 현장은 그만큼 옮겨가지 않았다.</strong> 그리고 그 간극에서 두 가지 반작용이 나왔다. 하나는 "JS를 최소한만 보내자"는 Astro 계열, 다른 하나는 "그냥 SPA로 두되 타입과 데이터만 잘 챙기자"는 TanStack Start 계열이다.</p>
+<p>유행을 따라가는 것보다 <strong>내가 만드는 게 어느 칸에 속하는지</strong>를 정하는 게 먼저다.</p>
+<h2>이 블로그는 왜 그냥 Vite + React인가</h2>
+<p>마지막으로 자기 사례를 하나 붙인다. 이 블로그는 메타 프레임워크를 안 쓴다. Vite + React + React Router, 순수 SPA다. 마크다운을 클라이언트에서 파싱해서 그린다. 이유가 셋이다.</p>
+<ul>
+<li><strong>GitHub Pages에 올린다.</strong> 정적 호스팅이라 SSR을 돌릴 서버가 없다</li>
+<li><strong>개인 블로그라 SEO 요구가 낮다.</strong> 검색 유입으로 먹고사는 사이트가 아니다</li>
+<li><strong>다른 데모 앱(nearby, 딥페이크 탐지)이 한 저장소에 같이 있다.</strong> 라우팅 구조가 프레임워크 규칙에 잘 안 맞는다</li>
+</ul>
+<p>솔직히 말하면 <strong>글만 놓고 보면 Astro가 정답에 가깝다.</strong> 마크다운을 빌드 시점에 HTML로 바꿔서 JS 없이 내보내면 지금보다 훨씬 빠르고 SEO도 좋아진다. 지금 구조에서는 글 하나 읽자고 React와 마크다운 파서를 전부 받아야 한다.</p>
+<p>그런데도 안 옮긴 이유는, 이 저장소가 블로그이면서 동시에 <strong>React 앱 여러 개를 얹은 포트폴리오</strong>이기 때문이다. 요구사항이 두 개면 최적해도 두 개다. 이런 판단을 하려면 결국 앞의 표들이 머릿속에 있어야 한다.</p>
+<h2>정리</h2>
+<ul>
+<li>SPA의 대가(첫 화면, 번들 크기, SEO, 데이터 폭포)를 해결하려고 프레임워크가 서버로 갔다</li>
+<li>축은 둘이다 — <strong>HTML을 언제 만드는가</strong>, <strong>만든 뒤 JS로 무엇을 하는가</strong></li>
+<li><strong>하이드레이션</strong>은 서버가 만든 HTML에 이벤트를 붙이는 과정이고, 같은 일을 두 번 하며 "보이는데 안 눌리는" 구간을 만든다</li>
+<li>아일랜드는 하이드레이션 범위를 줄이고, 리주머빌리티는 없애고, RSC는 클라이언트로 갈 코드를 줄인다</li>
+<li><strong>RSC ≠ SSR.</strong> SSR은 첫 화면을 빨리 주는 것, RSC는 번들에서 코드를 빼는 것이다</li>
+<li>Next.js는 기능이 가장 많고 복잡도도 가장 높다. Cache Components로 캐싱이 명시적 opt-in으로 바뀌었다</li>
+<li>콘텐츠 사이트는 Astro, Vue는 Nuxt, 번들 크기는 SvelteKit, 큰 조직은 Angular</li>
+<li><strong>Turbopack을 쓰는 Next.js를 빼면 거의 전부 Vite 위에 있다</strong></li>
+<li>SSR은 공짜가 아니다. SEO가 필요 없는 사내 도구라면 SPA가 더 낫다</li>
+<li>2026년 현재 혁신은 서버 쪽에 몰려 있지만 현장은 여전히 SPA가 많다</li>
+</ul>
+<h2>참고</h2>
+<ul>
+<li><a href="https://nextjs.org/blog/next-16">Next.js 16</a> · <a href="https://nextjs.org/blog/next-16-3">Next.js 16.3</a></li>
+<li><a href="https://nuxt.com/blog/v4-5">Nuxt 4.5</a></li>
+<li><a href="https://astro.build/blog/astro-6/">Astro 6</a></li>
+<li><a href="https://remix.run/blog/merging-remix-and-react-router">Remix와 React Router 병합</a></li>
+<li><a href="https://tanstack.com/blog/announcing-tanstack-start-v1">TanStack Start v1</a></li>
+<li><a href="https://qwik.dev/docs/concepts/resumable/">Qwik — Resumable</a></li>
+<li><a href="https://github.com/solidjs/solid-start/discussions/2281">SolidStart 2 릴리스</a></li>
+<li><a href="https://blog.angular.dev/announcing-angular-v22-c52bb83a4664">Angular v22</a></li>
+<li><a href="https://2025.stateofjs.com/en-US/">State of JS 2025</a> · <a href="https://2025.stateofreact.com/en-US/conclusion/">State of React 2025</a></li>
+</ul>
+</article><section><h2>Frontend의 다른 글</h2><ul class="pr-list"><li><a href="/post/cra-to-vite">CRA에서 Vite로, 블로그 빌드 환경을 갈아끼운 기록</a><p>react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. 무엇이 걸림돌이었고, 어떤 코드를 어떻게 고쳤는지 순서대로 정리한다.</p><span class="pr-meta">2026.08.31</span></li><li><a href="/post/buildtool-01-bundlers">프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도</a><p>CRA가 느렸던 이유와 Vite가 빠른 이유를 원리에서부터 정리한다. 네이티브 ESM 개발 서버, Go·Rust 툴체인, 증분 캐시라는 세 축으로 esbuild·SWC·Rollup·Rolldown·Rspack·Turbopack·Bun까지 2026년 현재의 지형을 그린다.</p><span class="pr-meta">2026.08.15</span></li></ul></section></main></div>
+  </body>
+</html>

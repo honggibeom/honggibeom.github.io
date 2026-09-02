@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Spring을 이해하는 데 실제로 쓰이는 자바 지식만 골랐다. 인터페이스 의존, 예외 체계, 프록시 패턴, 리플렉션과 애노테이션. Spring이 마법처럼 보이는 이유는 대부분 자바 쪽이 비어 있어서다." />
+    <meta name="keywords" content="spring, java, 객체지향, 로드맵, 백엔드, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/spring-00-java" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="Spring 전에 알아야 할 자바와 객체지향 - 인터페이스, 예외, 프록시 (Spring 로드맵 0) | Honggibeom's blog" />
+    <meta property="og:description" content="Spring을 이해하는 데 실제로 쓰이는 자바 지식만 골랐다. 인터페이스 의존, 예외 체계, 프록시 패턴, 리플렉션과 애노테이션. Spring이 마법처럼 보이는 이유는 대부분 자바 쪽이 비어 있어서다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/spring-00-java" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>Spring 전에 알아야 할 자바와 객체지향 - 인터페이스, 예외, 프록시 (Spring 로드맵 0) | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-Pk2sdH6G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-03-26" />
+<meta property="article:section" content="Spring" />
+<meta property="article:tag" content="spring" />
+<meta property="article:tag" content="java" />
+<meta property="article:tag" content="객체지향" />
+<meta property="article:tag" content="로드맵" />
+<meta property="article:tag" content="백엔드" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spring 전에 알아야 할 자바와 객체지향 - 인터페이스, 예외, 프록시 (Spring 로드맵 0)","description":"Spring을 이해하는 데 실제로 쓰이는 자바 지식만 골랐다. 인터페이스 의존, 예외 체계, 프록시 패턴, 리플렉션과 애노테이션. Spring이 마법처럼 보이는 이유는 대부분 자바 쪽이 비어 있어서다.","datePublished":"2026-03-26","dateModified":"2026-03-26","keywords":"spring, java, 객체지향, 로드맵, 백엔드","image":"https://honggibeom.github.io/posts/assets/spring-00-java/cover.svg","url":"https://honggibeom.github.io/post/spring-00-java","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/spring-00-java"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Spring","item":"https://honggibeom.github.io/categories/spring"},{"@type":"ListItem","position":3,"name":"Spring 전에 알아야 할 자바와 객체지향 - 인터페이스, 예외, 프록시 (Spring 로드맵 0)","item":"https://honggibeom.github.io/post/spring-00-java"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/spring">Spring</a></p>
+<h1>Spring 전에 알아야 할 자바와 객체지향 - 인터페이스, 예외, 프록시 (Spring 로드맵 0)</h1>
+<p class="pr-meta">2026.03.26 · <a href="/tags/spring">#spring</a> <a href="/tags/java">#java</a> <a href="/tags/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5">#객체지향</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
+<blockquote>
+<p>Spring 공부 로드맵 시리즈 0편. 전체 목차는 로드맵 글에 있다.</p>
+</blockquote>
+<h2>왜 자바부터인가</h2>
+<p>Spring을 쓰다 막히는 지점은 대부분 Spring 문제가 아니다. <code>@Transactional</code>이 안 먹는 건 프록시를 몰라서고, 순환 참조를 못 푸는 건 객체 그래프를 안 그려봐서고, 서비스 계층이 비대해지는 건 인터페이스로 나누는 감각이 없어서다.</p>
+<p>그래서 0단계에서는 <strong>Spring을 이해하는 데 실제로 동원되는 자바 지식만</strong> 추린다. 자바 전체를 다시 볼 필요는 없다.</p>
+<h2>1. 객체지향 설계 감각</h2>
+<ul>
+<li>클래스와 인터페이스, 상속과 조합 — 상속보다 조합을 먼저 고려하는 이유</li>
+<li>다형성: 같은 타입으로 다른 구현을 갈아끼운다는 것의 실제 의미</li>
+<li>인터페이스에 의존한다는 것 — 구현체를 바꿔도 호출부가 안 바뀌는 구조</li>
+<li>SOLID 중 최소한 SRP(단일 책임)와 DIP(의존 역전)</li>
+<li>패키지 구조로 계층을 나누는 감각 (controller / service / repository / domain)</li>
+</ul>
+<p>DI를 배우기 전에, <strong>Spring 없이</strong> 인터페이스와 생성자만으로 의존성을 뒤집는 코드를 한 번 짜보는 게 가장 효율이 좋다. 그러면 나중에 <code>@Autowired</code>가 무슨 수고를 대신해주는지가 바로 보인다.</p>
+<h2>2. 예외 체계</h2>
+<ul>
+<li><code>Error</code> / <code>Exception</code> / <code>RuntimeException</code>의 계층</li>
+<li>checked 예외와 unchecked 예외의 차이</li>
+<li>Spring이 unchecked(런타임) 예외를 선호하는 이유 — 트랜잭션 롤백 규칙과도 직결된다</li>
+<li>커스텀 예외를 만들고 의미 단위로 던지기</li>
+<li><code>try-with-resources</code></li>
+</ul>
+<h2>3. 제네릭과 컬렉션</h2>
+<ul>
+<li>제네릭 타입 파라미터, 와일드카드(<code>? extends</code>, <code>? super</code>)의 대략적 감각</li>
+<li><code>List</code> / <code>Set</code> / <code>Map</code>의 특성과 선택 기준</li>
+<li><code>equals</code>와 <code>hashCode</code>를 같이 재정의해야 하는 이유 — JPA 엔티티에서 다시 만난다</li>
+</ul>
+<h2>4. 람다와 Stream</h2>
+<ul>
+<li>함수형 인터페이스 (<code>Function</code>, <code>Supplier</code>, <code>Consumer</code>, <code>Predicate</code>)</li>
+<li>Stream의 filter / map / collect / groupingBy</li>
+<li><code>Optional</code>을 쓰는 자리(반환값)와 쓰면 안 되는 자리(필드, 파라미터)</li>
+</ul>
+<h2>5. 애노테이션·리플렉션·프록시</h2>
+<p>Spring의 정체를 알려면 이 셋은 피할 수 없다.</p>
+<ul>
+<li>애노테이션은 그 자체로 아무 일도 하지 않는다 — 읽는 쪽이 있어야 동작한다</li>
+<li>리플렉션으로 클래스 정보를 런타임에 읽고 객체를 만든다는 개념</li>
+<li><strong>프록시 패턴</strong>: 원본 객체를 감싼 대리 객체가 앞뒤로 뭔가를 끼워 넣는 구조</li>
+<li>싱글턴 패턴, 팩토리 패턴</li>
+</ul>
+<p>프록시 패턴은 직접 손으로 한 번 구현해보는 걸 권한다. AOP와 트랜잭션이 전부 이 위에 서 있다.</p>
+<h2>6. 최신 문법과 빌드</h2>
+<ul>
+<li>자바 8 이후: <code>var</code>, <code>record</code>, switch expression, text block</li>
+<li>Gradle(또는 Maven)의 의존성 선언, <code>implementation</code>과 <code>runtimeOnly</code> 같은 스코프 차이</li>
+<li>JDK 버전 선택 (LTS 기준)</li>
+</ul>
+<h2>체크리스트</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Spring 없이 인터페이스 + 생성자로 의존성을 주입하는 코드를 짜봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> checked / unchecked 예외를 구분해서 설명할 수 있다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>equals</code>/<code>hashCode</code>를 왜 같이 재정의해야 하는지 안다</li>
+<li class="task-list-item"><input type="checkbox" disabled> Stream으로 필터·매핑·그룹핑을 막힘 없이 쓴다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 프록시 패턴을 직접 구현해봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>build.gradle</code>의 각 줄이 무슨 뜻인지 설명할 수 있다</li>
+</ul>
+<h2>다음 편</h2>
+<p>다음은 Spring Core: IoC 컨테이너와 의존성 주입이다. 여기서 만든 "직접 주입하는 코드"를 컨테이너가 어떻게 대신 해주는지 본다.</p>
+</article><section><h2>Spring의 다른 글</h2><ul class="pr-list"><li><a href="/post/spring-10-ops">Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)</a><p>Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.</p><span class="pr-meta">2026.08.17</span></li><li><a href="/post/spring-09-batch">Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)</a><p>Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.</p><span class="pr-meta">2026.07.31</span></li><li><a href="/post/spring-08-test">Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)</a><p>Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.</p><span class="pr-meta">2026.07.19</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li><li><a href="/post/spring-06-transaction">Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)</a><p>Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다.</p><span class="pr-meta">2026.06.21</span></li><li><a href="/post/spring-05-jpa">Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)</a><p>Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.</p><span class="pr-meta">2026.06.05</span></li></ul></section></main></div>
+  </body>
+</html>

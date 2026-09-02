@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (7) Spring Security - 필터체인, JWT, OAuth2
+title: Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)
 date: 2026-07-03
 category: spring
 src: cover.svg
 tags: [spring-security, jwt, oauth2, 인증, 인가, 로드맵]
-summary: Security는 "설정을 외우는" 방식으로 접근하면 반드시 막힌다. 필터체인이라는 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 소셜 로그인으로 확장하는 순서로 정리했다.
+summary: Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.
 ---
 
 > Spring 공부 로드맵 시리즈 7편.

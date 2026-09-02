@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (3) Spring MVC - 요청 하나가 지나가는 길
+title: Spring MVC 요청 흐름 정리 - DispatcherServlet부터 바인딩, 검증, 예외 처리까지 (Spring 로드맵 3)
 date: 2026-05-07
 category: spring
 src: cover.svg
 tags: [spring, mvc, rest, api, 로드맵, 백엔드]
-summary: DispatcherServlet에서 시작해 컨트롤러, 바인딩, 검증, 전역 예외 처리까지. 요청 흐름을 그릴 수 있으면 필터와 인터셉터를 어디에 끼울지가 저절로 정해진다.
+summary: Spring MVC 요청 흐름 정리. DispatcherServlet에서 컨트롤러, 바인딩, 검증, 전역 예외 처리까지. 흐름을 그릴 수 있으면 필터와 인터셉터를 어디에 끼울지가 저절로 정해진다.
 ---
 
 > Spring 공부 로드맵 시리즈 3편.

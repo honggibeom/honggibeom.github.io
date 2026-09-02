@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (6) - DML, 트랜잭션, 락, 그리고 스키마 객체
+title: 오라클 DML과 트랜잭션, 락, 스키마 객체 정리 - 커밋, 롤백, 읽기 일관성 (오라클 학습 노트 6)
 date: 2025-10-02
 category: oracle
 src: cover.svg

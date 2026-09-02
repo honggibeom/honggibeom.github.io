@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 로드맵 - 무엇을 어떤 순서로 볼 것인가 (시리즈 목차)
+title: Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차)
 date: 2026-03-08
 category: spring
 src: cover.svg
 tags: [spring, spring-boot, java, 백엔드, 로드맵]
-summary: Spring을 처음부터 제대로 훑기 위해 전체 범위를 9개 주제로 쪼갰다. 각 주제를 왜 그 순서로 봐야 하는지와, 이어지는 시리즈 글의 목차를 정리한다.
+summary: Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 9개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다.
 ---
 
 ## 왜 지도부터 그리는가

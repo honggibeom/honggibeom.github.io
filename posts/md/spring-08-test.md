@@ -1,10 +1,10 @@
 ---
-title: Spring 공부 (8) 테스트 - 이 코드가 맞다는 걸 어떻게 증명하나
+title: Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)
 date: 2026-07-19
 category: spring
 src: cover.svg
 tags: [spring, test, junit, mockito, testcontainers, 로드맵]
-summary: 단위 테스트, 슬라이스 테스트, 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로 정리했다.
+summary: Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.
 ---
 
 > Spring 공부 로드맵 시리즈 8편.

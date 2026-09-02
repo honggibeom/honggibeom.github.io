@@ -1,5 +1,5 @@
 ---
-title: 오라클 DB 학습 노트 (8) - 인덱스, 실행계획, 그리고 튜닝
+title: 오라클 인덱스와 실행계획, SQL 튜닝 정리 - B*Tree, 조인 방식, 힌트, 안티패턴 (오라클 학습 노트 8)
 date: 2025-10-27
 category: oracle
 src: cover.svg
