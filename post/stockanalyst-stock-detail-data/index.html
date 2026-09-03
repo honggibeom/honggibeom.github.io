@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="StockAnalyst 종목 상세에 붙인 데이터 기록. pykrx 공매도 수집으로 KRX에 IP 차단당한 뒤 CSV 임포트, 화면 단위 조회로 돌아온 과정, 숏커버 압력 추정식, 국내 지수옵션·미국 옵션 체인 압축, DART corp_code 캐싱." />
+    <meta name="keywords" content="stockanalyst, 공매도, 옵션, DART, KIS, python, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/stockanalyst-stock-detail-data" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시 | Honggibeom's blog" />
+    <meta property="og:description" content="StockAnalyst 종목 상세에 붙인 데이터 기록. pykrx 공매도 수집으로 KRX에 IP 차단당한 뒤 CSV 임포트, 화면 단위 조회로 돌아온 과정, 숏커버 압력 추정식, 국내 지수옵션·미국 옵션 체인 압축, DART corp_code 캐싱." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/stockanalyst-stock-detail-data" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-CrXwMW_6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-09-02" />
+<meta property="article:section" content="StockAnalyst" />
+<meta property="article:tag" content="stockanalyst" />
+<meta property="article:tag" content="공매도" />
+<meta property="article:tag" content="옵션" />
+<meta property="article:tag" content="DART" />
+<meta property="article:tag" content="KIS" />
+<meta property="article:tag" content="python" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시","description":"StockAnalyst 종목 상세에 붙인 데이터 기록. pykrx 공매도 수집으로 KRX에 IP 차단당한 뒤 CSV 임포트, 화면 단위 조회로 돌아온 과정, 숏커버 압력 추정식, 국내 지수옵션·미국 옵션 체인 압축, DART corp_code 캐싱.","datePublished":"2026-09-02","dateModified":"2026-09-02","keywords":"stockanalyst, 공매도, 옵션, DART, KIS, python","image":"https://honggibeom.github.io/posts/assets/stockanalyst-stock-detail-data/cover.svg","url":"https://honggibeom.github.io/post/stockanalyst-stock-detail-data","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/stockanalyst-stock-detail-data"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"StockAnalyst","item":"https://honggibeom.github.io/categories/stockanalyst"},{"@type":"ListItem","position":3,"name":"StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시","item":"https://honggibeom.github.io/post/stockanalyst-stock-detail-data"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/stockanalyst">StockAnalyst</a></p>
+<h1>StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시</h1>
+<p class="pr-meta">2026.09.02 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/%EA%B3%B5%EB%A7%A4%EB%8F%84">#공매도</a> <a href="/tags/%EC%98%B5%EC%85%98">#옵션</a> <a href="/tags/DART">#DART</a> <a href="/tags/KIS">#KIS</a> <a href="/tags/python">#python</a></p>
+<blockquote>
+<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 개발기 1편은 <a href="/post/stockanalyst-sentiment-model">뉴스 감성 모델</a>과 <a href="/post/stockanalyst-ticker-extraction">종목 추출</a>이었고, 2편은 그것을 뺀 나머지를 주제별로 나눴다. 전체 목차는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있다.</p>
+</blockquote>
+<p><strong>한눈에 보기</strong></p>
+<ul>
+<li>국내·해외 데이터 소스가 전부 다르다. 투자의견·공매도·옵션·공시·펀더멘털 다섯 종류</li>
+<li>공매도는 pykrx 종목별 수집 → <strong>IP 차단(약관 위반)</strong> → CSV 임포트 → 화면 단위 하루 10건으로 정착</li>
+<li>숏커버 압력은 Days To Cover와 제곱근 법칙 <strong>추정치</strong>. 계산식과 가정을 화면에 반드시 같이 노출</li>
+<li>미국 옵션은 체인 원본 대신 만기별 PCR·최대고통·ATM IV로 압축. DART는 corp_code 매핑을 하루 1회 캐싱</li>
+</ul>
+<p>종목 상세 화면에는 데이터 다섯 종류가 더 붙는다. 국내와 해외의 소스가 전부 다르다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>국내</th><th>해외</th></tr></thead><tbody><tr><td>투자의견</td><td>KIS API 실시간 (10분 캐시)</td><td>yfinance recommendations + 목표주가</td></tr><tr><td>공매도 잔고</td><td>KRX (자세한 사연은 아래)</td><td>yfinance info (FINRA 격주 공시)</td></tr><tr><td>옵션</td><td>개별주식옵션은 유동성이 없어 미지원, 지수옵션만 KRX Open API</td><td>yfinance option_chain</td></tr><tr><td>공시</td><td>DART Open API</td><td>없음</td></tr><tr><td>펀더멘털</td><td>FinanceDataReader + pykrx</td><td>yfinance info</td></tr></tbody></table>
+<h2>공매도 - 차단당하고, CSV로 갔다가, 화면 단위로 돌아오다</h2>
+<svg viewBox="0 0 760 250" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="pykrx 차단에서 CSV 임포트를 거쳐 화면 단위 조회로 돌아온 경로">
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">공매도 데이터 경로가 바뀐 순서</text>
+<circle cx="14" cy="42" r="6" fill="#e5534b" stroke="var(--color-bg-elevated)" stroke-width="2"></circle>
+<line x1="14" y1="50" x2="14" y2="86" stroke="var(--color-border-strong)" stroke-width="2"></line>
+<text x="32" y="40" font-size="11" fill="var(--color-text-dim)">1</text>
+<text x="32" y="56" font-size="13" fill="var(--color-text)">pykrx로 종목별 공매도를 수천 건 수집 → KRX가 IP를 하루 차단. 사유는 속도 제한이 아니라 약관 위반</text>
+<circle cx="14" cy="94" r="6" fill="#d29922" stroke="var(--color-bg-elevated)" stroke-width="2"></circle>
+<line x1="14" y1="102" x2="14" y2="138" stroke="var(--color-border-strong)" stroke-width="2"></line>
+<text x="32" y="92" font-size="11" fill="var(--color-text-dim)">2</text>
+<text x="32" y="108" font-size="13" fill="var(--color-text)">정식 경로 확인: 화면 다운로드 · 데이터 상품 구입 · Open API. Open API에는 공매도가 없다</text>
+<circle cx="14" cy="146" r="6" fill="#d29922" stroke="var(--color-bg-elevated)" stroke-width="2"></circle>
+<line x1="14" y1="154" x2="14" y2="190" stroke="var(--color-border-strong)" stroke-width="2"></line>
+<text x="32" y="144" font-size="11" fill="var(--color-text-dim)">3</text>
+<text x="32" y="160" font-size="13" fill="var(--color-text)">화면에서 내려받은 CSV 임포트로 전환. 헤더 별칭 표, 인코딩·헤더 위치 자동 탐색, 파일명에서 날짜·코드</text>
+<circle cx="14" cy="198" r="6" fill="var(--color-accent)" stroke="var(--color-bg-elevated)" stroke-width="2"></circle>
+<text x="32" y="196" font-size="11" fill="var(--color-text-dim)">4</text>
+<text x="32" y="212" font-size="13" fill="var(--color-text)">종목별 조회 없이 화면 단위(전종목 잔고·거래, 상위 50, 투자자별)만 하루 10건 안팎으로. 3초 간격,</text>
+<text x="32" y="228" font-size="13" fill="var(--color-text)">상한 40건, 거부 시 즉시 중단</text>
+</svg>
+<p>차단 안내를 다시 읽어 보니 문제는 요청 속도가 아니라 **"자동화 수단을 이용한 정보 무단 수집"**이라는 약관 조항이었다. 속도를 늦춘다고 해결되는 게 아니다.</p>
+<p>CSV 임포트는 헤더 표기가 화면마다 조금씩 달라서 별칭 표로 흡수하고, 인코딩(cp949 / utf-8-sig)과 헤더 위치(0~2행)를 자동 탐색하고, 날짜나 종목코드가 헤더에 없으면 파일명에서 읽는다.</p>
+<p>그러다 "5영업일치만 매일 받으면 요청이 하루 10건인데, 그건 사람이 클릭하는 것과 다를 게 없지 않나"로 정리했다. 종목별 조회를 하지 않고 <strong>화면 단위</strong>로만 조회하는 스크립트를 다시 만들었다. 약관 조항 자체는 그대로라는 점은 알고 있고, 차단 안내가 오면 스위치 하나로 CSV로 돌아간다.</p>
+<p>이 데이터를 화면에 어떻게 놓았는지, 그리고 이후에 잡은 공매도 수집 버그 셋은 <a href="/post/stockanalyst-dev-log-3-signals-rates">개발기 (3)</a>에 있다.</p>
+<h3>숏커버 압력은 추정치다</h3>
+<p>화면에는 숏커버 압력을 보여 준다. 공시값이 아니라 <strong>추정치</strong>이고, 계산식과 가정을 응답에 실어 화면에 반드시 같이 노출한다. "예상 상승률"로 단정하지 않는다. (이런 고지는 나중에 <code>Disclaimer</code> 컴포넌트 하나로 통일했다 — <a href="/post/stockanalyst-dev-log-3-signals-rates">3편</a>)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>지표</th><th>식</th><th>뜻</th></tr></thead><tbody><tr><td>Days To Cover</td><td>공매도 잔고 ÷ 20일 평균 거래량</td><td>잔고를 전부 되사는 데 며칠 걸리나</td></tr><tr><td>시장충격 (제곱근 법칙)</td><td><code>ΔP/P ≈ Y · σ · √(Q/ADV)</code>, Y = 0.5와 1.0 두 값</td><td>잔고 Q를 한 번에 되사면 가격이 얼마나 밀리나</td></tr></tbody></table>
+<h2>옵션</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>국내 지수옵션</th><th>미국 옵션</th></tr></thead><tbody><tr><td>소스</td><td>KRX Open API (<code>basDd</code> 하루 1건, 일 10,000회 한도)</td><td>yfinance option_chain</td></tr><tr><td>저장</td><td>기준일로부터 3개월 이내 월물만</td><td>체인 원본 대신 만기별 PCR · 최대고통가격 · ATM IV로 <strong>압축</strong></td></tr><tr><td>만기 선택</td><td>먼 월물은 거래가 없어 행만 차지</td><td>3개월 이내 중 가장 가까운 것 + 월물(셋째 금요일) 우선, 최대 4개</td></tr></tbody></table>
+<p>KRX는 승인이 두 단계라(인증키 발급 승인 → API별 활용신청 승인) 401은 승인 문제, 404는 경로 문제로 구분해 안내한다. 미국 주간 만기 종목은 3개월에 만기가 13개라 전부 받으면 하루 8천 건이 된다. 압축이 필요한 이유다.</p>
+<h2>DART 공시</h2>
+<svg viewBox="0 0 760 124" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="DART 공시는 corp_code 매핑을 하루 한 번 캐싱한 뒤 최근 6개월 공시를 분류해 배지로 보여 준다">
+<g font-size="13" fill="var(--color-text)" text-anchor="middle">
+<rect x="0" y="30" width="160" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="80" y="52">corpCode.xml (zip)</text>
+<text x="80" y="69" fill="var(--color-text-dim)" font-size="11">스트리밍 파싱</text>
+<rect x="200" y="30" width="160" height="70" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="280" y="52" font-weight="600">6자리 종목코드만 캐싱</text>
+<text x="280" y="69" fill="var(--color-text-dim)" font-size="11">하루 1회</text>
+<rect x="400" y="30" width="160" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="480" y="52">최근 6개월 공시</text>
+<text x="480" y="69" fill="var(--color-text-dim)" font-size="11">corp_code로 조회</text>
+<rect x="600" y="30" width="160" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="680" y="52">보고서명 분류 배지</text>
+<text x="680" y="69" fill="var(--color-text-dim)" font-size="11">정기 · 실적 · 배당 · 증자</text>
+<text x="680" y="83" fill="var(--color-text-dim)" font-size="11">…</text>
+</g>
+<path d="M160 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M360 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M560 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+</svg>
+<p>opendart의 목록 API는 종목코드가 아니라 <code>corp_code</code>로만 조회된다. 그래서 <code>corpCode.xml</code>(zip)을 받아 스트리밍 파싱해 6자리 종목코드가 있는 것만 하루 1회 캐싱한다. 최근 6개월 공시는 보고서명으로 대략 분류(정기공시 / 실적 / 배당 / 증자·CB / 자사주 / 지배구조 / 수주)해 배지를 붙인다. 상세 페이지 새로고침마다 호출되던 걸 10분 캐시로 막았다. 키당 일 20,000건 한도다.</p>
+<h2>삽질 하나</h2>
+<p>KIS 403이 나서 코드에서 한참 원인을 찾았다. 응답의 EGW 코드를 로그에 찍게 하니 **EGW00105(AppSecret 무효)**였다. 포털에서 재발급하면 되는 문제였다. 외부 API 에러는 상태 코드만 보지 말고 본문의 에러 코드부터 찍자.</p>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-risk-analysis">StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAnalyst 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-turning-point-model">StockAnalyst 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로</a><p>StockAnalyst 변곡점 예측 모델 기록. 40일 기술지표 창과 Keras 3개 앙상블, ZigZag 정답, 고점·저점을 따로 정하는 임계값 이진 탐색과 4단계 노이즈 필터, 그리고 종목당 1분 걸리던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄인 과정. (2026-09에 이 배치 구조는 삭제하고 온디맨드로 전환했다 — 후속 글 참고)</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-turning-point-v2">StockAnalyst 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a><p>전 종목 배치 예측을 지우고 버튼을 눌렀을 때만 계산하는 구조로 바꾼 기록. 국내 종목 신호가 무너진 진짜 원인(임계값 이진 탐색의 도달 불가능한 목표)을 찾고, TensorFlow를 버리고 PyTorch로 옮겨 국내 372·미국 380종목으로 v2를 재학습했다. 그리고 평가를 정직하게 다시 짜서 &quot;가격 지표만으로는 정밀도 0.6이 상한&quot;이라는 결론에 도달한 과정.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+  </body>
+</html>

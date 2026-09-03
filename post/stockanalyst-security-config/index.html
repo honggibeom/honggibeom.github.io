@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="StockAnalyst 보안과 설정 기록. 평문으로 있던 API 키·DB 비밀번호를 application-secret.yml로 분리하고 optional 없이 import해 없으면 기동이 실패하게, 소셜 로그인 전용에서 관리자를 이메일 등록 + 로그인 시 승격으로, permitAll이던 배치 엔드포인트에 X-Batch-Key, 자원별 권한 체계." />
+    <meta name="keywords" content="stockanalyst, spring-security, spring-boot, 보안, oauth2, 설정관리, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/stockanalyst-security-config" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계 | Honggibeom's blog" />
+    <meta property="og:description" content="StockAnalyst 보안과 설정 기록. 평문으로 있던 API 키·DB 비밀번호를 application-secret.yml로 분리하고 optional 없이 import해 없으면 기동이 실패하게, 소셜 로그인 전용에서 관리자를 이메일 등록 + 로그인 시 승격으로, permitAll이던 배치 엔드포인트에 X-Batch-Key, 자원별 권한 체계." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/stockanalyst-security-config" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-CrXwMW_6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-09-02" />
+<meta property="article:section" content="StockAnalyst" />
+<meta property="article:tag" content="stockanalyst" />
+<meta property="article:tag" content="spring-security" />
+<meta property="article:tag" content="spring-boot" />
+<meta property="article:tag" content="보안" />
+<meta property="article:tag" content="oauth2" />
+<meta property="article:tag" content="설정관리" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계","description":"StockAnalyst 보안과 설정 기록. 평문으로 있던 API 키·DB 비밀번호를 application-secret.yml로 분리하고 optional 없이 import해 없으면 기동이 실패하게, 소셜 로그인 전용에서 관리자를 이메일 등록 + 로그인 시 승격으로, permitAll이던 배치 엔드포인트에 X-Batch-Key, 자원별 권한 체계.","datePublished":"2026-09-02","dateModified":"2026-09-02","keywords":"stockanalyst, spring-security, spring-boot, 보안, oauth2, 설정관리","image":"https://honggibeom.github.io/posts/assets/stockanalyst-security-config/cover.svg","url":"https://honggibeom.github.io/post/stockanalyst-security-config","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/stockanalyst-security-config"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"StockAnalyst","item":"https://honggibeom.github.io/categories/stockanalyst"},{"@type":"ListItem","position":3,"name":"StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계","item":"https://honggibeom.github.io/post/stockanalyst-security-config"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/stockanalyst">StockAnalyst</a></p>
+<h1>StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계</h1>
+<p class="pr-meta">2026.09.02 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/spring-security">#spring-security</a> <a href="/tags/spring-boot">#spring-boot</a> <a href="/tags/%EB%B3%B4%EC%95%88">#보안</a> <a href="/tags/oauth2">#oauth2</a> <a href="/tags/%EC%84%A4%EC%A0%95%EA%B4%80%EB%A6%AC">#설정관리</a></p>
+<blockquote>
+<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 개발기 1편은 <a href="/post/stockanalyst-sentiment-model">뉴스 감성 모델</a>과 <a href="/post/stockanalyst-ticker-extraction">종목 추출</a>이었고, 2편은 그것을 뺀 나머지를 주제별로 나눴다. 전체 목차는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있다.</p>
+</blockquote>
+<p><strong>한눈에 보기</strong></p>
+<ul>
+<li>기밀은 <code>application-secret.yml</code>(git 제외)로. <code>optional</code> 없이 import해서 <strong>없으면 기동 실패</strong></li>
+<li>비밀번호 계정이 없으니 관리자는 <strong>이메일 등록 + 구글 로그인 시 승격</strong>. 카카오는 이메일을 못 받아 제외</li>
+<li>누구나 가짜 신호를 넣을 수 있던 <code>/stocknews</code>에 48자 <code>X-Batch-Key</code></li>
+<li>기준 데이터는 GET 공개, 쓰기는 관리자, 사용자 자원은 서비스 계층에서 소유자 검증</li>
+</ul>
+<h2>기밀을 파일에서 분리</h2>
+<p><code>application.yml</code>에 KIS 앱키·시크릿, Google 클라이언트 시크릿, DB 비밀번호가 평문으로 있었다. 기밀을 전부 <code>application-secret.yml</code>(git 제외)로 옮기고 <code>spring.config.import</code>로 불러온다.</p>
+<svg viewBox="0 0 760 124" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="application.yml이 application-secret.yml을 필수로 import한다. 파일이 없으면 기동이 실패한다">
+<g font-size="13" fill="var(--color-text)" text-anchor="middle">
+<rect x="0" y="30" width="160" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="80" y="52">application.yml</text>
+<text x="80" y="69" fill="var(--color-text-dim)" font-size="11">git에 포함 · 기밀 없음</text>
+<rect x="200" y="30" width="160" height="70" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="280" y="52" font-weight="600">spring.config.import</text>
+<text x="280" y="69" fill="var(--color-text-dim)" font-size="11">optional 없이 필수</text>
+<rect x="400" y="30" width="160" height="70" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="480" y="52" font-weight="600">application-secret.yml</text>
+<text x="480" y="69" fill="var(--color-text-dim)" font-size="11">git 제외 · KIS</text>
+<text x="480" y="83" fill="var(--color-text-dim)" font-size="11">Google · DB 비밀번호</text>
+<rect x="600" y="30" width="160" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="680" y="52">없으면 기동 실패</text>
+<text x="680" y="69" fill="var(--color-text-dim)" font-size="11">즉시 알 수 있다</text>
+</g>
+<path d="M160 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M360 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M560 65.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+</svg>
+<p><code>optional</code>을 <strong>붙이지 않은 게</strong> 포인트다. secret 파일이 없으면 기동이 실패해서 "어, 설정이 왜 비어 있지"를 한참 뒤에 아는 대신 즉시 안다. 파이썬 쪽도 <code>krx_credentials.json</code>을 없애고 <code>.env</code> 하나로 통일했다.</p>
+<p>이미 노출된 키는 파일을 분리한다고 안전해지지 않는다. <strong>로테이션</strong>이 필요하고, 배포 전 목록에 올려 뒀다.</p>
+<h2>관리자는 이메일 등록 + 로그인 시 승격</h2>
+<p>소셜 로그인 전용이라 비밀번호 계정이 없다. 그러면 관리자 계정을 어떻게 만드나.</p>
+<svg viewBox="0 0 760 110" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="관리자는 비밀번호 계정 없이 이메일 등록 + 로그인 시 승격 방식">
+<g font-size="13" fill="var(--color-text)" text-anchor="middle">
+<rect x="0" y="30" width="160" height="56" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="80" y="52">설정 admin.email</text>
+<text x="80" y="69" fill="var(--color-text-dim)" font-size="11">관리자 이메일 등록</text>
+<rect x="200" y="30" width="160" height="56" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="280" y="52" font-weight="600">구글 로그인</text>
+<text x="280" y="69" fill="var(--color-text-dim)" font-size="11">이메일 일치 확인</text>
+<rect x="400" y="30" width="160" height="56" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="480" y="52" font-weight="600">ROLE_ADMIN 부여</text>
+<text x="480" y="69" fill="var(--color-text-dim)" font-size="11">로그인 시 승격</text>
+<rect x="600" y="30" width="160" height="56" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="680" y="52">기동 시 시드</text>
+<text x="680" y="69" fill="var(--color-text-dim)" font-size="11">계정 없으면 생성</text>
+</g>
+<path d="M160 58.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M360 58.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+<path d="M560 58.0h34m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
+</svg>
+<p>카카오 로그인은 비즈 앱 없이는 이메일 동의항목을 못 켜서 구글 단일로 정리했다. 이메일이 없으면 관리자 승격 판단 자체가 안 된다.</p>
+<h2>배치 API 키</h2>
+<p>변곡점 신호를 넣는 <code>POST /stocknews</code>가 <code>permitAll</code>이라 누구나 가짜 신호를 넣을 수 있었다. 48자 랜덤 공유 키를 <code>X-Batch-Key</code> 헤더로 검사하고, 배치 스크립트가 <code>.env</code>의 <code>BATCH_API_KEY</code>를 보낸다. 사용자 인증과는 별개 경로다. 배치는 로그인할 수 없으니까.</p>
+<h2>권한 체계</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>자원</th><th>읽기</th><th>쓰기</th><th>비고</th></tr></thead><tbody><tr><td>기준 데이터 (주식 · 캔들 · 지수 · 뉴스 · 매크로 등)</td><td>공개 (GET)</td><td>관리자</td><td>누구나 볼 수 있어야 하는 데이터</td></tr><tr><td>변곡점 신호 (<code>/stocknews</code>)</td><td>공개</td><td>배치 키</td><td><code>X-Batch-Key</code></td></tr><tr><td>사용자 소유 자원 (북마크 · 포트폴리오 · 위험분석)</td><td>회원</td><td>회원</td><td><strong>서비스 계층에서 소유자 검증</strong>. 로그인했다고 남의 포트폴리오를 보면 안 된다</td></tr></tbody></table>
+<h2>삽질 하나</h2>
+<p><code>@Query("""...""", countQuery = """...""")</code>는 컴파일 오류다. 어노테이션 요소가 둘 이상이면 첫 번째도 <code>value =</code>로 이름을 붙여야 한다. 문제는 이 오류 하나가 <strong>어노테이션 프로세서를 막아서</strong> Lombok이 만드는 <code>log</code>·<code>getId()</code>·<code>builder()</code>가 전부 사라진 것처럼 에러 100개가 났다는 것이다. 에러가 100개면 첫 에러만 보자. 나머지는 첫 에러의 그림자다.</p>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-risk-analysis">StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAnalyst 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-turning-point-model">StockAnalyst 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로</a><p>StockAnalyst 변곡점 예측 모델 기록. 40일 기술지표 창과 Keras 3개 앙상블, ZigZag 정답, 고점·저점을 따로 정하는 임계값 이진 탐색과 4단계 노이즈 필터, 그리고 종목당 1분 걸리던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄인 과정. (2026-09에 이 배치 구조는 삭제하고 온디맨드로 전환했다 — 후속 글 참고)</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-turning-point-v2">StockAnalyst 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a><p>전 종목 배치 예측을 지우고 버튼을 눌렀을 때만 계산하는 구조로 바꾼 기록. 국내 종목 신호가 무너진 진짜 원인(임계값 이진 탐색의 도달 불가능한 목표)을 찾고, TensorFlow를 버리고 PyTorch로 옮겨 국내 372·미국 380종목으로 v2를 재학습했다. 그리고 평가를 정직하게 다시 짜서 &quot;가격 지표만으로는 정밀도 0.6이 상한&quot;이라는 결론에 도달한 과정.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+  </body>
+</html>

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://honggibeom.github.io/</loc><lastmod>2026-09-03</lastmod><priority>1.0</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-dev-log-3-signals-rates</loc><lastmod>2026-09-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-portfolio</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-risk-analysis</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-turning-point-model</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-turning-point-v2</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-market-widgets</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-stock-detail-data</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-data-pipeline</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-frontend-rebuild</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-security-config</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-infra-oci</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-ticker-extraction</loc><lastmod>2026-09-01</lastmod><priority>0.8</priority></url>
-  <url><loc>https://honggibeom.github.io/post/stockadvisor-sentiment-model</loc><lastmod>2026-09-01</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-dev-log-3-signals-rates</loc><lastmod>2026-09-03</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-dev-log-2-overview</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-portfolio</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-risk-analysis</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-turning-point-model</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-turning-point-v2</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-market-widgets</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-stock-detail-data</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-data-pipeline</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-frontend-rebuild</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-security-config</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-infra-oci</loc><lastmod>2026-09-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-ticker-extraction</loc><lastmod>2026-09-01</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-sentiment-model</loc><lastmod>2026-09-01</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/cra-to-vite</loc><lastmod>2026-08-31</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/buildtool-02-meta-frameworks</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/spring-10-ops</loc><lastmod>2026-08-17</lastmod><priority>0.8</priority></url>
@@ -53,9 +53,9 @@
   <url><loc>https://honggibeom.github.io/categories/docker</loc><lastmod>2026-02-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/categories/frontend</loc><lastmod>2026-08-31</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/categories/nearby</loc><lastmod>2025-07-07</lastmod><priority>0.6</priority></url>
-  <url><loc>https://honggibeom.github.io/categories/stockadvisor</loc><lastmod>2026-09-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://honggibeom.github.io/categories/stockanalyst</loc><lastmod>2026-09-03</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/tags</loc><priority>0.4</priority></url>
-  <url><loc>https://honggibeom.github.io/tags/stockadvisor</loc><lastmod>2026-09-03</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/stockanalyst</loc><lastmod>2026-09-03</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EB%B3%80%EA%B3%A1%EC%A0%90</loc><lastmod>2026-09-03</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EA%B3%B5%EB%A7%A4%EB%8F%84</loc><lastmod>2026-09-03</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EA%B8%88%EB%A6%AC</loc><lastmod>2026-09-03</lastmod><priority>0.3</priority></url>
