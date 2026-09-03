@@ -12,7 +12,7 @@ summary: StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리�
 **한눈에 보기**
 
 - V1(차트·뉴스) → V2(포트폴리오) → V3(위험분석) 세 단계 계획. 실제 진행은 뒤섞였다
-- 주제별 10편: 포트폴리오, 위험분석, 변곡점 모델(과 v2 재학습), 시황 위젯, 종목 상세 데이터, 파이프라인, 프론트 재구축, 보안, 인프라
+- 주제별 10편: 포트폴리오, 위험분석, 변곡점 모델(과 v2 재학습), 다우 이론 위젯, 종목 상세 데이터, 파이프라인, 프론트 재구축, 보안, 인프라
 - 이후 하루치 기록은 [3편](/post/stockanalyst-dev-log-3-signals-rates)으로 이어진다
 - 가장 많이 한 일은 난수·랜덤·목업을 실데이터로 바꾸는 것이었다
 
@@ -57,7 +57,7 @@ summary: StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리�
 | 1 | [StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기](/post/stockanalyst-portfolio) |
 | 2 | [StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면](/post/stockanalyst-risk-analysis) |
 | 3 | [StockAnalyst 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로](/post/stockanalyst-turning-point-model) |
-| 4 | [StockAnalyst 시황 위젯 - 다우 이론 6국면 판정과 환율·원자재 파생 신호](/post/stockanalyst-market-widgets) |
+| 4 | [StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로](/post/stockanalyst-dow-theory) |
 | 5 | [StockAnalyst 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시](/post/stockanalyst-stock-detail-data) |
 | 6 | [StockAnalyst 데이터 파이프라인 - 증분 수집, 실행 로그, 호출량 관리, 왜 파이썬인가](/post/stockanalyst-data-pipeline) |
 | 7 | [StockAnalyst 프론트 재구축 - CRA에서 Vite로, styled-components에서 Tailwind v4로, 컵앤핸들 로고](/post/stockanalyst-frontend-rebuild) |
