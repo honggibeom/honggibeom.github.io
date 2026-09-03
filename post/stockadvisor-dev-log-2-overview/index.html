@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="StockAdvisor 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 9편의 글과 배포 전 남은 일을 정리한다." />
+    <meta name="keywords" content="stockadvisor, spring-boot, react, python, 프로젝트, 개발기, 홍기범, 개발 블로그, 풀스택 개발자, Spring Boot, Java, Docker, Oracle" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="StockAdvisor 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지 | Honggibeom's blog" />
+    <meta property="og:description" content="StockAdvisor 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 9편의 글과 배포 전 남은 일을 정리한다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>StockAdvisor 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-CguGqeUW.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-09-02" />
+<meta property="article:section" content="StockAdvisor" />
+<meta property="article:tag" content="stockadvisor" />
+<meta property="article:tag" content="spring-boot" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="python" />
+<meta property="article:tag" content="프로젝트" />
+<meta property="article:tag" content="개발기" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"StockAdvisor 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지","description":"StockAdvisor 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 9편의 글과 배포 전 남은 일을 정리한다.","datePublished":"2026-09-02","dateModified":"2026-09-02","keywords":"stockadvisor, spring-boot, react, python, 프로젝트, 개발기","image":"https://honggibeom.github.io/posts/assets/stockadvisor-dev-log-2-overview/cover.svg","url":"https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"StockAdvisor","item":"https://honggibeom.github.io/categories/stockadvisor"},{"@type":"ListItem","position":3,"name":"StockAdvisor 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지","item":"https://honggibeom.github.io/post/stockadvisor-dev-log-2-overview"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/stockadvisor">StockAdvisor</a></p>
+<h1>StockAdvisor 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</h1>
+<p class="pr-meta">2026.09.02 · <a href="/tags/stockadvisor">#stockadvisor</a> <a href="/tags/spring-boot">#spring-boot</a> <a href="/tags/react">#react</a> <a href="/tags/python">#python</a> <a href="/tags/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8">#프로젝트</a> <a href="/tags/%EA%B0%9C%EB%B0%9C%EA%B8%B0">#개발기</a></p>
+<blockquote>
+<p>StockAdvisor는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 시세와 뉴스, 포트폴리오, 위험분석을 한 화면에서 본다. 개발기 1편은 <a href="/post/stockadvisor-sentiment-model">뉴스 감성 모델</a>과 <a href="/post/stockadvisor-ticker-extraction">종목 추출</a>이었고, 이 글은 2편의 목차다.</p>
+</blockquote>
+<p><strong>한눈에 보기</strong></p>
+<ul>
+<li>V1(차트·뉴스) → V2(포트폴리오) → V3(위험분석) 세 단계 계획. 실제 진행은 뒤섞였다</li>
+<li>주제별 10편: 포트폴리오, 위험분석, 변곡점 모델(과 v2 재학습), 시황 위젯, 종목 상세 데이터, 파이프라인, 프론트 재구축, 보안, 인프라</li>
+<li>가장 많이 한 일은 난수·랜덤·목업을 실데이터로 바꾸는 것이었다</li>
+</ul>
+<h2>처음 계획은 세 단계였다</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>단계</th><th>목표</th><th>실제로 만들어진 것</th></tr></thead><tbody><tr><td>V1</td><td>차트와 뉴스를 한 화면에서</td><td>실데이터 캔들, 변곡점 신호 마커, 매크로 지표, 뉴스 감성 점수</td></tr><tr><td>V2</td><td>주식·채권·옵션으로 포트폴리오 구성과 수익률</td><td>보유 종목 입력 → 규칙 기반 전략 추천, 채권·미국 주식 원화 환산</td></tr><tr><td>V3</td><td>델타-노말 VaR, 몬테카를로, 시나리오 분석</td><td>EWMA 공분산, Cornish-Fisher, Kupiec 백테스트, 베타·듀레이션 시나리오, 시장 국면 판정</td></tr></tbody></table>
+<p>세 단계는 순서대로가 아니라 뒤섞여서 진행됐고, 그 사이에 파이프라인·프론트 재구축·보안·인프라 작업이 끼어들었다. 아래는 그 전부를 주제별로 나눈 글 목록이다. 순서는 시간순이 아니라 주제순이다.</p>
+<svg viewBox="0 0 760 176" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="React 프론트, Spring 백엔드, MySQL/Redis, 파이썬 파이프라인, 외부 데이터 소스로 이루어진 구조">
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">전체 구조</text>
+<rect x="0" y="30" width="242" height="54" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="121" y="52" font-size="13" fill="var(--color-text)" text-anchor="middle">React + Vite</text>
+<text x="121" y="69" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">차트 · 포트폴리오 · 위험분석 화면</text>
+<rect x="258" y="30" width="242" height="54" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="379" y="52" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">Spring Boot</text>
+<text x="379" y="69" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">API · 캐시 · 감성 추론(ONNX)</text>
+<rect x="516" y="30" width="242" height="54" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="637" y="52" font-size="13" fill="var(--color-text)" text-anchor="middle">MySQL · Redis</text>
+<text x="637" y="69" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">캔들 · 뉴스 · 포트폴리오 / 캐시</text>
+<rect x="0" y="100" width="242" height="70" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+<text x="121" y="122" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">Python 파이프라인</text>
+<text x="121" y="139" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">run_pipeline.py · 20분 배치</text>
+<rect x="258" y="100" width="242" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="379" y="122" font-size="13" fill="var(--color-text)" text-anchor="middle">변곡점 모델</text>
+<text x="379" y="139" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">Keras 앙상블 · GPU</text>
+<rect x="516" y="100" width="242" height="70" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+<text x="637" y="122" font-size="13" fill="var(--color-text)" text-anchor="middle">외부 데이터</text>
+<text x="637" y="139" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">KIS · 네이버 · Yahoo · FRED</text>
+<text x="637" y="153" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">DART · KRX</text>
+</svg>
+<h2>글 목록</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>#</th><th>글</th></tr></thead><tbody><tr><td>0</td><td><a href="/post/stockadvisor-sentiment-model">뉴스 감성 모델</a>, <a href="/post/stockadvisor-ticker-extraction">종목 추출</a> (1편)</td></tr><tr><td>1</td><td><a href="/post/stockadvisor-portfolio">StockAdvisor 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a></td></tr><tr><td>2</td><td><a href="/post/stockadvisor-risk-analysis">StockAdvisor 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a></td></tr><tr><td>3</td><td><a href="/post/stockadvisor-turning-point-model">StockAdvisor 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로</a></td></tr><tr><td>4</td><td><a href="/post/stockadvisor-market-widgets">StockAdvisor 시황 위젯 - 다우 이론 6국면 판정과 환율·원자재 파생 신호</a></td></tr><tr><td>5</td><td><a href="/post/stockadvisor-stock-detail-data">StockAdvisor 종목 상세 데이터 - 공매도 IP 차단, 옵션 체인 압축, DART 공시</a></td></tr><tr><td>6</td><td><a href="/post/stockadvisor-data-pipeline">StockAdvisor 데이터 파이프라인 - 증분 수집, 실행 로그, 호출량 관리, 왜 파이썬인가</a></td></tr><tr><td>7</td><td><a href="/post/stockadvisor-frontend-rebuild">StockAdvisor 프론트 재구축 - CRA에서 Vite로, styled-components에서 Tailwind v4로, 컵앤핸들 로고</a></td></tr><tr><td>8</td><td><a href="/post/stockadvisor-security-config">StockAdvisor 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계</a></td></tr><tr><td>9</td><td><a href="/post/stockadvisor-infra-oci">StockAdvisor 인프라 - S3에서 OCI로, Docker Compose, Always Free 티어 검토</a></td></tr><tr><td>10</td><td><a href="/post/stockadvisor-turning-point-v2">StockAdvisor 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a></td></tr></tbody></table>
+<h2>남은 것</h2>
+<p>운영 배포는 아직이다. 배포 전 필수 목록은 이렇다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>이유</th></tr></thead><tbody><tr><td><code>ddl-auto</code>를 <code>validate</code>로, 스키마는 Flyway로</td><td>검토 중 <code>create</code>가 그대로 남아 있는 걸 발견했다. 운영에 올리면 재시작마다 데이터가 전멸한다</td></tr><tr><td>secret 파일 → 환경변수 주입</td><td>컨테이너 환경에 맞추기 위해</td></tr><tr><td>노출 이력 있는 키 로테이션</td><td>파일을 분리했다고 이미 노출된 키가 안전해지진 않는다</td></tr><tr><td>Docker 빌드에서 DJL 토크나이저 캐시 워밍</td><td>OCI 첫 기동 지연 방지</td></tr></tbody></table>
+<p>데이터 쪽은 몬테카를로의 정규 충격을 부트스트랩으로 바꾸는 것과 국내 지수옵션 UI 연결이 남았다. 변곡점 모델은 국내 372·미국 380종목으로 재학습해 <a href="/post/stockadvisor-turning-point-v2">v2</a>로 교체했는데, 국내 정확도가 오르긴 했지만 가격 지표만으로는 정밀도 0.6 근처가 상한이라는 것도 함께 확인했다. 프라이빗 버킷을 쓰게 되면 PAR 발급 로직도 필요하다.</p>
+<h2>돌아보면</h2>
+<p>이 프로젝트에서 가장 많이 한 일은 **"가짜를 진짜로 바꾸는 것"**이었다. 난수로 그리던 지수, 랜덤으로 붙이던 뉴스, 나열만 하던 전략 프리셋, 저장만 되고 안 보이던 신호. 하나씩 실데이터로 바꾸면서 데이터 소스의 한도와 약관, 그리고 그 데이터가 틀렸을 때 화면이 어떻게 보이는지를 배웠다.</p>
+</article><section><h2>StockAdvisor의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockadvisor-dev-log-3-signals-rates">StockAdvisor 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAdvisor 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockadvisor-portfolio">StockAdvisor 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAdvisor 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockadvisor-risk-analysis">StockAdvisor 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAdvisor 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockadvisor-turning-point-model">StockAdvisor 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로</a><p>StockAdvisor 변곡점 예측 모델 기록. 40일 기술지표 창과 Keras 3개 앙상블, ZigZag 정답, 고점·저점을 따로 정하는 임계값 이진 탐색과 4단계 노이즈 필터, 그리고 종목당 1분 걸리던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄인 과정. (2026-09에 이 배치 구조는 삭제하고 온디맨드로 전환했다 — 후속 글 참고)</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockadvisor-turning-point-v2">StockAdvisor 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a><p>전 종목 배치 예측을 지우고 버튼을 눌렀을 때만 계산하는 구조로 바꾼 기록. 국내 종목 신호가 무너진 진짜 원인(임계값 이진 탐색의 도달 불가능한 목표)을 찾고, TensorFlow를 버리고 PyTorch로 옮겨 국내 372·미국 380종목으로 v2를 재학습했다. 그리고 평가를 정직하게 다시 짜서 &quot;가격 지표만으로는 정밀도 0.6이 상한&quot;이라는 결론에 도달한 과정.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockadvisor-market-widgets">StockAdvisor 시황 위젯 - 다우 이론 6국면 판정과 환율·원자재 파생 신호</a><p>StockAdvisor 시황 위젯 기록. 다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하고 6국면을 추정하는 위젯, 금/구리 비율·브렌트-WTI 스프레드·엔캐리 등급 같은 환율 파생 신호, 그리고 미국 지수 NULL 종가와 2개월 전 전일 종가 버그.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+  </body>
+</html>
