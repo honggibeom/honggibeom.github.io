@@ -14,7 +14,7 @@ summary: StockAnalyst 인프라 기록. AWS SDK 종료로 OCI Object Storage 전
 - AWS SDK 1.x 종료 → OCI 네이티브 SDK. 설정이 비면 빈을 안 만들고 경고만, 앱은 뜬다
 - 뉴스 이미지는 스토리지 미러링 대신 **원본 og:image 임베드**. 저작권과 무료 티어 한도 양쪽에서 맞는 결정
 - compose 함정 4개: localhost API 주소, 리터럴 DB 비밀번호, Windows node_modules, vite outDir
-- A1은 2 OCPU/12GB로 줄었지만 4GB면 충분. 병목은 **Object Storage 월 50,000건 = 하루 83 페이지뷰**
+- A1은 2 OCPU/12GB로 줄었지만 충분. 병목은 **Object Storage 월 50,000건 = 하루 83 페이지뷰**
 
 ## Object Storage - S3에서 OCI로
 
@@ -96,35 +96,10 @@ AWS SDK 1.x가 2025년 12월 지원 종료라 OCI Object Storage 네이티브 SD
 
 ## OCI Always Free로 갈 수 있나
 
-검토 결과는 **"가능하다, 단 인용된 스펙이 옛날 값이다"**. Ampere A1이 2026년 6월에 4 OCPU/24GB에서 2 OCPU/12GB로 반토막 났고, Oracle은 공지 없이 문서만 고쳤다.
+검토 결과는 **"가능하다, 단 인용된 스펙이 옛날 값이다"**. Ampere A1이 2026년 6월에 4 OCPU/24GB에서 2 OCPU/12GB로 반토막 났고, 오라클은 공지 없이 문서만 고쳤다. 그래도 이 서비스에는 12GB로 충분하다.
 
-<svg viewBox="0 0 640 132" width="100%" style="max-width:640px;display:block;margin:22px auto" role="img" aria-label="합쳐서 4GB 안팎이라 12GB 안에서 여유가 있다">
-<text x="0" y="16" font-size="13" fill="var(--color-text-muted)">Always Free A1 (2 OCPU / 12GB)에서 예상 메모리</text>
-<rect x="0" y="30" width="53" height="22" rx="4" fill="var(--color-accent)"/>
-<rect x="55" y="30" width="53" height="22" rx="4" fill="var(--color-border-strong)"/>
-<rect x="110" y="30" width="106" height="22" rx="4" fill="#d29922"/>
-<rect x="218" y="30" width="423" height="22" rx="4" fill="var(--color-border)"/>
-<rect x="0" y="64" width="12" height="12" rx="3" fill="var(--color-accent)"/>
-<text x="18" y="74" font-size="12" fill="var(--color-text-muted)">Spring -Xmx1g 1,024</text>
-<rect x="167" y="64" width="12" height="12" rx="3" fill="var(--color-border-strong)"/>
-<text x="185" y="74" font-size="12" fill="var(--color-text-muted)">MySQL 버퍼풀 1G 1,024</text>
-<rect x="342" y="64" width="12" height="12" rx="3" fill="#d29922"/>
-<text x="360" y="74" font-size="12" fill="var(--color-text-muted)">nginx · Redis · Python 배치 2,048</text>
-<rect x="0" y="84" width="12" height="12" rx="3" fill="var(--color-border)"/>
-<text x="18" y="94" font-size="12" fill="var(--color-text-muted)">여유 8,192</text>
-<text x="0" y="116" font-size="12" fill="var(--color-text-dim)">셋을 합쳐 4GB 안팎. 나머지 8GB가 여유</text>
-</svg>
+정작 걸린 건 컴퓨팅이 아니라 **Object Storage API 요청 50,000건/월**이었다. 뉴스 한 페이지에 이미지가 20장이면 하루 83 페이지뷰로 한도가 끝난다. 위에서 내린 원본 임베드 결정이 여기서 다시 한번 맞았다 — 이미지를 스토리지에서 서빙했으면 무료 티어로는 하루 83명이 한계였다.
 
-진짜 병목은 컴퓨팅이 아니라 **Object Storage API 요청 50,000건/월**이다.
-
-| 가정 | 계산 |
-|---|---|
-| 뉴스 한 페이지에 이미지 20장 | 페이지뷰당 요청 20건 |
-| 월 50,000건 ÷ 30일 | 하루 약 1,667건 |
-| ÷ 20 | **하루 83 페이지뷰**로 한도가 끝난다 |
-
-원본 임베드 결정이 여기서 다시 한번 맞았다. 이미지를 스토리지에서 서빙했으면 무료 티어로는 하루 83명이 한계였다.
-
-Autonomous DB는 Oracle DB라 MySQL 방언 프로젝트에 못 쓰고, **MySQL HeatWave Always Free(50GB)**가 맞다.
+여기까지가 "갈 수 있나"의 답이고, **실제로 올리기로 하고 내린 판단들**(홈 리전 제약, 관리형 MySQL과의 비교, 유휴 인스턴스 회수, aarch64 빌드, 컨테이너 메모리 배분)은 [OCI 무료 티어 배포 준비](/post/stockanalyst-oci-deploy)에 따로 정리했다.
 
 그리고 검토 중에 발견한 것 하나: `ddl-auto: create`가 그대로 있었다. 운영에 올리면 재시작마다 데이터가 전멸한다. [배포 전 목록](/post/stockanalyst-dev-log-2-overview) 맨 위에 올렸다.
