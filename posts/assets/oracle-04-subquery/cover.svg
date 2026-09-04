@@ -1,31 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d1117"/>
-      <stop offset="100%" stop-color="#171016"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#ff6b5b"/>
-      <stop offset="100%" stop-color="#ffb26b"/>
-    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#161b22"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b5b"/><stop offset="100%" stop-color="#ffb26b"/></linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g stroke="#20262e" stroke-width="1">
-    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
-  </g>
-  <g opacity="0.5">
-    <ellipse cx="960" cy="150" rx="150" ry="34" fill="none" stroke="#ff6b5b" stroke-width="2" opacity="0.35"/>
-    <ellipse cx="960" cy="230" rx="150" ry="34" fill="none" stroke="#ff6b5b" stroke-width="2" opacity="0.25"/>
-    <ellipse cx="960" cy="310" rx="150" ry="34" fill="none" stroke="#ff6b5b" stroke-width="2" opacity="0.15"/>
-    <path d="M810 150V310M1110 150V310" stroke="#ff6b5b" stroke-width="2" opacity="0.25"/>
-  </g>
-  <text x="90" y="130" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="24" fill="#8b7d80" letter-spacing="7">ORACLE STUDY NOTE</text>
-  <text x="90" y="470" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="220" font-weight="bold" fill="#ff6b5b" opacity="0.10">04</text>
-  <g font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="76" font-weight="bold" fill="#e6edf3">
-    <text x="90" y="270">서브쿼리와</text>
-    <text x="90" y="360">집합 연산</text>
-  </g>
-  <rect x="90" y="405" width="110" height="5" rx="2.5" fill="url(#accent)"/>
-  <text x="90" y="480" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="26" fill="#9aa7b4">인라인뷰 · 스칼라 · 상관 서브쿼리 · WITH · MERGE</text>
-  <text x="90" y="560" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#6b7785">PART 04 / 08</text>
+  <g stroke="#1a212a" stroke-width="1"><path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/></g>
+  <circle cx="600" cy="300" r="250" fill="#ff6b5b" opacity="0.06"/>
+  <text x="600" y="286" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="62" font-weight="bold" fill="url(#accent)">Oracle</text>
+  <rect x="555" y="314" width="90" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="600" y="374" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="30" fill="#e6edf3">오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리</text>
+  <text x="600" y="420" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">sql · 서브쿼리 · merge · 학습노트</text>
+  <text x="600" y="566" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="21" fill="#6b7785" letter-spacing="4">PART 04 / 08</text>
 </svg>

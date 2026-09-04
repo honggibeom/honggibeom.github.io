@@ -1,35 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d1117"/>
-      <stop offset="100%" stop-color="#0e1a24"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#2496ed"/>
-      <stop offset="100%" stop-color="#66d9f2"/>
-    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#161b22"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2496ed"/><stop offset="100%" stop-color="#66d9f2"/></linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g stroke="#1a2530" stroke-width="1">
-    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
-  </g>
-  <g opacity="0.55" fill="none" stroke="#2496ed" stroke-width="2">
-    <rect x="820" y="300" width="72" height="52" rx="4" opacity="0.35"/>
-    <rect x="900" y="300" width="72" height="52" rx="4" opacity="0.35"/>
-    <rect x="980" y="300" width="72" height="52" rx="4" opacity="0.35"/>
-    <rect x="860" y="238" width="72" height="52" rx="4" opacity="0.25"/>
-    <rect x="940" y="238" width="72" height="52" rx="4" opacity="0.25"/>
-    <rect x="900" y="176" width="72" height="52" rx="4" opacity="0.15"/>
-    <path d="M796 370H1076" stroke-width="3" opacity="0.4"/>
-    <path d="M796 370c0 26 14 44 44 44h196" opacity="0.2"/>
-  </g>
-  <text x="90" y="130" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="24" fill="#7d8b99" letter-spacing="7">DOCKER STUDY NOTE</text>
-  <text x="90" y="470" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="220" font-weight="bold" fill="#2496ed" opacity="0.10">03</text>
-  <g font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="76" font-weight="bold" fill="#e6edf3">
-    <text x="90" y="270">컨테이너 실행과</text>
-    <text x="90" y="360">생명주기</text>
-  </g>
-  <rect x="90" y="405" width="110" height="5" rx="2.5" fill="url(#accent)"/>
-  <text x="90" y="480" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="26" fill="#9aa7b4">run 옵션 · exec · 로그 · 리소스 제한</text>
-  <text x="90" y="560" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#6b7785">PART 03 / 08</text>
+  <g stroke="#1a212a" stroke-width="1"><path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/></g>
+  <circle cx="600" cy="300" r="250" fill="#2496ed" opacity="0.06"/>
+  <text x="600" y="286" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="62" font-weight="bold" fill="url(#accent)">Docker</text>
+  <rect x="555" y="314" width="90" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="600" y="374" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="30" fill="#e6edf3">docker run 옵션과 컨테이너 생명주기, 리소스 제한 정리</text>
+  <text x="600" y="420" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">container · cli · 운영 · 학습노트</text>
+  <text x="600" y="566" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="21" fill="#6b7785" letter-spacing="4">PART 03 / 08</text>
 </svg>

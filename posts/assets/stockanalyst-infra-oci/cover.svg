@@ -1,13 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#161b22"/></linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00b56e"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00b56e"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g stroke="#1c232c" stroke-width="1"><path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/></g>
-  <circle cx="600" cy="315" r="270" fill="#00a362" opacity="0.08"/>
-  <text x="600" y="200" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#6b7785" letter-spacing="8">STOCKANALYST · INFRA</text>
-  <text x="600" y="330" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="88" font-weight="bold" fill="url(#accent)">S3 → OCI</text>
-  <rect x="540" y="372" width="120" height="5" rx="2.5" fill="url(#accent)"/>
-  <text x="600" y="440" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#9aa7b4">Docker Compose · Always Free 검토</text>
+  <g stroke="#1a212a" stroke-width="1"><path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/></g>
+  <circle cx="600" cy="300" r="250" fill="#00b56e" opacity="0.06"/>
+  <g transform="translate(503.2,101.2) scale(0.3750)">
+<g fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="70,382.0 76,368.0 82,340.0 88,311.0 94,282.0 100,252.0 106,222.0 112,193.0 118,174.0 124,202.0 130,238.0 136,264.0 142,286.0 148,302.0 154,314.0 160,325.0 166,334.0 172,342.0 178,347.0 184,352.0 190,356.0 196,359.3 202,362.3 208,364.7 214,366.7 220,368.3 226,369.3 232,370.0 238,370.7 244,371.3 250,372.0 256,371.3 262,370.7 268,369.7 274,369.0 280,367.7 286,366.0 292,363.7 298,361.0 304,357.7 310,354.0 316,349.3 322,344.0 328,337.3 334,330.0 340,321.0 346,311.0 352,298.0 358,282.0 364,264.0 370,240.0 376,208.0 382,178.0 388,172.0 394,186.0 400,198.0 406,205.0 412,206.0 418,204.0 424,192.0 430,174.0 436,150.0 442,137.0 444,134.0"/>
+    <path d="M424 141 L442 135"/>
+  </g>
+  </g>
+  <text x="600" y="336" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="62" font-weight="bold" fill="url(#accent)">StockAnalyst</text>
+  <rect x="555" y="364" width="90" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="600" y="424" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="30" fill="#e6edf3">S3에서 OCI로, Docker Compose, Always Free 티어 검토</text>
+  <text x="600" y="470" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">docker · docker-compose · oci · 인프라 · 배포</text>
 </svg>

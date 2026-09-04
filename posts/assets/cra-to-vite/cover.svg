@@ -1,25 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d1117"/>
-      <stop offset="100%" stop-color="#161b22"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#4dd0b1"/>
-      <stop offset="100%" stop-color="#7bf5d8"/>
-    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#161b22"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#61dafb"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g stroke="#1c232c" stroke-width="1">
-    <path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/>
-  </g>
-  <circle cx="600" cy="315" r="270" fill="#4dd0b1" opacity="0.06"/>
-  <text x="600" y="215" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#6b7785" letter-spacing="8">MIGRATION LOG</text>
-  <g text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="96" font-weight="bold">
-    <text x="415" y="345" fill="#e6edf3">CRA</text>
-    <text x="600" y="340" fill="#6b7785" font-size="72">&#8594;</text>
-    <text x="790" y="345" fill="url(#accent)">Vite</text>
-  </g>
-  <rect x="540" y="395" width="120" height="5" rx="2.5" fill="url(#accent)"/>
-  <text x="600" y="470" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#9aa7b4">react-scripts를 걷어내고 빌드 파이프라인을 갈아끼운 기록</text>
+  <g stroke="#1a212a" stroke-width="1"><path d="M0 157.5H1200M0 315H1200M0 472.5H1200M300 0V630M600 0V630M900 0V630"/></g>
+  <circle cx="600" cy="300" r="250" fill="#61dafb" opacity="0.06"/>
+  <text x="600" y="286" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="62" font-weight="bold" fill="url(#accent)">Frontend</text>
+  <rect x="555" y="314" width="90" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="600" y="374" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="30" fill="#e6edf3">CRA에서 Vite로, 블로그 빌드 환경을 갈아끼운 기록</text>
+  <text x="600" y="420" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">vite · react · cra · 마이그레이션 · 프론트엔드</text>
 </svg>
