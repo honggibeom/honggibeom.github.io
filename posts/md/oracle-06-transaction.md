@@ -26,7 +26,7 @@ INSERT INTO emp_backup (employee_id, emp_name, salary)
 SELECT employee_id, emp_name, salary FROM employees WHERE department_id = 20;
 ```
 
-오라클에는 `INSERT INTO ... VALUES (...), (...)` 같은 다중 VALUES 문법이 **없다.** 여러 건을 한 문장에 넣으려면 `INSERT ALL`을 쓴다.
+23ai 이전 오라클에는 `INSERT INTO ... VALUES (...), (...)` 같은 다중 VALUES 문법이 **없다.** (23ai에서 추가됐지만 현장 버전은 대부분 11g~19c다.) 여러 건을 한 문장에 넣으려면 `INSERT ALL`을 쓴다.
 
 ```sql
 INSERT ALL
@@ -68,7 +68,7 @@ DELETE FROM employees WHERE employee_id = 109;
 DELETE FROM employees;              -- 전체 삭제 (롤백 가능)
 ```
 
-`FROM`은 생략할 수 있지만 쓰는 편이 읽기 좋다. 1편에서 본 `TRUNCATE`와의 차이를 기억한다.
+`FROM`은 생략할 수 있지만 쓰는 편이 읽기 좋다. [1편](/post/oracle-01-basics)에서 본 `TRUNCATE`와의 차이를 기억한다.
 
 ### RETURNING
 
@@ -119,7 +119,7 @@ ROLLBACK TO sp2;   -- DELETE만 취소. INSERT와 UPDATE는 살아있다
 COMMIT;            -- 나머지 확정
 ```
 
-`ROLLBACK TO`는 트랜잭션을 끝내지 않는다. 락도 유지된다.
+`ROLLBACK TO`는 트랜잭션을 끝내지 않는다. 다만 락이 전부 유지되는 건 아니라서, 그 세이브포인트 이후에 잡은 행·테이블 락은 풀리고 그 이전에 잡은 락만 남는다.
 
 ### 커밋의 비용
 
@@ -295,11 +295,11 @@ CREATE PUBLIC SYNONYM emp FOR hr.employees;   -- 전체 사용자
 
 ## 인덱스 (개요)
 
-자세한 건 8편에서 다루고, 여기서는 만드는 법만 본다.
+자세한 건 [8편](/post/oracle-08-tuning)에서 다루고, 여기서는 만드는 법만 본다.
 
 ```sql
 CREATE INDEX ix_emp_name ON employees (emp_name);
-CREATE UNIQUE INDEX ux_emp_email ON employees (email);
+CREATE INDEX ix_emp_hire ON employees (hire_date);   -- email은 1편 UNIQUE 제약이 이미 인덱스를 갖고 있다
 CREATE INDEX ix_emp_dept_sal ON employees (department_id, salary);   -- 복합
 CREATE INDEX fx_emp_upper ON employees (UPPER(emp_name));            -- 함수 기반
 
@@ -313,7 +313,7 @@ DROP INDEX ix_emp_name;
 
 - 오라클은 자동 커밋이 아니다. DML 뒤에는 `COMMIT`이 필요하다
 - DDL은 앞의 DML까지 암시적으로 커밋해버린다
-- 다중 행 삽입은 `INSERT ALL`, `VALUES (...), (...)` 문법은 없다
+- 다중 행 삽입은 `INSERT ALL` (`VALUES (...), (...)`는 23ai에서야 생겼다)
 - 읽기는 UNDO에서 이전 이미지를 복원한다 — 읽기와 쓰기가 서로를 막지 않는다
 - 기본 격리 수준은 READ COMMITTED, 문장 단위 일관성
 - 행 락은 무한 대기한다. `NOWAIT` / `WAIT n` / `SKIP LOCKED`를 활용한다

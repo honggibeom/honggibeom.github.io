@@ -92,7 +92,7 @@ const filtering = (filter, data) => {
 
 이벤트 서비스라 날짜 비교가 도처에 있다. D-day 계산, 진행 중 여부, 기간 겹침 판정.
 
-여기서 계속 미묘한 오차가 났다. 원인은 시각이었다. `new Date()`에는 시·분·초가 들어있는데, `new Date("2026-08-30")`은 자정이다. 이 둘을 그냥 빼면 "오늘 시작하는 이벤트"가 시간대에 따라 어제로도, 오늘로도 판정됐다.
+여기서 계속 미묘한 오차가 났다. 원인은 시각과 시간대였다. `new Date()`에는 시·분·초가 들어있는데, `new Date("2026-08-30")`처럼 날짜만 있는 문자열은 **UTC 자정**으로 해석된다. KST에서 읽으면 그날 오전 9시다. 이 둘을 그냥 빼면 "오늘 시작하는 이벤트"가 어제로도, 오늘로도 판정됐다.
 
 해결은 단순하다. 비교하기 전에 양쪽을 모두 자정으로 내린다.
 
@@ -161,15 +161,17 @@ while (el && el !== document.body) {
 Zustand는 store 하나가 함수 하나다.
 
 ```js
-export const usePostsStore = create(
-  persist((set) => ({
-    posts: [],
-    tags: {},
-    setPosts: async () => {
-      const res = await loadPost();
-      set({ posts: res, tags: buildTags(res) });
-    },
-  }))
+export const useFilterStore = create(
+  persist(
+    (set) => ({
+      category: [],
+      fee: null,
+      run: false,
+      setCategory: (category) => set({ category }),
+      reset: () => set({ category: [], fee: null, run: false }),
+    }),
+    { name: "nearby-filter" }
+  )
 );
 ```
 

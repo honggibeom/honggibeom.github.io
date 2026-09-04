@@ -91,7 +91,7 @@
 <h1>Spring IoC 컨테이너와 의존성 주입(DI) 정리 - 빈 등록, 스코프, 생명주기, 순환 참조 (Spring 로드맵 1)</h1>
 <p class="pr-meta">2026.04.07 · <a href="/tags/spring">#spring</a> <a href="/tags/di">#di</a> <a href="/tags/ioc">#ioc</a> <a href="/tags/bean">#bean</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 1편.</p>
+<p>Spring 공부 로드맵 시리즈 1편. <a href="/post/spring-00-java">0편</a>에서 인터페이스와 생성자만으로 의존성을 직접 뒤집어봤다. 이번엔 그 일을 대신해 주는 컨테이너 이야기다.</p>
 </blockquote>
 <h2>이 단계가 본체다</h2>
 <p>Spring의 정체는 사실 <strong>객체를 대신 만들어 관리해주는 컨테이너</strong>다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.</p>
@@ -111,6 +111,7 @@
 <p><code>@ComponentScan</code>의 기본 범위가 어디인지(= <code>@SpringBootApplication</code>이 붙은 패키지 하위)를 반드시 알아둬야 한다. 빈을 못 찾는 문제의 절반이 여기서 나온다.</p>
 <p><code>@Configuration</code> 클래스가 프록시로 감싸져서 <code>@Bean</code> 메서드를 여러 번 호출해도 같은 객체가 나오는 것(<code>proxyBeanMethods</code>)도 확인해볼 만하다.</p>
 <h2>3. 의존성 주입 방식</h2>
+<p>세 가지가 있지만 실무에서 고민할 여지는 거의 없다. 생성자 주입을 기본으로 두고 나머지는 예외로 취급한다.</p>
 
 
 
@@ -136,7 +137,7 @@
 
 
 
-<table><thead><tr><th>방식</th><th>권장</th><th>이유</th></tr></thead><tbody><tr><td>생성자 주입</td><td>O</td><td>불변성 보장, 필수 의존성 명시, 테스트 쉬움, 순환참조를 기동 시점에 잡아줌</td></tr><tr><td>세터 주입</td><td>선택적 의존성에만</td><td>런타임에 바뀔 수 있는 값</td></tr><tr><td>필드 주입</td><td>X</td><td>테스트에서 갈아끼우기 어렵고 의존성이 숨는다</td></tr></tbody></table>
+<table><thead><tr><th>방식</th><th>권장</th><th>이유</th></tr></thead><tbody><tr><td>생성자 주입</td><td>O</td><td>불변성 보장, 필수 의존성 명시, 테스트 쉬움, 순환 참조를 기동 시점에 잡아줌</td></tr><tr><td>세터 주입</td><td>선택적 의존성에만</td><td>런타임에 바뀔 수 있는 값</td></tr><tr><td>필드 주입</td><td>X</td><td>테스트에서 갈아끼우기 어렵고 의존성이 숨는다</td></tr></tbody></table>
 <ul>
 <li>생성자가 하나면 <code>@Autowired</code>를 생략할 수 있다 → Lombok <code>@RequiredArgsConstructor</code>와 조합</li>
 <li>같은 타입 빈이 여러 개일 때: <code>@Qualifier</code>, <code>@Primary</code></li>
@@ -171,7 +172,7 @@
 <li class="task-list-item"><input type="checkbox" disabled> 싱글턴 빈에 상태를 두면 왜 위험한지 예시로 설명할 수 있다</li>
 <li class="task-list-item"><input type="checkbox" disabled> 순환 참조를 일부러 만들어 에러 메시지를 읽어봤다</li>
 <li class="task-list-item"><input type="checkbox" disabled> <code>@Bean</code>과 <code>@Component</code>를 각각 언제 쓰는지 안다</li>
-<li class="task-list-item"><input type="checkbox" disabled> <code>@ConfigurationProperties</code>로 설정 묶음을 받아봤다</li>
+<li class="task-list-item"><input type="checkbox" disabled> 리스트 주입으로 같은 타입 빈 여러 개를 받아 전략 패턴을 만들어봤다</li>
 </ul>
 <h2>다음 편</h2>
 <p>다음은 AOP와 프록시다. 컨테이너가 관리하는 빈이 "내가 짠 그 객체가 아닐 수도 있다"는 이야기를 한다.</p>

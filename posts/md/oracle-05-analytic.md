@@ -7,7 +7,7 @@ tags: [oracle, sql, 분석함수, 윈도우함수, connectby, 학습노트]
 summary: OVER 절의 구조부터 순위·누적·이전행 참조·이동평균까지, 그리고 CONNECT BY 계층 질의와 PIVOT/UNPIVOT을 정리한다. 오라클을 제대로 쓰기 시작하는 지점.
 ---
 
-분석 함수(윈도우 함수)를 알기 전과 후는 SQL 실력이 다르다. 그전에는 서브쿼리를 겹겹이 쌓아야 했던 것들이 한 줄로 끝난다.
+[4편](/post/oracle-04-subquery)까지가 서브쿼리를 겹겹이 쌓아 원하는 결과를 만드는 법이었다면, 이번 편은 그 겹을 걷어내는 도구다. 분석 함수(윈도우 함수)를 알기 전과 후는 SQL 실력이 다르다. 그전에는 인라인 뷰와 조인을 몇 겹씩 쌓아야 했던 것들이 한 줄로 끝난다.
 
 ## 집계 함수와 무엇이 다른가
 
@@ -115,7 +115,7 @@ FROM   employees;
 
 ### ORDER BY를 붙이면 누적이 된다
 
-여기가 중요한 지점이다. `OVER` 안에 `ORDER BY`가 들어가면 **기본 윈도우가 "처음부터 현재 행까지"** 로 바뀐다.
+여기가 중요한 지점이다. `OVER` 안에 `ORDER BY`가 들어가면 **기본 윈도우가 "처음부터 현재 행까지"**로 바뀐다.
 
 ```sql
 SELECT order_date, amount,
@@ -148,7 +148,7 @@ ORDER  BY order_date, order_id;
 | `UNBOUNDED FOLLOWING` | 파티션 끝 |
 
 ```sql
--- 3개월 이동평균 (현재 포함 직전 3건)
+-- 3건 이동평균 (현재 행 + 직전 2건)
 SELECT order_date, amount,
        ROUND(AVG(amount) OVER (ORDER BY order_date
                                ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)) AS 이동평균3
@@ -209,7 +209,7 @@ SELECT emp_name, department_id, salary,
 FROM   employees;
 ```
 
-**`LAST_VALUE`는 윈도우 절을 반드시 써야 한다.** 기본 윈도우가 "현재 행까지"라서, 그냥 쓰면 항상 자기 자신이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.
+**`LAST_VALUE`는 윈도우 절을 반드시 써야 한다.** 기본 윈도우가 "현재 행까지"(`RANGE`)라서, 그냥 쓰면 자기 자신 — 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 — 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.
 
 `IGNORE NULLS` 옵션도 있다. 결측치를 직전 값으로 채우는 데 유용하다.
 
@@ -219,7 +219,7 @@ LAST_VALUE(price IGNORE NULLS) OVER (ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDIN
 
 ## RATIO_TO_REPORT
 
-전체 대비 비율을 바로 구한다.
+`SUM(...) OVER (...)`로 나누던 비중 계산을 한 함수로 줄인다. 윈도우 전체 합에 대한 각 행의 비율을 돌려주므로, `PARTITION BY`를 어떻게 주느냐가 "전체 대비"인지 "그룹 내"인지를 결정한다.
 
 ```sql
 SELECT emp_name, salary,
@@ -297,7 +297,7 @@ START WITH employee_id = 105 CONNECT BY employee_id = PRIOR manager_id
 
 ### 숫자·날짜 생성
 
-`CONNECT BY LEVEL`은 계층과 상관없이 연속된 행을 만드는 데 쓰인다. 3편의 월 축 만들기가 이 용법이었다.
+`CONNECT BY LEVEL`은 계층과 상관없이 연속된 행을 만드는 데 쓰인다. [3편](/post/oracle-03-group-join)의 월 축 만들기가 이 용법이었다.
 
 ```sql
 SELECT LEVEL AS n FROM dual CONNECT BY LEVEL <= 10;

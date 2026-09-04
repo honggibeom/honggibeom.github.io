@@ -4,7 +4,7 @@ date: 2026-03-08
 category: spring
 src: cover.svg
 tags: [spring, spring-boot, java, 백엔드, 로드맵]
-summary: Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 9개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다.
+summary: Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 11개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다.
 ---
 
 ## 왜 지도부터 그리는가
@@ -13,11 +13,13 @@ Spring은 배울 게 많다기보다 **경계가 흐려서** 어렵다. "Spring�
 
 그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 **알아야 할 항목과 체크리스트**를 정리한다. 이 글은 그 시리즈의 목차다.
 
-원칙은 하나다. 순서를 건너뛰어도 되지만 **0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.** `@Transactional`이 왜 안 먹는지, 순환참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.
+원칙은 하나다. 순서를 건너뛰어도 되지만 **0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.** `@Transactional`이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.
 
 ---
 
 ## 전체 지도
+
+먼저 전체를 열한 칸으로 쪼갠다. 각 칸은 "이 단계가 답해주는 질문 하나"로 정리했다.
 
 | 단계 | 주제 | 핵심 질문 | 예상 기간 |
 | --- | --- | --- | --- |
@@ -41,17 +43,17 @@ Spring은 배울 게 많다기보다 **경계가 흐려서** 어렵다. "Spring�
 
 각 주제는 개별 글로 따로 정리한다.
 
-0. **[준비] 자바와 객체지향** — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle
-1. **Spring Core: IoC 컨테이너와 의존성 주입** — 빈 등록·주입·스코프·생명주기, 순환참조
-2. **AOP와 프록시** — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정
-3. **Spring MVC** — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계
-4. **Spring Boot** — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣
-5. **Spring Data JPA** — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL
-6. **트랜잭션** — 전파 속성, 격리 수준, 롤백 규칙, `@Transactional`이 안 먹는 경우
-7. **Spring Security** — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인
-8. **테스트** — 단위/슬라이스/통합 테스트, Mockito, Testcontainers
-9. **Spring Batch와 스케줄링** — Job/Step/Chunk, 재시작과 멱등성, `@Scheduled`, 락
-10. **운영과 성능** — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포
+0. **[[준비] 자바와 객체지향](/post/spring-00-java)** — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle
+1. **[Spring Core: IoC 컨테이너와 의존성 주입](/post/spring-01-core-di)** — 빈 등록·주입·스코프·생명주기, 순환 참조
+2. **[AOP와 프록시](/post/spring-02-aop)** — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정
+3. **[Spring MVC](/post/spring-03-mvc)** — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계
+4. **[Spring Boot](/post/spring-04-boot)** — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣
+5. **[Spring Data JPA](/post/spring-05-jpa)** — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL
+6. **[트랜잭션](/post/spring-06-transaction)** — 전파 속성, 격리 수준, 롤백 규칙, `@Transactional`이 안 먹는 경우
+7. **[Spring Security](/post/spring-07-security)** — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인
+8. **[테스트](/post/spring-08-test)** — 단위/슬라이스/통합 테스트, Mockito, Testcontainers
+9. **[Spring Batch와 스케줄링](/post/spring-09-batch)** — Job/Step/Chunk, 재시작과 멱등성, `@Scheduled`, 락
+10. **[운영과 성능](/post/spring-10-ops)** — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포
 
 ---
 

@@ -7,7 +7,7 @@ tags: [spring-boot, actuator, 성능, 캐시, 배포, 로드맵]
 summary: Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.
 ---
 
-> Spring 공부 로드맵 시리즈 10편(마지막).
+> Spring 공부 로드맵 시리즈 10편(마지막). [0편](/post/spring-00-java)부터 [9편](/post/spring-09-batch)까지가 "만드는 법"이었다면 이번은 "굴리는 법"이다. 끝이 있는 단계가 아니라 계속 쌓아가는 영역이다.
 
 ## 만드는 것과 굴리는 것
 
@@ -15,7 +15,7 @@ summary: Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, �
 
 ## 1. 관측 - 보이지 않으면 고칠 수 없다
 
-- **Actuator**: `/health`, `/metrics`, `/info`, `/env`, `/loggers`
+- **Actuator**: `/actuator/health`, `/actuator/metrics`, `/actuator/info`, `/actuator/env`, `/actuator/loggers`
   - 운영에서 어떤 엔드포인트를 열고 닫을지, 보안 설정
 - Micrometer와 메트릭 수집 → Prometheus + Grafana
 - 로깅
@@ -89,4 +89,4 @@ summary: Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, �
 
 ## 시리즈를 마치며
 
-10편을 관통하는 이야기는 하나다. **Spring은 마법이 아니라 컨테이너와 프록시로 이루어진 구조물이다.** 어떤 애노테이션이 동작하지 않을 때 "왜 안 되지"에서 멈추지 않고 "누가 이걸 읽어서 무엇을 감싸고 있나"까지 내려갈 수 있으면, 나머지는 문서를 찾아 읽는 문제로 바뀐다.
+0편부터 10편까지 열한 편을 관통하는 이야기는 하나다. **Spring은 마법이 아니라 컨테이너와 프록시로 이루어진 구조물이다.** 어떤 애노테이션이 동작하지 않을 때 "왜 안 되지"에서 멈추지 않고 "누가 이걸 읽어서 무엇을 감싸고 있나"까지 내려갈 수 있으면, 나머지는 문서를 찾아 읽는 문제로 바뀐다.

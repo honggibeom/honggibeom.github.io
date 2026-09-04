@@ -7,7 +7,7 @@ tags: [oracle, sql, select, 함수, 학습노트]
 summary: SELECT 문의 실행 순서부터 WHERE 조건, NULL의 함정, 문자·숫자·날짜·변환·조건 함수까지. 오라클에서 매일 쓰게 되는 문법을 한 번에 정리한다.
 ---
 
-이 글의 예제는 1편에서 만든 스키마를 그대로 쓴다.
+[1편](/post/oracle-01-basics)에서 오라클이 데이터를 어디에 어떻게 두는지와 테이블을 만드는 법까지 봤다. 이번 편은 그렇게 만든 테이블에서 데이터를 꺼내는 쪽이다. 매일 쓰게 되는 `SELECT` 문법과 단일행 함수를 한 번에 정리한다. 예제는 1편에서 만든 스키마를 그대로 쓴다.
 
 ## SELECT의 논리적 실행 순서
 
@@ -65,7 +65,7 @@ SELECT DISTINCT department_id, job_id FROM employees;  -- 두 컬럼 조합 기�
 SELECT emp_name || ' (' || job_id || ')' AS label FROM employees;
 ```
 
-`+`는 숫자 덧셈이다. 문자열에 쓰면 `ORA-01722: 수치가 부적합합니다` 가 난다.
+`+`는 숫자 덧셈이다. 문자열에 쓰면 `ORA-01722: 수치가 부적합합니다`가 난다.
 
 ### 리터럴에 따옴표 넣기
 
@@ -107,7 +107,7 @@ WHERE (department_id = 20 OR department_id = 30) AND salary >= 5000000 -- 맞음
 WHERE code LIKE 'A\_%' ESCAPE '\'   -- 'A_'로 시작하는 것
 ```
 
-`LIKE '%foo%'`처럼 앞에 `%`가 오면 인덱스를 못 탄다. 이건 8편에서 다시 본다.
+`LIKE '%foo%'`처럼 앞에 `%`가 오면 인덱스를 못 탄다. 이건 [8편](/post/oracle-08-tuning)에서 다시 본다.
 
 ### NULL
 
@@ -126,7 +126,7 @@ SELECT 'a' || NULL       FROM dual;  -- 'a'  (문자열 연결만 예외)
 SELECT NVL(NULL, 0) + 100 FROM dual; -- 100
 ```
 
-`NOT IN`에 NULL이 섞이면 결과가 아예 비어버린다. 이건 4편 서브쿼리에서 크게 문제가 되는데, 원리는 여기서 나온다.
+`NOT IN`에 NULL이 섞이면 결과가 아예 비어버린다. 이건 [4편](/post/oracle-04-subquery) 서브쿼리에서 크게 문제가 되는데, 원리는 여기서 나온다.
 
 ```sql
 SELECT * FROM employees WHERE department_id NOT IN (10, 20, NULL);
@@ -402,7 +402,7 @@ SELECT emp_name,
 FROM   employees;
 ```
 
-`NVL`은 두 인자의 타입이 같아야 하고 둘 다 평가한다. `COALESCE`는 필요한 만큼만 평가하고 인자 개수 제한이 없어서, 인자가 두 개여도 `COALESCE`를 쓰는 습관이 나쁘지 않다.
+`NVL`은 인자 타입이 달라도 암시적으로 변환해 넘어가지만 두 인자를 **모두 평가**한다. `COALESCE`는 앞에서부터 필요한 만큼만 평가하고 멈추며 인자 개수 제한도 없어서, 인자가 두 개여도 `COALESCE`를 쓰는 습관이 나쁘지 않다.
 
 ## 조건 함수
 

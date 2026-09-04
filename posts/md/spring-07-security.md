@@ -7,7 +7,7 @@ tags: [spring-security, jwt, oauth2, 인증, 인가, 로드맵]
 summary: Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.
 ---
 
-> Spring 공부 로드맵 시리즈 7편.
+> Spring 공부 로드맵 시리즈 7편. [6편](/post/spring-06-transaction)까지로 "무엇을 어떻게 저장하는가"는 정리됐다. 이번엔 그 앞에 서서 "누가 요청했고 무엇을 해도 되는가"를 거르는 층이다.
 
 ## 구조를 먼저
 
@@ -20,15 +20,15 @@ Spring Security를 어렵게 만드는 건 문법이 아니라 **어디에 무�
  → DelegatingFilterProxy
  → FilterChainProxy
  → SecurityFilterChain (여러 필터가 순서대로)
-     - SecurityContextPersistenceFilter
+     - SecurityContextHolderFilter (6.0 전 이름은 SecurityContextPersistenceFilter)
      - (커스텀) JWT 인증 필터
      - UsernamePasswordAuthenticationFilter
      - ExceptionTranslationFilter
-     - FilterSecurityInterceptor / AuthorizationFilter
+     - AuthorizationFilter (6.0에서 FilterSecurityInterceptor 를 대체)
  → DispatcherServlet
 ```
 
-정리하면 Security는 **MVC 앞단의 필터 뭉치**다. 그래서 Security에서 던진 예외는 `@ControllerAdvice`로 잡히지 않는다 — 이 사실 하나만 알아도 삽질이 크게 준다.
+정리하면 Security는 **MVC 앞단의 필터 뭉치**다. 그래서 필터 단계에서 던진 예외는 `@ControllerAdvice`로 잡히지 않고 `AuthenticationEntryPoint` / `AccessDeniedHandler`가 받는다 — 이 사실 하나만 알아도 삽질이 크게 준다. (반대로 `@PreAuthorize` 같은 메서드 보안 예외는 컨트롤러 안쪽에서 나므로 `@ControllerAdvice`로 잡힌다.)
 
 ## 1. 인증과 인가 구분
 
@@ -41,7 +41,7 @@ Spring Security를 어렵게 만드는 건 문법이 아니라 **어디에 무�
 
 JWT로 바로 가지 말고 세션 기반 폼 로그인을 먼저 굴려보는 게 이해에 훨씬 낫다.
 
-- `SecurityFilterChain` 빈으로 설정하기 (최신 방식, `WebSecurityConfigurerAdapter`는 제거됨)
+- `SecurityFilterChain` 빈으로 설정하기 (5.7부터 권장, `WebSecurityConfigurerAdapter`는 6.0에서 제거)
 - `UserDetailsService`와 `UserDetails` 구현
 - `PasswordEncoder` — BCrypt, 평문 저장 금지
 - `AuthenticationManager`, `AuthenticationProvider`의 역할
@@ -51,7 +51,7 @@ JWT로 바로 가지 말고 세션 기반 폼 로그인을 먼저 굴려보는 �
 ## 3. 인가 설정
 
 - `authorizeHttpRequests`로 경로별 권한 지정
-- 역할(ROLE_) 과 권한(authority)의 차이
+- 역할(`ROLE_`)과 권한(authority)의 차이
 - 메서드 보안: `@PreAuthorize`, `@PostAuthorize`, `@Secured`
 - SpEL로 표현하는 조건 (`@PreAuthorize("#userId == authentication.name")`)
 - 계층형 권한(RoleHierarchy)
@@ -96,4 +96,4 @@ JWT로 바로 가지 말고 세션 기반 폼 로그인을 먼저 굴려보는 �
 
 ## 다음 편
 
-다음은 테스트다.
+다음은 테스트다. 여기까지 만든 것들이 정말 그렇게 동작하는지를 증명하는 방법으로 넘어간다.

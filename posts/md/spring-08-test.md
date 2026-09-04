@@ -7,7 +7,7 @@ tags: [spring, test, junit, mockito, testcontainers, 로드맵]
 summary: Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.
 ---
 
-> Spring 공부 로드맵 시리즈 8편.
+> Spring 공부 로드맵 시리즈 8편. 0~[7편](/post/spring-07-security)에서 만드는 법을 봤다. 이번엔 그게 정말 그렇게 동작하는지를 증명하는 법, 그리고 증명 비용을 계층별로 나누는 법이다.
 
 ## 테스트를 나누는 기준
 
@@ -40,7 +40,7 @@ Spring에서 테스트가 어려워지는 이유는 대부분 **모든 테스트
 ## 3. 슬라이스 테스트
 
 - `@WebMvcTest` + `MockMvc` — 컨트롤러, 바인딩, 검증, 예외 처리 확인
-  - 서비스는 `@MockBean`으로 대체
+  - 서비스는 `@MockitoBean`으로 대체 (Boot 3.4부터. 그 전 이름인 `@MockBean`은 deprecated)
   - Security가 끼어들 때 `@WithMockUser`
 - `@DataJpaTest` — 리포지토리와 쿼리 검증, 기본적으로 롤백
   - 임베디드 DB 대신 실제 DB로 돌리려면 `@AutoConfigureTestDatabase(replace = NONE)`
@@ -77,4 +77,4 @@ Spring에서 테스트가 어려워지는 이유는 대부분 **모든 테스트
 
 ## 다음 편
 
-다음은 Spring Batch와 스케줄링이다.
+다음은 Spring Batch와 스케줄링이다. 요청 하나를 처리하는 세계에서 수십만 건을 밤새 돌리는 세계로 넘어간다.

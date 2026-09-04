@@ -90,7 +90,7 @@
 <h1>Spring AOP와 프록시 정리 - 내가 안 짠 코드가 왜 끼어드나 (Spring 로드맵 2)</h1>
 <p class="pr-meta">2026.04.20 · <a href="/tags/spring">#spring</a> <a href="/tags/aop">#aop</a> <a href="/tags/proxy">#proxy</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 2편.</p>
+<p>Spring 공부 로드맵 시리즈 2편. <a href="/post/spring-01-core-di">1편</a>에서 컨테이너가 빈을 만들어 넣어준다는 걸 봤다. 이번엔 그 빈이 사실 내가 짠 객체가 아닐 수도 있다는 이야기다.</p>
 </blockquote>
 <h2>왜 따로 한 편을 쓰나</h2>
 <p>AOP는 "로깅 편하게 하는 기능" 정도로 배우고 넘어가기 쉽다. 그런데 Spring에서 자주 겪는 미스터리 — <code>@Transactional</code>이 안 먹는다, <code>@Cacheable</code>이 무시된다, 스택 트레이스에 낯선 클래스명이 나온다 — 는 전부 여기서 설명된다.</p>
@@ -109,7 +109,7 @@
 <h2>3. 포인트컷 표현식</h2>
 <ul>
 <li><code>execution(...)</code> 표현식 읽는 법 — 접근제어자, 반환타입, 패키지, 클래스, 메서드, 파라미터</li>
-<li><code>@annotation(...)</code> 으로 특정 애노테이션이 붙은 메서드만 잡기</li>
+<li><code>@annotation(...)</code>으로 특정 애노테이션이 붙은 메서드만 잡기</li>
 <li><code>within(...)</code>, <code>bean(...)</code></li>
 <li>커스텀 애노테이션을 만들고 그것만 잡는 방식이 실무에서 가장 깔끔하다</li>
 </ul>
@@ -118,7 +118,7 @@
 <ul>
 <li><strong>JDK 동적 프록시</strong>: 인터페이스가 있을 때, 인터페이스 기반으로 생성</li>
 <li><strong>CGLIB 프록시</strong>: 클래스를 상속해서 생성 (Spring Boot의 기본값)</li>
-<li>CGLIB의 제약: <code>final</code> 클래스/메서드에는 못 건다, 기본 생성자 이슈</li>
+<li>CGLIB의 제약: <code>final</code> 클래스/메서드, <code>private</code>·<code>static</code> 메서드에는 못 건다 (기본 생성자가 필요하던 제약은 Spring 4.0의 Objenesis 도입으로 사라졌다)</li>
 </ul>
 <p>이 구조에서 나오는 대표적 함정 두 가지:</p>
 <p><strong>self-invocation (자기 호출)</strong></p>

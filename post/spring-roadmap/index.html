@@ -9,7 +9,7 @@
     />
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
-    <meta name="description" content="Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 9개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다." />
+    <meta name="description" content="Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 11개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다." />
     <meta name="keywords" content="spring, spring-boot, java, 백엔드, 로드맵, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Docker, Oracle, Python" />
     <meta name="author" content="홍기범 (Honggibeom)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -17,7 +17,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Honggibeom's blog" />
     <meta property="og:title" content="Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차) | Honggibeom's blog" />
-    <meta property="og:description" content="Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 9개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다." />
+    <meta property="og:description" content="Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 11개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다." />
     <meta property="og:url" content="https://honggibeom.github.io/post/spring-roadmap" />
     <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -67,7 +67,7 @@
 <meta property="article:tag" content="java" />
 <meta property="article:tag" content="백엔드" />
 <meta property="article:tag" content="로드맵" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차)","description":"Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 9개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다.","datePublished":"2026-03-08","dateModified":"2026-03-08","keywords":"spring, spring-boot, java, 백엔드, 로드맵","image":"https://honggibeom.github.io/posts/assets/spring-roadmap/cover.svg","url":"https://honggibeom.github.io/post/spring-roadmap","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/spring-roadmap"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차)","description":"Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JPA, 트랜잭션, Security, 테스트, Batch, 운영까지 11개 주제를 왜 이 순서로 봐야 하는지와 시리즈 목차를 정리한다.","datePublished":"2026-03-08","dateModified":"2026-03-08","keywords":"spring, spring-boot, java, 백엔드, 로드맵","image":"https://honggibeom.github.io/posts/assets/spring-roadmap/cover.svg","url":"https://honggibeom.github.io/post/spring-roadmap","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/spring-roadmap"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Spring","item":"https://honggibeom.github.io/categories/spring"},{"@type":"ListItem","position":3,"name":"Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차)","item":"https://honggibeom.github.io/post/spring-roadmap"}]}</script>
 </head>
   <body>
@@ -92,9 +92,10 @@
 <h2>왜 지도부터 그리는가</h2>
 <p>Spring은 배울 게 많다기보다 <strong>경계가 흐려서</strong> 어렵다. "Spring을 공부한다"는 말 안에 자바 언어, 프레임워크 코어, 웹 계층, ORM, 트랜잭션, 보안, 배치, 배포가 전부 섞여 들어간다. 그래서 튜토리얼을 따라 CRUD 하나를 만들고 나면, 정작 "내가 뭘 아는지"를 스스로도 설명하지 못하는 상태가 된다.</p>
 <p>그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 <strong>알아야 할 항목과 체크리스트</strong>를 정리한다. 이 글은 그 시리즈의 목차다.</p>
-<p>원칙은 하나다. 순서를 건너뛰어도 되지만 <strong>0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.</strong> <code>@Transactional</code>이 왜 안 먹는지, 순환참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.</p>
+<p>원칙은 하나다. 순서를 건너뛰어도 되지만 <strong>0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.</strong> <code>@Transactional</code>이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.</p>
 <hr>
 <h2>전체 지도</h2>
+<p>먼저 전체를 열한 칸으로 쪼갠다. 각 칸은 "이 단계가 답해주는 질문 하나"로 정리했다.</p>
 
 
 
@@ -178,17 +179,17 @@
 <h2>시리즈 목차</h2>
 <p>각 주제는 개별 글로 따로 정리한다.</p>
 <ol start="0">
-<li><strong>[준비] 자바와 객체지향</strong> — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle</li>
-<li><strong>Spring Core: IoC 컨테이너와 의존성 주입</strong> — 빈 등록·주입·스코프·생명주기, 순환참조</li>
-<li><strong>AOP와 프록시</strong> — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정</li>
-<li><strong>Spring MVC</strong> — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계</li>
-<li><strong>Spring Boot</strong> — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣</li>
-<li><strong>Spring Data JPA</strong> — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL</li>
-<li><strong>트랜잭션</strong> — 전파 속성, 격리 수준, 롤백 규칙, <code>@Transactional</code>이 안 먹는 경우</li>
-<li><strong>Spring Security</strong> — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인</li>
-<li><strong>테스트</strong> — 단위/슬라이스/통합 테스트, Mockito, Testcontainers</li>
-<li><strong>Spring Batch와 스케줄링</strong> — Job/Step/Chunk, 재시작과 멱등성, <code>@Scheduled</code>, 락</li>
-<li><strong>운영과 성능</strong> — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포</li>
+<li><strong><a href="/post/spring-00-java">[준비] 자바와 객체지향</a></strong> — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle</li>
+<li><strong><a href="/post/spring-01-core-di">Spring Core: IoC 컨테이너와 의존성 주입</a></strong> — 빈 등록·주입·스코프·생명주기, 순환 참조</li>
+<li><strong><a href="/post/spring-02-aop">AOP와 프록시</a></strong> — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정</li>
+<li><strong><a href="/post/spring-03-mvc">Spring MVC</a></strong> — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계</li>
+<li><strong><a href="/post/spring-04-boot">Spring Boot</a></strong> — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣</li>
+<li><strong><a href="/post/spring-05-jpa">Spring Data JPA</a></strong> — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL</li>
+<li><strong><a href="/post/spring-06-transaction">트랜잭션</a></strong> — 전파 속성, 격리 수준, 롤백 규칙, <code>@Transactional</code>이 안 먹는 경우</li>
+<li><strong><a href="/post/spring-07-security">Spring Security</a></strong> — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인</li>
+<li><strong><a href="/post/spring-08-test">테스트</a></strong> — 단위/슬라이스/통합 테스트, Mockito, Testcontainers</li>
+<li><strong><a href="/post/spring-09-batch">Spring Batch와 스케줄링</a></strong> — Job/Step/Chunk, 재시작과 멱등성, <code>@Scheduled</code>, 락</li>
+<li><strong><a href="/post/spring-10-ops">운영과 성능</a></strong> — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포</li>
 </ol>
 <hr>
 <h2>공부하는 방법에 대해</h2>

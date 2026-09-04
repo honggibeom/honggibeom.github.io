@@ -16,13 +16,13 @@ summary: 오라클 DB 기본기 정리. 인스턴스·테이블스페이스 구�
 | 편 | 주제 |
 | --- | --- |
 | 1 | 구조와 기본기, 데이터 타입, DDL과 제약조건 |
-| 2 | SELECT와 단일행 함수 |
-| 3 | 집계, GROUP BY, 조인 |
-| 4 | 서브쿼리, 집합 연산, WITH, MERGE |
-| 5 | 분석 함수와 계층 질의 |
-| 6 | DML, 트랜잭션, 락, 스키마 객체 |
-| 7 | PL/SQL 전반 |
-| 8 | 인덱스, 실행계획, 튜닝 |
+| 2 | [SELECT와 단일행 함수](/post/oracle-02-select-functions) |
+| 3 | [집계, GROUP BY, 조인](/post/oracle-03-group-join) |
+| 4 | [서브쿼리, 집합 연산, WITH, MERGE](/post/oracle-04-subquery) |
+| 5 | [분석 함수와 계층 질의](/post/oracle-05-analytic) |
+| 6 | [DML, 트랜잭션, 락, 스키마 객체](/post/oracle-06-transaction) |
+| 7 | [PL/SQL 전반](/post/oracle-07-plsql) |
+| 8 | [인덱스, 실행계획, 튜닝](/post/oracle-08-tuning) |
 
 이 시리즈의 모든 예제는 이 글 마지막에서 만드는 스키마 하나를 계속 재사용한다.
 
@@ -90,7 +90,7 @@ docker exec -it oracle-free sqlplus sys/oracle@localhost:1521/FREEPDB1 as sysdba
                   └─ 블록 (기본 8KB, I/O 최소 단위)
 ```
 
-읽기의 최소 단위가 **블록**이라는 게 중요하다. 한 행만 필요해도 그 행이 든 블록 전체를 읽는다. 8편의 인덱스 이야기가 전부 여기서 출발한다.
+읽기의 최소 단위가 **블록**이라는 게 중요하다. 한 행만 필요해도 그 행이 든 블록 전체를 읽는다. [8편](/post/oracle-08-tuning)의 인덱스 이야기가 전부 여기서 출발한다.
 
 ## 사용자, 스키마, 그리고 접속
 
@@ -357,7 +357,7 @@ FOREIGN KEY (department_id) REFERENCES departments (department_id)
 
 ## 실습용 스키마
 
-앞으로 모든 편에서 이 스키마를 쓴다. `study` 계정으로 접속해 그대로 실행하면 된다.
+앞으로 모든 편에서 이 스키마를 쓴다. `study` 계정으로 접속해 그대로 실행하면 된다. (위 DDL 예제를 이미 실행했다면 `DROP TABLE departments PURGE;`로 지우고 시작한다.)
 
 ```sql
 CREATE TABLE departments (
@@ -450,7 +450,7 @@ COMMIT;
 
 `DATE '2015-01-05'`는 ANSI 날짜 리터럴이다. `TO_DATE('2015-01-05','YYYY-MM-DD')`와 같지만 짧고, 세션 날짜 포맷에 영향받지 않아서 안전하다.
 
-마지막의 `COMMIT`을 빼먹으면 안 된다. 오라클은 자동 커밋이 아니다. 이 이야기는 6편에서 제대로 다룬다.
+마지막의 `COMMIT`을 빼먹으면 안 된다. 오라클은 자동 커밋이 아니다. 이 이야기는 [6편](/post/oracle-06-transaction)에서 제대로 다룬다.
 
 ## 정리
 

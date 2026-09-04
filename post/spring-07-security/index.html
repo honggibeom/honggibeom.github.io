@@ -91,7 +91,7 @@
 <h1>Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</h1>
 <p class="pr-meta">2026.07.03 · <a href="/tags/spring-security">#spring-security</a> <a href="/tags/jwt">#jwt</a> <a href="/tags/oauth2">#oauth2</a> <a href="/tags/%EC%9D%B8%EC%A6%9D">#인증</a> <a href="/tags/%EC%9D%B8%EA%B0%80">#인가</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 7편.</p>
+<p>Spring 공부 로드맵 시리즈 7편. <a href="/post/spring-06-transaction">6편</a>까지로 "무엇을 어떻게 저장하는가"는 정리됐다. 이번엔 그 앞에 서서 "누가 요청했고 무엇을 해도 되는가"를 거르는 층이다.</p>
 </blockquote>
 <h2>구조를 먼저</h2>
 <p>Spring Security를 어렵게 만드는 건 문법이 아니라 <strong>어디에 무엇이 끼어드는지 안 보인다는 점</strong>이다. 그래서 설정 예제를 복사하기 전에 필터체인이라는 골격부터 잡아야 한다.</p>
@@ -100,14 +100,14 @@
  → DelegatingFilterProxy
  → FilterChainProxy
  → SecurityFilterChain (여러 필터가 순서대로)
-     - SecurityContextPersistenceFilter
+     - SecurityContextHolderFilter (6.0 전 이름은 SecurityContextPersistenceFilter)
      - (커스텀) JWT 인증 필터
      - UsernamePasswordAuthenticationFilter
      - ExceptionTranslationFilter
-     - FilterSecurityInterceptor / AuthorizationFilter
+     - AuthorizationFilter (6.0에서 FilterSecurityInterceptor 를 대체)
  → DispatcherServlet
 </code></pre>
-<p>정리하면 Security는 <strong>MVC 앞단의 필터 뭉치</strong>다. 그래서 Security에서 던진 예외는 <code>@ControllerAdvice</code>로 잡히지 않는다 — 이 사실 하나만 알아도 삽질이 크게 준다.</p>
+<p>정리하면 Security는 <strong>MVC 앞단의 필터 뭉치</strong>다. 그래서 필터 단계에서 던진 예외는 <code>@ControllerAdvice</code>로 잡히지 않고 <code>AuthenticationEntryPoint</code> / <code>AccessDeniedHandler</code>가 받는다 — 이 사실 하나만 알아도 삽질이 크게 준다. (반대로 <code>@PreAuthorize</code> 같은 메서드 보안 예외는 컨트롤러 안쪽에서 나므로 <code>@ControllerAdvice</code>로 잡힌다.)</p>
 <h2>1. 인증과 인가 구분</h2>
 <ul>
 <li><strong>인증(Authentication)</strong>: 너는 누구인가</li>
@@ -118,7 +118,7 @@
 <h2>2. 폼 로그인부터</h2>
 <p>JWT로 바로 가지 말고 세션 기반 폼 로그인을 먼저 굴려보는 게 이해에 훨씬 낫다.</p>
 <ul>
-<li><code>SecurityFilterChain</code> 빈으로 설정하기 (최신 방식, <code>WebSecurityConfigurerAdapter</code>는 제거됨)</li>
+<li><code>SecurityFilterChain</code> 빈으로 설정하기 (5.7부터 권장, <code>WebSecurityConfigurerAdapter</code>는 6.0에서 제거)</li>
 <li><code>UserDetailsService</code>와 <code>UserDetails</code> 구현</li>
 <li><code>PasswordEncoder</code> — BCrypt, 평문 저장 금지</li>
 <li><code>AuthenticationManager</code>, <code>AuthenticationProvider</code>의 역할</li>
@@ -128,7 +128,7 @@
 <h2>3. 인가 설정</h2>
 <ul>
 <li><code>authorizeHttpRequests</code>로 경로별 권한 지정</li>
-<li>역할(ROLE_) 과 권한(authority)의 차이</li>
+<li>역할(<code>ROLE_</code>)과 권한(authority)의 차이</li>
 <li>메서드 보안: <code>@PreAuthorize</code>, <code>@PostAuthorize</code>, <code>@Secured</code></li>
 <li>SpEL로 표현하는 조건 (<code>@PreAuthorize("#userId == authentication.name")</code>)</li>
 <li>계층형 권한(RoleHierarchy)</li>
@@ -171,7 +171,7 @@
 <li class="task-list-item"><input type="checkbox" disabled> 401과 403을 구분해서 응답한다</li>
 </ul>
 <h2>다음 편</h2>
-<p>다음은 테스트다.</p>
+<p>다음은 테스트다. 여기까지 만든 것들이 정말 그렇게 동작하는지를 증명하는 방법으로 넘어간다.</p>
 </article><section><h2>Spring의 다른 글</h2><ul class="pr-list"><li><a href="/post/spring-10-ops">Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)</a><p>Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.</p><span class="pr-meta">2026.08.17</span></li><li><a href="/post/spring-09-batch">Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)</a><p>Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.</p><span class="pr-meta">2026.07.31</span></li><li><a href="/post/spring-08-test">Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)</a><p>Spring 테스트 정리. 단위 테스트, 슬라이스 테스트(@WebMvcTest, @DataJpaTest), 통합 테스트를 어떻게 나누고 무엇을 어디까지 검증할 것인가. Mockito와 Testcontainers까지 실전 순서로.</p><span class="pr-meta">2026.07.19</span></li><li><a href="/post/spring-06-transaction">Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)</a><p>Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다.</p><span class="pr-meta">2026.06.21</span></li><li><a href="/post/spring-05-jpa">Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)</a><p>Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.</p><span class="pr-meta">2026.06.05</span></li><li><a href="/post/spring-04-boot">Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)</a><p>Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법.</p><span class="pr-meta">2026.05.20</span></li></ul></section></main></div>
   </body>
 </html>

@@ -91,7 +91,7 @@
 <h1>프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식</h1>
 <p class="pr-meta">2026.08.29 · <a href="/tags/nextjs">#nextjs</a> <a href="/tags/astro">#astro</a> <a href="/tags/sveltekit">#sveltekit</a> <a href="/tags/ssr">#ssr</a> <a href="/tags/rsc">#rsc</a> <a href="/tags/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C">#프론트엔드</a></p>
 <blockquote>
-<p>프론트엔드 빌드 도구 시리즈 2편. 1편에서 빌드 도구 층을 봤다면, 이번엔 그 위에 얹히는 층이다.</p>
+<p>프론트엔드 빌드 도구 시리즈 2편. <a href="/post/buildtool-01-bundlers">1편</a>에서 빌드 도구 층을 봤다면, 이번엔 그 위에 얹히는 층이다.</p>
 </blockquote>
 <h2>왜 다시 서버로 갔나</h2>
 <p>2015년부터 한동안 방향은 명확했다. <strong>전부 클라이언트로 옮기자.</strong> 서버는 JSON만 주고, 화면은 브라우저에서 React가 그린다. 페이지 이동에 새로고침이 없고, 백엔드와 프론트엔드가 깔끔하게 분리된다.</p>
@@ -351,6 +351,7 @@ export function LikeButton({ initial }) {
 <li><strong>Waku</strong> — RSC를 최소한으로 체험해보기 위한 가벼운 React 프레임워크</li>
 </ul>
 <h2>한 장으로</h2>
+<p>앞의 렌더링 방식이 실제 프레임워크에 어떻게 배분돼 있는지를 한 표에 모았다.</p>
 
 
 
@@ -427,7 +428,7 @@ export function LikeButton({ initial }) {
 
 
 <table><thead><tr><th>프레임워크</th><th>버전(2026-08)</th><th>기반 언어/뷰</th><th>빌드 도구</th><th>주 렌더링</th></tr></thead><tbody><tr><td>Next.js</td><td>16.3</td><td>React</td><td>Turbopack</td><td>RSC + SSR/ISR/PPR</td></tr><tr><td>Nuxt</td><td>4.5</td><td>Vue</td><td>Vite 8 + Nitro</td><td>SSR/SSG 하이브리드</td></tr><tr><td>SvelteKit</td><td>2.7x (Svelte 5)</td><td>Svelte</td><td>Vite</td><td>SSR/SSG/CSR</td></tr><tr><td>Astro</td><td>6</td><td>무관(섞어 씀)</td><td>Vite</td><td>아일랜드 + SSG/SSR</td></tr><tr><td>React Router</td><td>v7</td><td>React</td><td>Vite</td><td>SSR/SSG/SPA</td></tr><tr><td>TanStack Start</td><td>1.x</td><td>React</td><td>Vite</td><td>SPA 우선 + 서버 함수</td></tr><tr><td>Qwik</td><td>1.x (2.0 베타)</td><td>Qwik</td><td>Vite</td><td>리주머빌리티</td></tr><tr><td>SolidStart</td><td>2</td><td>Solid</td><td>Vite 8</td><td>SSR/SSG/CSR</td></tr><tr><td>Angular</td><td>v22</td><td>Angular</td><td>esbuild</td><td>SSR/SSG</td></tr></tbody></table>
-<p><strong>빌드 도구 칸을 보면 1편이 왜 필요했는지가 보인다.</strong> Turbopack을 쓰는 Next.js를 빼면 전부 Vite다.</p>
+<p><strong>빌드 도구 칸을 보면 1편이 왜 필요했는지가 보인다.</strong> Turbopack을 쓰는 Next.js와 esbuild를 쓰는 Angular를 빼면 전부 Vite다.</p>
 <h2>무엇을 고를 것인가</h2>
 
 

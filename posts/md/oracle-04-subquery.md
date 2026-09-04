@@ -4,10 +4,10 @@ date: 2025-09-02
 category: oracle
 src: cover.svg
 tags: [oracle, sql, 서브쿼리, merge, 학습노트]
-summary: 단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.
+summary: 단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.
 ---
 
-서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, **어디에 놓이는가**와 **몇 행을 돌려주는가** 두 축으로 보면 정리된다.
+[3편](/post/oracle-03-group-join)에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, **어디에 놓이는가**와 **몇 행을 돌려주는가** 두 축으로 보면 정리된다.
 
 ## 놓이는 자리에 따른 분류
 
@@ -58,11 +58,11 @@ WHERE  salary > ALL (SELECT salary FROM employees WHERE department_id = 20);
 WHERE  salary > ANY (SELECT salary FROM employees WHERE department_id = 20);
 ```
 
-`ANY`/`ALL`은 읽기 어려워서 실무에서는 `> (SELECT MIN(...))`, `> (SELECT MAX(...))` 로 바꿔 쓰는 편이 낫다.
+`ANY`/`ALL`은 읽기 어려워서 실무에서는 `> (SELECT MIN(...))`, `> (SELECT MAX(...))`로 바꿔 쓰는 편이 낫다.
 
 ### NOT IN의 NULL 함정
 
-2편에서 본 NULL 규칙이 여기서 사고로 이어진다.
+[2편](/post/oracle-02-select-functions)에서 본 NULL 규칙이 여기서 사고로 이어진다.
 
 ```sql
 -- 부서에 아무도 배정되지 않은 부서를 찾으려는 의도
@@ -244,7 +244,7 @@ ORDER  BY h.avg_sal DESC;
 
 ### 재귀 CTE
 
-11gR2부터 표준 재귀 문법도 쓸 수 있다. 오라클 고유의 `CONNECT BY`는 5편에서 다룬다.
+11gR2부터 표준 재귀 문법도 쓸 수 있다. 오라클 고유의 `CONNECT BY`는 [5편](/post/oracle-05-analytic)에서 다룬다.
 
 ```sql
 WITH org (employee_id, emp_name, manager_id, lvl) AS (
@@ -278,7 +278,7 @@ WHEN NOT MATCHED THEN
 포인트.
 
 - `ON` 절의 컬럼은 `UPDATE SET`에서 **변경할 수 없다.**
-- `WHEN MATCHED THEN UPDATE ... DELETE WHERE ...` 로 조건부 삭제도 붙일 수 있다.
+- `WHEN MATCHED THEN UPDATE ... DELETE WHERE ...`로 조건부 삭제도 붙일 수 있다.
 - `WHEN MATCHED`와 `WHEN NOT MATCHED` 중 하나만 써도 된다.
 - `USING`에 서브쿼리를 놓으면 대량 데이터를 한 번에 반영할 수 있다. 배치에서 이 형태를 가장 많이 쓴다.
 

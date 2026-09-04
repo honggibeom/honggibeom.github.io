@@ -7,7 +7,7 @@ tags: [nextjs, astro, sveltekit, ssr, rsc, 프론트엔드]
 summary: Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지.
 ---
 
-> 프론트엔드 빌드 도구 시리즈 2편. 1편에서 빌드 도구 층을 봤다면, 이번엔 그 위에 얹히는 층이다.
+> 프론트엔드 빌드 도구 시리즈 2편. [1편](/post/buildtool-01-bundlers)에서 빌드 도구 층을 봤다면, 이번엔 그 위에 얹히는 층이다.
 
 ## 왜 다시 서버로 갔나
 
@@ -273,6 +273,8 @@ Vapor Mode는 컴파일된 컴포넌트에서 가상 DOM을 걷어내는 것이�
 
 ## 한 장으로
 
+앞의 렌더링 방식이 실제 프레임워크에 어떻게 배분돼 있는지를 한 표에 모았다.
+
 | 프레임워크 | 버전(2026-08) | 기반 언어/뷰 | 빌드 도구 | 주 렌더링 |
 | --- | --- | --- | --- | --- |
 | Next.js | 16.3 | React | Turbopack | RSC + SSR/ISR/PPR |
@@ -285,7 +287,7 @@ Vapor Mode는 컴파일된 컴포넌트에서 가상 DOM을 걷어내는 것이�
 | SolidStart | 2 | Solid | Vite 8 | SSR/SSG/CSR |
 | Angular | v22 | Angular | esbuild | SSR/SSG |
 
-**빌드 도구 칸을 보면 1편이 왜 필요했는지가 보인다.** Turbopack을 쓰는 Next.js를 빼면 전부 Vite다.
+**빌드 도구 칸을 보면 1편이 왜 필요했는지가 보인다.** Turbopack을 쓰는 Next.js와 esbuild를 쓰는 Angular를 빼면 전부 Vite다.
 
 ## 무엇을 고를 것인가
 

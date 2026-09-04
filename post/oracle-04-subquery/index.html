@@ -9,7 +9,7 @@
     />
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
-    <meta name="description" content="단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다." />
+    <meta name="description" content="단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다." />
     <meta name="keywords" content="oracle, sql, 서브쿼리, merge, 학습노트, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Python" />
     <meta name="author" content="홍기범 (Honggibeom)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -17,7 +17,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Honggibeom's blog" />
     <meta property="og:title" content="오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4) | Honggibeom's blog" />
-    <meta property="og:description" content="단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다." />
+    <meta property="og:description" content="단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다." />
     <meta property="og:url" content="https://honggibeom.github.io/post/oracle-04-subquery" />
     <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -67,7 +67,7 @@
 <meta property="article:tag" content="서브쿼리" />
 <meta property="article:tag" content="merge" />
 <meta property="article:tag" content="학습노트" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)","description":"단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.","datePublished":"2025-09-02","dateModified":"2025-09-02","keywords":"oracle, sql, 서브쿼리, merge, 학습노트","image":"https://honggibeom.github.io/posts/assets/oracle-04-subquery/cover.svg","url":"https://honggibeom.github.io/post/oracle-04-subquery","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/oracle-04-subquery"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)","description":"단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.","datePublished":"2025-09-02","dateModified":"2025-09-02","keywords":"oracle, sql, 서브쿼리, merge, 학습노트","image":"https://honggibeom.github.io/posts/assets/oracle-04-subquery/cover.svg","url":"https://honggibeom.github.io/post/oracle-04-subquery","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/oracle-04-subquery"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"Oracle","item":"https://honggibeom.github.io/categories/oracle"},{"@type":"ListItem","position":3,"name":"오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)","item":"https://honggibeom.github.io/post/oracle-04-subquery"}]}</script>
 </head>
   <body>
@@ -89,7 +89,7 @@
 <p class="pr-meta"><a href="/categories/oracle">Oracle</a></p>
 <h1>오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)</h1>
 <p class="pr-meta">2025.09.02 · <a href="/tags/oracle">#oracle</a> <a href="/tags/sql">#sql</a> <a href="/tags/%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC">#서브쿼리</a> <a href="/tags/merge">#merge</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
-<p>서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, <strong>어디에 놓이는가</strong>와 <strong>몇 행을 돌려주는가</strong> 두 축으로 보면 정리된다.</p>
+<p><a href="/post/oracle-03-group-join">3편</a>에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, <strong>어디에 놓이는가</strong>와 <strong>몇 행을 돌려주는가</strong> 두 축으로 보면 정리된다.</p>
 <h2>놓이는 자리에 따른 분류</h2>
 
 
@@ -173,9 +173,9 @@ WHERE  salary > ALL (SELECT salary FROM employees WHERE department_id = 20);
 -- 개발팀 최저 연봉보다는 많이 받는 사원
 WHERE  salary > ANY (SELECT salary FROM employees WHERE department_id = 20);
 </code></pre>
-<p><code>ANY</code>/<code>ALL</code>은 읽기 어려워서 실무에서는 <code>> (SELECT MIN(...))</code>, <code>> (SELECT MAX(...))</code> 로 바꿔 쓰는 편이 낫다.</p>
+<p><code>ANY</code>/<code>ALL</code>은 읽기 어려워서 실무에서는 <code>> (SELECT MIN(...))</code>, <code>> (SELECT MAX(...))</code>로 바꿔 쓰는 편이 낫다.</p>
 <h3>NOT IN의 NULL 함정</h3>
-<p>2편에서 본 NULL 규칙이 여기서 사고로 이어진다.</p>
+<p><a href="/post/oracle-02-select-functions">2편</a>에서 본 NULL 규칙이 여기서 사고로 이어진다.</p>
 <pre><code class="language-sql">-- 부서에 아무도 배정되지 않은 부서를 찾으려는 의도
 SELECT department_name FROM departments
 WHERE  department_id NOT IN (SELECT department_id FROM employees);
@@ -335,7 +335,7 @@ ORDER  BY h.avg_sal DESC;
 </code></pre>
 <p>읽는 순서가 위에서 아래로 흘러서 인라인 뷰보다 훨씬 낫다. 두 번 이상 참조하면 오라클이 임시 테이블로 한 번만 실행하기도 한다(<code>MATERIALIZE</code> 힌트로 강제할 수 있다).</p>
 <h3>재귀 CTE</h3>
-<p>11gR2부터 표준 재귀 문법도 쓸 수 있다. 오라클 고유의 <code>CONNECT BY</code>는 5편에서 다룬다.</p>
+<p>11gR2부터 표준 재귀 문법도 쓸 수 있다. 오라클 고유의 <code>CONNECT BY</code>는 <a href="/post/oracle-05-analytic">5편</a>에서 다룬다.</p>
 <pre><code class="language-sql">WITH org (employee_id, emp_name, manager_id, lvl) AS (
   SELECT employee_id, emp_name, manager_id, 1
   FROM   employees WHERE manager_id IS NULL
@@ -362,7 +362,7 @@ WHEN NOT MATCHED THEN
 <p>포인트.</p>
 <ul>
 <li><code>ON</code> 절의 컬럼은 <code>UPDATE SET</code>에서 <strong>변경할 수 없다.</strong></li>
-<li><code>WHEN MATCHED THEN UPDATE ... DELETE WHERE ...</code> 로 조건부 삭제도 붙일 수 있다.</li>
+<li><code>WHEN MATCHED THEN UPDATE ... DELETE WHERE ...</code>로 조건부 삭제도 붙일 수 있다.</li>
 <li><code>WHEN MATCHED</code>와 <code>WHEN NOT MATCHED</code> 중 하나만 써도 된다.</li>
 <li><code>USING</code>에 서브쿼리를 놓으면 대량 데이터를 한 번에 반영할 수 있다. 배치에서 이 형태를 가장 많이 쓴다.</li>
 </ul>

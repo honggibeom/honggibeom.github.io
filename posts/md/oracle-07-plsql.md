@@ -7,7 +7,7 @@ tags: [oracle, plsql, 프로시저, 트리거, 학습노트]
 summary: 블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리.
 ---
 
-PL/SQL은 SQL에 절차적 문법을 얹은 언어다. 반복과 분기, 예외 처리가 필요한 로직을 **DB 안에서** 돌린다. 애플리케이션과 DB 사이를 여러 번 오가지 않아도 되므로, 대량 데이터 처리에서 성능 차이가 크게 난다.
+[6편](/post/oracle-06-transaction)까지가 SQL 한 문장으로 할 수 있는 일이었다면, 이번 편은 그 문장들을 묶어 절차로 만드는 이야기다. PL/SQL은 SQL에 절차적 문법을 얹은 언어로, 반복과 분기, 예외 처리가 필요한 로직을 **DB 안에서** 돌린다. 6편에서 본 커밋과 락도 여기서는 프로시저·트리거 안쪽 문제로 다시 나온다. 애플리케이션과 DB 사이를 여러 번 오가지 않아도 되므로 대량 데이터 처리에서 성능 차이가 크게 나고, 예제 스키마는 계속 [1편](/post/oracle-01-basics) 것을 쓴다.
 
 ## 블록 구조
 
@@ -40,6 +40,8 @@ END;
 ```
 
 ## 변수와 타입
+
+선언부에 변수·상수·타입을 적는다. 오라클에서는 컬럼 타입을 직접 적는 대신 테이블에서 따오는 방식을 더 많이 쓴다.
 
 ```sql
 DECLARE
@@ -79,6 +81,8 @@ END;
 ```
 
 ## 조건과 반복
+
+분기는 `IF`와 `CASE`, 반복은 기본 `LOOP`·`WHILE`·`FOR` 세 가지다. 다른 언어와 거의 같지만 키워드 철자에서 한 번씩 걸린다.
 
 ```sql
 IF v_salary >= 10000000 THEN
@@ -243,11 +247,14 @@ END;
 ```sql
 DECLARE
   e_invalid_salary EXCEPTION;
-  PRAGMA EXCEPTION_INIT(e_invalid_salary, -20001);
+  v_salary NUMBER := -100;
 BEGIN
   IF v_salary < 0 THEN
-    RAISE_APPLICATION_ERROR(-20001, '급여는 음수일 수 없습니다: ' || v_salary);
+    RAISE e_invalid_salary;          -- 직접 선언한 예외를 던진다
   END IF;
+EXCEPTION
+  WHEN e_invalid_salary THEN
+    RAISE_APPLICATION_ERROR(-20001, '급여는 음수일 수 없습니다: ' || v_salary);
 END;
 ```
 
@@ -365,7 +372,7 @@ CREATE OR REPLACE PACKAGE BODY emp_pkg IS
   FUNCTION next_id RETURN NUMBER IS
     v NUMBER;
   BEGIN
-    SELECT NVL(MAX(employee_id), 0) + 1 INTO v FROM employees;
+    SELECT seq_employees.NEXTVAL INTO v FROM dual;   -- 6편에서 만든 시퀀스
     RETURN v;
   END next_id;
 
@@ -563,7 +570,7 @@ BEGIN
   EXECUTE IMMEDIATE v_sql INTO v_cnt USING 20;
   DBMS_OUTPUT.PUT_LINE(v_cnt);
 
-  EXECUTE IMMEDIATE 'CREATE INDEX ix_tmp ON employees (email)';  -- DDL도 가능
+  EXECUTE IMMEDIATE 'CREATE INDEX ix_tmp ON employees (hire_date)';  -- DDL도 가능
 END;
 /
 ```

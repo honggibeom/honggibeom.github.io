@@ -91,7 +91,7 @@
 <h1>Spring MVC 요청 흐름 정리 - DispatcherServlet부터 바인딩, 검증, 예외 처리까지 (Spring 로드맵 3)</h1>
 <p class="pr-meta">2026.05.07 · <a href="/tags/spring">#spring</a> <a href="/tags/mvc">#mvc</a> <a href="/tags/rest">#rest</a> <a href="/tags/api">#api</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 3편.</p>
+<p>Spring 공부 로드맵 시리즈 3편. <a href="/post/spring-02-aop">2편</a>까지가 컨테이너 안쪽 이야기였다면, 이번엔 바깥에서 들어온 HTTP 요청이 그 안까지 어떤 경로로 도달하는지를 따라간다.</p>
 </blockquote>
 <h2>흐름부터 외운다</h2>
 <p>웹 계층은 기능을 하나씩 외우는 것보다 <strong>경로를 그릴 수 있는지</strong>가 훨씬 중요하다. 경로를 알면 "이 처리를 어디에 넣어야 하나"라는 질문에 매번 답이 나온다.</p>
@@ -103,8 +103,9 @@
   → HandlerAdapter
   → Interceptor(preHandle)
   → Controller
+  → (@ResponseBody 면 여기서 HttpMessageConverter 가 본문을 쓴다)
   → Interceptor(postHandle)
-  → HttpMessageConverter / ViewResolver
+  → (뷰를 쓰면 여기서 ViewResolver 가 렌더링)
   → Interceptor(afterCompletion)
   → Filter 체인
   → 응답

@@ -92,7 +92,7 @@
 <h2>왜 옮겼나</h2>
 <p>이 블로그는 <code>create-react-app</code>으로 시작했다. 처음엔 아무 불만이 없었다. 문제는 프로젝트가 커지면서 드러났다.</p>
 <p>블로그 하나에 <code>nearby</code>(위치 기반 티켓 서비스)와 <code>antifake</code>(딥페이크 탐지) 데모까지 한 저장소에 들어있다 보니 소스 파일이 100개를 훌쩍 넘겼다. <code>npm start</code> 한 번에 수십 초, 파일 하나 고치면 HMR이 도는 데도 체감으로 몇 초가 걸렸다. 개발하다 흐름이 끊기는 게 가장 컸다.</p>
-<p>거기에 CRA는 2023년 이후로 사실상 유지보수가 멈춰 있다. <code>react-scripts@5</code>가 물고 있는 webpack 4/5 계열 의존성 때문에 <code>npm install</code>을 할 때마다 취약점 경고가 수십 개씩 쏟아졌고, React 19를 쓰면서도 빌드 도구는 몇 년 전에 머물러 있는 상태였다.</p>
+<p>거기에 CRA는 2025년에 공식적으로 deprecated 됐다. React 19를 쓰면서도 빌드 도구만 몇 년 전에 머물러 있는 상태였다. CRA가 왜 이렇게 됐고 그 자리를 무엇이 대체했는지는 <a href="/post/buildtool-01-bundlers">번들러 지도</a>에 정리해 뒀고, 이 글은 그 이동을 실제로 해 본 기록이다.</p>
 <p>정리하면 이유는 세 가지다.</p>
 <ol>
 <li>dev 서버 기동과 HMR이 느리다</li>
@@ -111,7 +111,7 @@
 <li>빌드 산출물 경로를 맞춰 <code>gh-pages</code> 배포 스크립트 유지</li>
 </ol>
 <h2>1. package.json 정리</h2>
-<p>먼저 CRA 쪽 의존성을 걷어냈다.</p>
+<p>먼저 CRA 쪽 의존성을 걷어냈다. 아래는 작업 당시(Vite 6 라인) 기준이다. 지금 새로 옮긴다면 Vite 8을 쓰면 되고, 그때는 <code>esbuild</code> 항목이 Rolldown·Oxc 쪽 옵션으로 바뀐다.</p>
 <pre><code class="language-json">{
   "type": "module",
   "scripts": {
@@ -158,7 +158,7 @@
 </code></pre>
 <h2>3. 가장 크게 막힌 곳: .js 안의 JSX</h2>
 <p>여기서 제일 오래 붙잡았다.</p>
-<p>이 프로젝트는 JSX를 전부 <code>.jsx</code>가 아닌 <code>.js</code> 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite는 esbuild를 쓰고, <strong>esbuild는 기본적으로 <code>.js</code> 파일에 JSX가 들어있을 거라고 가정하지 않는다.</strong></p>
+<p>이 프로젝트는 JSX를 전부 <code>.jsx</code>가 아닌 <code>.js</code> 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite 7까지는 변환에 esbuild를 쓰고, <strong>esbuild는 기본적으로 <code>.js</code> 파일에 JSX가 들어있을 거라고 가정하지 않는다.</strong> (Vite 8은 Oxc로 바뀌었지만 확장자로 판단한다는 전제는 같다.)</p>
 <p>그래서 첫 빌드에서 이런 에러를 만난다.</p>
 <pre><code>The JSX syntax extension is not currently enabled
 </code></pre>
@@ -237,7 +237,7 @@ src/App.test.js
 <p><code>BrowserRouter</code> + <code>404.html</code> 리다이렉트 트릭으로 바꾸는 것도 가능하지만, 이번 작업의 목적은 빌드 도구 교체였다. 한 번에 여러 개를 바꾸면 무언가 깨졌을 때 원인을 찾기 어려워진다.</p>
 <h2>결과</h2>
 <ul>
-<li>dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. Vite는 dev에서 번들링을 하지 않고 브라우저의 네이티브 ESM을 그대로 쓴다.</li>
+<li>dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. dev에서 앱 코드를 번들링하지 않고 요청이 들어온 파일만 변환하기 때문이다(<code>node_modules</code>는 예외로 미리 묶는다 — 위 <code>optimizeDeps</code> 설정이 그 단계다).</li>
 <li>HMR이 즉각적이다. 수정한 모듈만 교체하기 때문에 프로젝트 크기가 커져도 거의 일정하다.</li>
 <li><code>npm install</code>에서 쏟아지던 취약점 경고가 거의 사라졌다. 의존성 트리 자체가 훨씬 얕아졌다.</li>
 </ul>

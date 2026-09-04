@@ -7,7 +7,7 @@ tags: [spring, transaction, jpa, 로드맵, 백엔드]
 summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다."
 ---
 
-> Spring 공부 로드맵 시리즈 6편.
+> Spring 공부 로드맵 시리즈 6편. [5편](/post/spring-05-jpa)에서 영속성 컨텍스트가 언제 flush 되는지를 봤다. 그 경계를 실제로 긋는 게 트랜잭션이고, [2편](/post/spring-02-aop)의 프록시가 여기서 다시 등장한다.
 
 ## 애노테이션 하나의 무게
 
@@ -77,4 +77,4 @@ summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규
 
 ## 다음 편
 
-다음은 Spring Security다.
+다음은 Spring Security다. 트랜잭션이 "이 작업이 끝까지 갔는가"였다면, 다음은 "애초에 이 사람이 해도 되는 작업인가"를 본다.

@@ -7,7 +7,7 @@ tags: [spring-boot, 자동설정, 프로파일, 로드맵, 백엔드]
 summary: Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법.
 ---
 
-> Spring 공부 로드맵 시리즈 4편.
+> Spring 공부 로드맵 시리즈 4편. 1~[3편](/post/spring-03-mvc)에서 빈 등록과 MVC 설정을 손으로 짚었다. 이번엔 그 손작업이 왜 대부분 사라졌는지, 그리고 필요할 때 어떻게 되돌리는지를 본다.
 
 ## Boot는 무엇을 대신해주는가
 
@@ -16,7 +16,7 @@ Spring Boot는 별개의 프레임워크가 아니다. **의존성 묶음 + 자�
 ## 1. 자동 설정의 원리
 
 - `@SpringBootApplication` = `@SpringBootConfiguration` + `@EnableAutoConfiguration` + `@ComponentScan`
-- `spring.factories` / `AutoConfiguration.imports` 로 후보 설정 클래스를 읽는다
+- `META-INF/spring/...AutoConfiguration.imports`로 후보 설정 클래스를 읽는다 (2.7 이전에는 `spring.factories`였고, 자동 설정 용도로는 3.0에서 제거됐다)
 - `@Conditional` 계열이 "적용할지 말지"를 결정한다
   - `@ConditionalOnClass` — 클래스패스에 그 라이브러리가 있으면
   - `@ConditionalOnMissingBean` — 내가 직접 등록한 빈이 없으면

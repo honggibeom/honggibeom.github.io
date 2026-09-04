@@ -90,7 +90,7 @@
 <p class="pr-meta"><a href="/categories/oracle">Oracle</a></p>
 <h1>오라클 분석 함수(윈도우 함수)와 CONNECT BY 계층 질의, PIVOT 정리 (오라클 학습 노트 5)</h1>
 <p class="pr-meta">2025.09.14 · <a href="/tags/oracle">#oracle</a> <a href="/tags/sql">#sql</a> <a href="/tags/%EB%B6%84%EC%84%9D%ED%95%A8%EC%88%98">#분석함수</a> <a href="/tags/%EC%9C%88%EB%8F%84%EC%9A%B0%ED%95%A8%EC%88%98">#윈도우함수</a> <a href="/tags/connectby">#connectby</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
-<p>분석 함수(윈도우 함수)를 알기 전과 후는 SQL 실력이 다르다. 그전에는 서브쿼리를 겹겹이 쌓아야 했던 것들이 한 줄로 끝난다.</p>
+<p><a href="/post/oracle-04-subquery">4편</a>까지가 서브쿼리를 겹겹이 쌓아 원하는 결과를 만드는 법이었다면, 이번 편은 그 겹을 걷어내는 도구다. 분석 함수(윈도우 함수)를 알기 전과 후는 SQL 실력이 다르다. 그전에는 인라인 뷰와 조인을 몇 겹씩 쌓아야 했던 것들이 한 줄로 끝난다.</p>
 <h2>집계 함수와 무엇이 다른가</h2>
 <p><code>GROUP BY</code>로 집계하면 <strong>행이 줄어든다.</strong> 분석 함수는 <strong>행을 그대로 두고</strong> 옆에 계산 결과를 붙인다.</p>
 <pre><code class="language-sql">-- 집계: 부서당 1행
@@ -200,7 +200,7 @@ FROM   employees;
 </code></pre>
 <p><code>OVER ()</code>처럼 비워두면 전체 행이 한 윈도우가 된다. "각 행이 전체에서 차지하는 비중"을 구할 때 이 형태를 쓴다.</p>
 <h3>ORDER BY를 붙이면 누적이 된다</h3>
-<p>여기가 중요한 지점이다. <code>OVER</code> 안에 <code>ORDER BY</code>가 들어가면 <strong>기본 윈도우가 "처음부터 현재 행까지"</strong> 로 바뀐다.</p>
+<p>여기가 중요한 지점이다. <code>OVER</code> 안에 <code>ORDER BY</code>가 들어가면 **기본 윈도우가 "처음부터 현재 행까지"**로 바뀐다.</p>
 <pre><code class="language-sql">SELECT order_date, amount,
        SUM(amount) OVER (ORDER BY order_date, order_id) AS 누적매출
 FROM   orders
@@ -246,7 +246,7 @@ ORDER  BY order_date, order_id;
 
 
 <table><thead><tr><th>키워드</th><th>의미</th></tr></thead><tbody><tr><td><code>UNBOUNDED PRECEDING</code></td><td>파티션 시작</td></tr><tr><td><code>n PRECEDING</code></td><td>n행(값) 앞</td></tr><tr><td><code>CURRENT ROW</code></td><td>현재 행</td></tr><tr><td><code>n FOLLOWING</code></td><td>n행(값) 뒤</td></tr><tr><td><code>UNBOUNDED FOLLOWING</code></td><td>파티션 끝</td></tr></tbody></table>
-<pre><code class="language-sql">-- 3개월 이동평균 (현재 포함 직전 3건)
+<pre><code class="language-sql">-- 3건 이동평균 (현재 행 + 직전 2건)
 SELECT order_date, amount,
        ROUND(AVG(amount) OVER (ORDER BY order_date
                                ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)) AS 이동평균3
@@ -292,12 +292,12 @@ FROM   m ORDER BY mon;
                                             AND UNBOUNDED FOLLOWING) AS 최저연봉자
 FROM   employees;
 </code></pre>
-<p><strong><code>LAST_VALUE</code>는 윈도우 절을 반드시 써야 한다.</strong> 기본 윈도우가 "현재 행까지"라서, 그냥 쓰면 항상 자기 자신이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.</p>
+<p><strong><code>LAST_VALUE</code>는 윈도우 절을 반드시 써야 한다.</strong> 기본 윈도우가 "현재 행까지"(<code>RANGE</code>)라서, 그냥 쓰면 자기 자신 — 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 — 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.</p>
 <p><code>IGNORE NULLS</code> 옵션도 있다. 결측치를 직전 값으로 채우는 데 유용하다.</p>
 <pre><code class="language-sql">LAST_VALUE(price IGNORE NULLS) OVER (ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 </code></pre>
 <h2>RATIO_TO_REPORT</h2>
-<p>전체 대비 비율을 바로 구한다.</p>
+<p><code>SUM(...) OVER (...)</code>로 나누던 비중 계산을 한 함수로 줄인다. 윈도우 전체 합에 대한 각 행의 비율을 돌려주므로, <code>PARTITION BY</code>를 어떻게 주느냐가 "전체 대비"인지 "그룹 내"인지를 결정한다.</p>
 <pre><code class="language-sql">SELECT emp_name, salary,
        ROUND(RATIO_TO_REPORT(salary) OVER (PARTITION BY department_id) * 100, 2) AS 부서내비중
 FROM   employees;
@@ -378,7 +378,7 @@ START WITH employee_id = 101 CONNECT BY PRIOR employee_id = manager_id
 START WITH employee_id = 105 CONNECT BY employee_id = PRIOR manager_id
 </code></pre>
 <h3>숫자·날짜 생성</h3>
-<p><code>CONNECT BY LEVEL</code>은 계층과 상관없이 연속된 행을 만드는 데 쓰인다. 3편의 월 축 만들기가 이 용법이었다.</p>
+<p><code>CONNECT BY LEVEL</code>은 계층과 상관없이 연속된 행을 만드는 데 쓰인다. <a href="/post/oracle-03-group-join">3편</a>의 월 축 만들기가 이 용법이었다.</p>
 <pre><code class="language-sql">SELECT LEVEL AS n FROM dual CONNECT BY LEVEL &#x3C;= 10;
 
 -- 8월 날짜 전체
@@ -427,6 +427,6 @@ UNPIVOT (amount FOR mon IN (jan AS '01', feb AS '02', mar AS '03'));
 <li><code>PIVOT</code>에 넘기는 인라인 뷰에는 필요한 컬럼만 남긴다</li>
 </ul>
 <p>다음 편은 DML과 트랜잭션, 락이다.</p>
-</article><section><h2>Oracle의 다른 글</h2><ul class="pr-list"><li><a href="/post/oracle-08-tuning">오라클 인덱스와 실행계획, SQL 튜닝 정리 - B*Tree, 조인 방식, 힌트, 안티패턴 (오라클 학습 노트 8)</a><p>B*Tree 인덱스가 동작하는 방식부터 실행계획 읽는 법, 조인 방식 세 가지, 통계정보와 힌트, 그리고 인덱스를 죽이는 안티패턴까지. 시리즈 마지막 편.</p><span class="pr-meta">2025.10.27</span></li><li><a href="/post/oracle-07-plsql">오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)</a><p>블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리.</p><span class="pr-meta">2025.10.15</span></li><li><a href="/post/oracle-06-transaction">오라클 DML과 트랜잭션, 락, 스키마 객체 정리 - 커밋, 롤백, 읽기 일관성 (오라클 학습 노트 6)</a><p>INSERT/UPDATE/DELETE부터 커밋·롤백·세이브포인트, 오라클의 읽기 일관성과 락 동작, 그리고 시퀀스·뷰·시노님 같은 스키마 객체까지 정리한다.</p><span class="pr-meta">2025.10.02</span></li><li><a href="/post/oracle-04-subquery">오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)</a><p>단일행·다중행·인라인뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.</p><span class="pr-meta">2025.09.02</span></li><li><a href="/post/oracle-03-group-join">오라클 집계 함수와 GROUP BY, 조인 정리 - ROLLUP, CUBE, ANSI 조인 (오라클 학습 노트 3)</a><p>집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, 그리고 조인의 모든 형태를 ANSI 문법과 오라클 전통 문법으로 나란히 정리한다.</p><span class="pr-meta">2025.08.15</span></li><li><a href="/post/oracle-02-select-functions">오라클 SELECT 문과 단일행 함수 정리 - 실행 순서, NULL, 문자·날짜·변환 함수 (오라클 학습 노트 2)</a><p>SELECT 문의 실행 순서부터 WHERE 조건, NULL의 함정, 문자·숫자·날짜·변환·조건 함수까지. 오라클에서 매일 쓰게 되는 문법을 한 번에 정리한다.</p><span class="pr-meta">2025.08.04</span></li></ul></section></main></div>
+</article><section><h2>Oracle의 다른 글</h2><ul class="pr-list"><li><a href="/post/oracle-08-tuning">오라클 인덱스와 실행계획, SQL 튜닝 정리 - B*Tree, 조인 방식, 힌트, 안티패턴 (오라클 학습 노트 8)</a><p>B*Tree 인덱스가 동작하는 방식부터 실행계획 읽는 법, 조인 방식 세 가지, 통계정보와 힌트, 그리고 인덱스를 죽이는 안티패턴까지. 시리즈 마지막 편.</p><span class="pr-meta">2025.10.27</span></li><li><a href="/post/oracle-07-plsql">오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)</a><p>블록 구조와 변수, 조건·반복, 커서, 예외 처리, 프로시저·함수·패키지·트리거, 컬렉션과 BULK 연산, 동적 SQL까지. 오라클 서버 사이드 프로그래밍 한 편 정리.</p><span class="pr-meta">2025.10.15</span></li><li><a href="/post/oracle-06-transaction">오라클 DML과 트랜잭션, 락, 스키마 객체 정리 - 커밋, 롤백, 읽기 일관성 (오라클 학습 노트 6)</a><p>INSERT/UPDATE/DELETE부터 커밋·롤백·세이브포인트, 오라클의 읽기 일관성과 락 동작, 그리고 시퀀스·뷰·시노님 같은 스키마 객체까지 정리한다.</p><span class="pr-meta">2025.10.02</span></li><li><a href="/post/oracle-04-subquery">오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)</a><p>단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.</p><span class="pr-meta">2025.09.02</span></li><li><a href="/post/oracle-03-group-join">오라클 집계 함수와 GROUP BY, 조인 정리 - ROLLUP, CUBE, ANSI 조인 (오라클 학습 노트 3)</a><p>집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, 그리고 조인의 모든 형태를 ANSI 문법과 오라클 전통 문법으로 나란히 정리한다.</p><span class="pr-meta">2025.08.15</span></li><li><a href="/post/oracle-02-select-functions">오라클 SELECT 문과 단일행 함수 정리 - 실행 순서, NULL, 문자·날짜·변환 함수 (오라클 학습 노트 2)</a><p>SELECT 문의 실행 순서부터 WHERE 조건, NULL의 함정, 문자·숫자·날짜·변환·조건 함수까지. 오라클에서 매일 쓰게 되는 문법을 한 번에 정리한다.</p><span class="pr-meta">2025.08.04</span></li></ul></section></main></div>
   </body>
 </html>

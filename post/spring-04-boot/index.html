@@ -90,14 +90,14 @@
 <h1>Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)</h1>
 <p class="pr-meta">2026.05.20 · <a href="/tags/spring-boot">#spring-boot</a> <a href="/tags/%EC%9E%90%EB%8F%99%EC%84%A4%EC%A0%95">#자동설정</a> <a href="/tags/%ED%94%84%EB%A1%9C%ED%8C%8C%EC%9D%BC">#프로파일</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 4편.</p>
+<p>Spring 공부 로드맵 시리즈 4편. 1~<a href="/post/spring-03-mvc">3편</a>에서 빈 등록과 MVC 설정을 손으로 짚었다. 이번엔 그 손작업이 왜 대부분 사라졌는지, 그리고 필요할 때 어떻게 되돌리는지를 본다.</p>
 </blockquote>
 <h2>Boot는 무엇을 대신해주는가</h2>
 <p>Spring Boot는 별개의 프레임워크가 아니다. <strong>의존성 묶음 + 자동 설정 + 내장 서버</strong>를 얹어서, 원래는 손으로 하던 조립을 대신해주는 층이다. 그래서 Core와 MVC를 먼저 본 다음에 Boot를 보면 "아, 이걸 안 써도 되게 해준 거구나"가 명확해진다.</p>
 <h2>1. 자동 설정의 원리</h2>
 <ul>
 <li><code>@SpringBootApplication</code> = <code>@SpringBootConfiguration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code></li>
-<li><code>spring.factories</code> / <code>AutoConfiguration.imports</code> 로 후보 설정 클래스를 읽는다</li>
+<li><code>META-INF/spring/...AutoConfiguration.imports</code>로 후보 설정 클래스를 읽는다 (2.7 이전에는 <code>spring.factories</code>였고, 자동 설정 용도로는 3.0에서 제거됐다)</li>
 <li><code>@Conditional</code> 계열이 "적용할지 말지"를 결정한다
 <ul>
 <li><code>@ConditionalOnClass</code> — 클래스패스에 그 라이브러리가 있으면</li>

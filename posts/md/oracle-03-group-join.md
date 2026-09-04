@@ -7,7 +7,7 @@ tags: [oracle, sql, join, groupby, 학습노트]
 summary: 집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, 그리고 조인의 모든 형태를 ANSI 문법과 오라클 전통 문법으로 나란히 정리한다.
 ---
 
-3편은 여러 행을 묶는 이야기다. 세로로 묶는 것이 집계, 가로로 붙이는 것이 조인이다. 예제 스키마는 1편에 있다.
+3편은 여러 행을 묶는 이야기다. 세로로 묶는 것이 집계, 가로로 붙이는 것이 조인이다. 예제 스키마는 [1편](/post/oracle-01-basics)에 있다.
 
 ## 집계 함수
 
@@ -21,7 +21,7 @@ summary: 집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, �
 | `STDDEV` / `VARIANCE` | 표준편차 / 분산 | NULL 제외 |
 | `LISTAGG` | 문자열로 이어붙이기 | NULL 제외 |
 
-**모든 집계 함수는 NULL을 무시한다.** 이게 평균에서 문제가 된다.
+**`COUNT(*)`를 뺀 집계 함수는 전부 NULL을 무시한다.** 이게 평균에서 문제가 된다.
 
 ```sql
 SELECT COUNT(*)              AS 전체,      -- 10
@@ -213,7 +213,7 @@ WHERE  e.department_id = d.department_id(+);
 `(+)`의 제약이 많아서 결국 ANSI로 넘어가게 된다.
 
 - `FULL OUTER JOIN`을 표현할 수 없다
-- 한 쿼리에서 한쪽 테이블에만 붙일 수 있다
+- 하나의 조건식 양쪽에 동시에 붙일 수 없고, 한 테이블은 다른 한 테이블에만 외부 조인할 수 있다
 - `IN`이나 서브쿼리와 함께 쓸 수 없다
 
 ### 외부 조인에서 조건의 위치
@@ -254,7 +254,7 @@ FROM   employees e
 LEFT   JOIN employees m ON e.manager_id = m.employee_id;
 ```
 
-`LEFT JOIN`을 써야 관리자가 없는 대표이사도 나온다. 여러 단계를 재귀적으로 펼치는 건 5편의 `CONNECT BY`다.
+`LEFT JOIN`을 써야 관리자가 없는 대표이사도 나온다. 여러 단계를 재귀적으로 펼치는 건 [5편](/post/oracle-05-analytic)의 `CONNECT BY`다.
 
 ### 카티션 곱과 CROSS JOIN
 
@@ -265,7 +265,7 @@ SELECT * FROM employees, departments;        -- 사고
 SELECT * FROM employees CROSS JOIN departments;  -- 의도한 경우
 ```
 
-의도적으로 쓰는 경우도 있다. 날짜 축을 만들어 빈 구간을 채우는 패턴이 대표적이다.
+의도적으로 쓰는 경우도 있다. 날짜 축을 만들어 빈 구간을 채우는 패턴이 대표적이다. 아래에서 12개월 축을 만드는 `CONNECT BY LEVEL`은 계층 질의 문법을 행 생성기로 전용한 것인데, 자세한 설명은 5편에서 한다.
 
 ```sql
 -- 부서 × 월 조합을 먼저 만들고, 실적을 외부 조인으로 붙인다

@@ -7,7 +7,7 @@ tags: [spring, mvc, rest, api, 로드맵, 백엔드]
 summary: Spring MVC 요청 흐름 정리. DispatcherServlet에서 컨트롤러, 바인딩, 검증, 전역 예외 처리까지. 흐름을 그릴 수 있으면 필터와 인터셉터를 어디에 끼울지가 저절로 정해진다.
 ---
 
-> Spring 공부 로드맵 시리즈 3편.
+> Spring 공부 로드맵 시리즈 3편. [2편](/post/spring-02-aop)까지가 컨테이너 안쪽 이야기였다면, 이번엔 바깥에서 들어온 HTTP 요청이 그 안까지 어떤 경로로 도달하는지를 따라간다.
 
 ## 흐름부터 외운다
 
@@ -22,8 +22,9 @@ summary: Spring MVC 요청 흐름 정리. DispatcherServlet에서 컨트롤러, 
   → HandlerAdapter
   → Interceptor(preHandle)
   → Controller
+  → (@ResponseBody 면 여기서 HttpMessageConverter 가 본문을 쓴다)
   → Interceptor(postHandle)
-  → HttpMessageConverter / ViewResolver
+  → (뷰를 쓰면 여기서 ViewResolver 가 렌더링)
   → Interceptor(afterCompletion)
   → Filter 체인
   → 응답

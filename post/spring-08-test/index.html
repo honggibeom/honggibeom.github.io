@@ -91,7 +91,7 @@
 <h1>Spring 테스트 전략 - 단위·슬라이스·통합 테스트, Mockito, Testcontainers (Spring 로드맵 8)</h1>
 <p class="pr-meta">2026.07.19 · <a href="/tags/spring">#spring</a> <a href="/tags/test">#test</a> <a href="/tags/junit">#junit</a> <a href="/tags/mockito">#mockito</a> <a href="/tags/testcontainers">#testcontainers</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a></p>
 <blockquote>
-<p>Spring 공부 로드맵 시리즈 8편.</p>
+<p>Spring 공부 로드맵 시리즈 8편. 0~<a href="/post/spring-07-security">7편</a>에서 만드는 법을 봤다. 이번엔 그게 정말 그렇게 동작하는지를 증명하는 법, 그리고 증명 비용을 계층별로 나누는 법이다.</p>
 </blockquote>
 <h2>테스트를 나누는 기준</h2>
 <p>Spring에서 테스트가 어려워지는 이유는 대부분 <strong>모든 테스트를 통합 테스트로 만들기 때문</strong>이다. 컨텍스트를 통째로 띄우면 느리고, 느리면 안 돌리게 되고, 안 돌리면 없는 것과 같다.</p>
@@ -146,7 +146,7 @@
 <ul>
 <li><code>@WebMvcTest</code> + <code>MockMvc</code> — 컨트롤러, 바인딩, 검증, 예외 처리 확인
 <ul>
-<li>서비스는 <code>@MockBean</code>으로 대체</li>
+<li>서비스는 <code>@MockitoBean</code>으로 대체 (Boot 3.4부터. 그 전 이름인 <code>@MockBean</code>은 deprecated)</li>
 <li>Security가 끼어들 때 <code>@WithMockUser</code></li>
 </ul>
 </li>
@@ -187,7 +187,7 @@
 <li class="task-list-item"><input type="checkbox" disabled> 버그 재현 테스트를 먼저 쓰고 고쳐본 적이 있다</li>
 </ul>
 <h2>다음 편</h2>
-<p>다음은 Spring Batch와 스케줄링이다.</p>
+<p>다음은 Spring Batch와 스케줄링이다. 요청 하나를 처리하는 세계에서 수십만 건을 밤새 돌리는 세계로 넘어간다.</p>
 </article><section><h2>Spring의 다른 글</h2><ul class="pr-list"><li><a href="/post/spring-10-ops">Spring Boot 운영과 성능 - 모니터링, 로깅, 캐시, 커넥션 풀, JVM, 배포 (Spring 로드맵 10)</a><p>Spring Boot 운영과 성능 정리. Actuator 모니터링과 로깅, 캐시와 비동기, 커넥션 풀과 JVM 설정, 배포까지 기능을 다 만든 뒤 실제로 손대게 되는 것들.</p><span class="pr-meta">2026.08.17</span></li><li><a href="/post/spring-09-batch">Spring Batch와 스케줄링 정리 - Job/Step/Chunk, 재시작, 멱등성, 분산 중복 실행 (Spring 로드맵 9)</a><p>Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.</p><span class="pr-meta">2026.07.31</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li><li><a href="/post/spring-06-transaction">Spring 트랜잭션 정리 - @Transactional 전파 속성, 격리 수준, 롤백이 안 되는 경우 (Spring 로드맵 6)</a><p>Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규칙, 그리고 애노테이션을 붙였는데도 트랜잭션이 안 걸리는 대표적인 경우(내부 호출, 체크 예외, 프록시)를 정리했다.</p><span class="pr-meta">2026.06.21</span></li><li><a href="/post/spring-05-jpa">Spring Data JPA 정리 - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL (Spring 로드맵 5)</a><p>Spring Data JPA 정리. 영속성 컨텍스트, 연관관계 매핑, N+1 문제, 페치 조인, QueryDSL까지 로드맵에서 시간을 가장 많이 잡아먹는 구간을 순서대로 짚는다.</p><span class="pr-meta">2026.06.05</span></li><li><a href="/post/spring-04-boot">Spring Boot 자동 설정 원리 - 설정을 안 했는데 왜 동작하나 (Spring 로드맵 4)</a><p>Spring Boot 자동 설정 원리 정리. Boot는 새 프레임워크가 아니라 Spring을 자동으로 조립해 주는 껍데기다. 자동 설정 동작 방식, 설정 파일과 프로파일 관리, 자동 설정을 되돌리는 방법.</p><span class="pr-meta">2026.05.20</span></li></ul></section></main></div>
   </body>
 </html>

@@ -7,7 +7,7 @@ tags: [spring-batch, 스케줄링, 배치, 로드맵, 백엔드]
 summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 부족하다. Job/Step/Chunk 구조, 재시작과 멱등성, @Scheduled와 분산 환경의 중복 실행 문제까지 정리했다.
 ---
 
-> Spring 공부 로드맵 시리즈 9편.
+> Spring 공부 로드맵 시리즈 9편. 여기까지는 전부 요청 하나를 짧게 처리하는 세계였다. 이번엔 수십만 건을 밤새 돌리고, 중간에 끊기면 그 지점부터 다시 여는 세계다.
 
 ## 왜 배치를 따로 배우나
 
@@ -44,7 +44,7 @@ summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 
 
 ## 4. 실패를 다루는 법
 
-배치의 진짜 주제는 여기다.
+앞의 셋은 배치를 "돌리는" 이야기였다. 배치의 진짜 주제는 실패를 다루는 여기다.
 
 - Skip / Retry 정책 (`faultTolerant()`, `skipLimit`, `retryLimit`)
 - 재시작(restart)과 `allowStartIfComplete`
