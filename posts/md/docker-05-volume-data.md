@@ -7,11 +7,11 @@ tags: [docker, volume, bind-mount, 데이터, 학습노트]
 summary: 컨테이너를 지워도 데이터가 남게 하는 방법. 볼륨과 바인드 마운트와 tmpfs의 차이, node_modules가 사라지는 이유, UID 권한 문제, 볼륨 백업과 복원, DB 컨테이너 운영까지 정리한다.
 ---
 
-> 도커 학습 노트 시리즈 5편.
+> 도커 학습 노트 시리즈 5편. [4편](/post/docker-04-dockerfile)에서 이미지를 직접 만드는 데까지 왔다. 이번에는 그렇게 만든 컨테이너를 지워도 데이터가 남게 하는 방법이다.
 
 ## 왜 필요한가
 
-2편에서 본 대로 컨테이너의 쓰기 레이어는 컨테이너와 수명을 같이한다.
+[1편](/post/docker-01-container-basics)에서 본 대로 컨테이너의 쓰기 레이어는 컨테이너와 수명을 같이한다.
 
 ```bash
 docker run -d --name db -e POSTGRES_PASSWORD=secret postgres:16-alpine
@@ -24,6 +24,8 @@ docker rm -f db          # 여기서 데이터가 전부 사라진다
 성능 문제도 있다. 유니온 파일시스템은 읽기에는 괜찮지만 **쓰기가 잦으면 Copy-on-Write 비용이 크다.** DB 데이터 디렉터리를 쓰기 레이어에 두면 눈에 띄게 느려진다.
 
 ## 세 가지 마운트
+
+데이터를 쓰기 레이어 밖으로 빼는 방법은 셋이고, 성질이 뚜렷하게 갈린다.
 
 | | 볼륨 (volume) | 바인드 마운트 (bind) | tmpfs |
 | --- | --- | --- | --- |
@@ -123,7 +125,7 @@ docker run -d --name web \
   node:20-alpine npm run dev
 ```
 
-호스트 경로는 **절대 경로**여야 한다. 상대 경로처럼 보이는 `./src`는 Compose에서만 허용되고, CLI에서는 `$(pwd)`를 붙인다. 이름처럼 보이는 문자열(`src`)을 주면 도커가 **볼륨 이름으로 해석한다.**
+호스트 경로는 `/`나 `./`로 시작해야 한다. 이름처럼 보이는 문자열(`src`)을 주면 도커가 **볼륨 이름으로 해석한다.** 상대 경로(`./src`)는 Compose에서는 예전부터, CLI에서는 최근 버전부터 되지만, 스크립트에서는 `$(pwd)`로 절대 경로를 만들어 두는 편이 안전하다.
 
 읽기 전용으로 붙일 수 있다. 설정 파일은 이렇게 두는 게 안전하다.
 
@@ -231,7 +233,7 @@ docker run -d --read-only \
   myapp:1.0
 ```
 
-루트 파일시스템 전체가 읽기 전용이라 침해가 나도 바이너리를 심을 수 없다. 쓰기가 필요한 경로만 명시적으로 열어준다. 8편의 보안 이야기에서 다시 나온다.
+루트 파일시스템 전체가 읽기 전용이라 침해가 나도 바이너리를 심을 수 없다. 쓰기가 필요한 경로만 명시적으로 열어준다. [8편](/post/docker-08-optimize-operate)의 보안 이야기에서 다시 나온다.
 
 ## 볼륨 백업과 복원
 
@@ -284,6 +286,8 @@ docker run --rm -v old:/from -v new:/to alpine \
 
 ## DB 컨테이너 실전
 
+지금까지 본 것들을 한 줄에 모으면 대략 이런 모양이 된다.
+
 ```bash
 docker run -d --name pg \
   -e POSTGRES_PASSWORD=secret \
@@ -314,7 +318,7 @@ docker run -d --name redis \
 
 ## 어디에 무엇을 마운트할지 정하기
 
-컨테이너가 어느 경로에 쓰고 있는지는 3편의 `docker diff`로 확인할 수 있다.
+컨테이너가 어느 경로에 쓰고 있는지는 [3편](/post/docker-03-run-lifecycle)의 `docker diff`로 확인할 수 있다.
 
 ```bash
 docker diff mycontainer | grep -v '^C /proc' | head -30
@@ -332,7 +336,7 @@ docker diff mycontainer | grep -v '^C /proc' | head -30
 - 빈 볼륨을 처음 마운트하면 이미지의 내용이 복사된다. 두 번째부터는 안 된다
 - 바인드 마운트는 그 경로를 가린다 → `node_modules`는 익명 볼륨으로 덮어 보호
 - 리눅스에서 UID/GID가 안 맞으면 권한 문제가 난다. `-u $(id -u):$(id -g)`
-- 볼륨 백업은 임시 컨테이너 + tar. DB는 멈추고 뜨거나 논리 백업(`pg_dump`)을 쓴다
+- 볼륨 백업은 임시 컨테이너 + tar. DB는 멈춘 뒤 백업하거나 논리 백업(`pg_dump`)을 쓴다
 - `/docker-entrypoint-initdb.d`는 최초 기동에만 실행된다
 - DB 포트는 `127.0.0.1:`을 붙여 묶는다
 - `docker system prune --volumes`는 운영에서 쓰지 않는다

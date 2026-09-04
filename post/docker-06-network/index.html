@@ -90,10 +90,10 @@
 <h1>도커 네트워크와 포트 매핑, 컨테이너 간 통신 정리 (도커 학습 노트 6)</h1>
 <p class="pr-meta">2026.01.25 · <a href="/tags/docker">#docker</a> <a href="/tags/network">#network</a> <a href="/tags/bridge">#bridge</a> <a href="/tags/dns">#dns</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <blockquote>
-<p>도커 학습 노트 시리즈 6편.</p>
+<p>도커 학습 노트 시리즈 6편. <a href="/post/docker-05-volume-data">5편</a>에서 컨테이너의 데이터를 바깥으로 빼내는 방법까지 봤다. 이번에는 컨테이너끼리, 그리고 바깥과 어떻게 통신하는지다.</p>
 </blockquote>
 <h2>컨테이너는 자기만의 네트워크를 갖는다</h2>
-<p>1편에서 본 net 네임스페이스가 여기서 전부다. 컨테이너는 자기만의 네트워크 인터페이스, IP, 라우팅 테이블, 포트 공간을 갖는다.</p>
+<p><a href="/post/docker-01-container-basics">1편</a>에서 net 네임스페이스를 잠깐 봤다. 이번 편의 내용은 사실상 전부 그 한 가지에서 파생된다. 컨테이너는 자기만의 네트워크 인터페이스, IP, 라우팅 테이블, 포트 공간을 갖는다.</p>
 <p>기본 구성은 이렇다.</p>
 <pre><code>         호스트
  ┌──────────────────────────────────────────┐
@@ -124,6 +124,7 @@ ip addr show docker0
 ip link | grep veth      # 호스트 쪽 veth 인터페이스가 보인다
 </code></pre>
 <h2>네트워크 드라이버</h2>
+<p>방금 본 브리지 구조는 여러 드라이버 중 하나일 뿐이다. 도커가 기본 제공하는 것은 다섯 가지다.</p>
 
 
 
@@ -262,7 +263,7 @@ docker run -d --name db  --network backnet postgres:16-alpine
 <pre><code class="language-bash">sudo ufw deny 5432
 docker run -d -p 5432:5432 postgres:16-alpine    # 외부에서 접속된다
 </code></pre>
-<p><code>ufw</code>는 <code>INPUT</code> 체인을 보고, 도커의 DNAT는 그보다 앞선 <code>PREROUTING</code>에서 처리되기 때문이다. 개발 서버를 클라우드에 띄우고 "방화벽 걸어놨으니 괜찮겠지" 했다가 DB가 통째로 노출되는 사고가 여기서 난다.</p>
+<p><code>ufw</code>가 관리하는 건 주로 <code>INPUT</code> 체인인데, PREROUTING에서 DNAT된 패킷은 목적지가 컨테이너 IP로 바뀌어 <code>INPUT</code>이 아니라 <code>FORWARD</code>를 탄다. 그리고 도커는 그 <code>FORWARD</code>의 맨 앞에 자기 <code>DOCKER</code> 체인을 끼워 넣어 먼저 허용해버린다. 개발 서버를 클라우드에 띄우고 "방화벽 걸어놨으니 괜찮겠지" 했다가 DB가 통째로 노출되는 사고가 여기서 난다.</p>
 <p>대응은 셋 중 하나다.</p>
 <ul>
 <li><strong><code>-p 127.0.0.1:5432:5432</code>로 바인딩을 묶는다</strong> (가장 간단하고 확실하다)</li>
@@ -328,7 +329,7 @@ python manage.py runserver 0.0.0.0:8000
 <pre><code class="language-bash">docker exec web netstat -tlnp    # 또는 ss -tlnp
 # 0.0.0.0:80 이어야 한다. 127.0.0.1:80 이면 밖에서 못 붙는다
 </code></pre>
-<h2>host 네트워크 모드</h2>
+<h2>host와 none 네트워크 모드</h2>
 <pre><code class="language-bash">docker run -d --network host nginx:alpine
 </code></pre>
 <p>네트워크 네임스페이스를 만들지 않고 <strong>호스트의 네트워크를 그대로 쓴다.</strong> <code>-p</code>가 무의미해지고(무시된다), 컨테이너가 호스트의 80 포트를 직접 잡는다.</p>
@@ -338,7 +339,8 @@ python manage.py runserver 0.0.0.0:8000
 <li><strong>맥/윈도우에서는 기대대로 동작하지 않는다.</strong> 컨테이너가 붙는 "호스트"는 그 안의 리눅스 VM이다</li>
 </ul>
 <p>성능이 정말 문제가 되는 게 아니면 브리지를 쓴다.</p>
-<p><code>none</code>은 반대다. 루프백만 있고 외부와 완전히 단절된다. 네트워크가 필요 없는 배치 작업에 쓴다.</p>
+<h3>none — 정반대 극단</h3>
+<p><code>host</code>가 격리를 전부 포기하는 쪽이라면 <code>none</code>은 그 반대편이다. 루프백만 있고 외부와 완전히 단절된다. 네트워크가 필요 없는 배치 작업에 쓴다.</p>
 <pre><code class="language-bash">docker run --rm --network none alpine ip addr    # lo 만 있다
 </code></pre>
 <h2>여러 호스트에 걸친 네트워크</h2>
@@ -367,7 +369,7 @@ docker exec db ss -tlnp
 docker port web
 ss -tlnp | grep 8080
 </code></pre>
-<p>셸이나 도구가 없는 이미지라면 3편에서 본 netshoot을 붙인다.</p>
+<p>셸이나 도구가 없는 이미지라면 <a href="/post/docker-03-run-lifecycle">3편</a>에서 본 netshoot을 붙인다.</p>
 <pre><code class="language-bash">docker run -it --rm --network container:api nicolaka/netshoot
 # 안에서 dig db / curl -v http://db:8080 / tcpdump -i any port 5432
 </code></pre>
@@ -380,7 +382,7 @@ ss -tlnp | grep 8080
 <p><strong>connection timeout</strong>
 : 다른 네트워크에 있거나 방화벽/보안 그룹이 막고 있다. <code>refused</code>와 <code>timeout</code>은 원인이 다르니 구분해서 읽는다.</p>
 <p><strong>DB가 아직 준비되지 않았는데 앱이 먼저 붙는다</strong>
-: 컨테이너가 "떴다"와 "준비됐다"는 다르다. 헬스체크와 재시도 로직이 필요하다. 7편에서 다룬다.</p>
+: 컨테이너가 "떴다"와 "준비됐다"는 다르다. 헬스체크와 재시도 로직이 필요하다. <a href="/post/docker-07-compose">7편</a>에서 다룬다.</p>
 <p><strong>컨테이너에서 외부 인터넷이 안 된다</strong>
 : 호스트의 IP 포워딩이 꺼져 있거나(<code>net.ipv4.ip_forward</code>), 사내 DNS 문제일 수 있다. <code>docker run --rm alpine ping -c1 8.8.8.8</code>(IP)과 <code>ping -c1 google.com</code>(도메인)을 나눠서 시험하면 네트워크 문제인지 DNS 문제인지 갈린다.</p>
 <p><strong>VPN을 켜면 도커 네트워크가 안 된다</strong>

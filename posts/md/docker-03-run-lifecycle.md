@@ -7,7 +7,7 @@ tags: [docker, container, cli, 운영, 학습노트]
 summary: docker run의 옵션을 갈래별로 정리하고, 컨테이너 상태 전이와 종료 시그널·종료 코드, 재시작 정책, 로그와 exec, CPU·메모리 제한과 OOM까지 실행과 운영에 필요한 것들을 정리한다.
 ---
 
-> 도커 학습 노트 시리즈 3편.
+> 도커 학습 노트 시리즈 3편. [2편](/post/docker-02-image-registry)에서 이미지가 레이어로 쌓이는 구조와 태그·레지스트리까지 봤다. 이번에는 그 이미지로 컨테이너를 실제로 띄우고 관리하는 쪽이다.
 
 ## 컨테이너의 상태
 
@@ -106,7 +106,7 @@ echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i�
 | `--add-host` | `/etc/hosts`에 항목 추가 |
 | `--dns` | DNS 서버 지정 |
 
-`-p 8080:80`은 **모든 인터페이스(0.0.0.0)에 바인딩된다.** 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 `-p 127.0.0.1:5432:5432`로 묶는 습관을 들이는 게 좋다. 자세한 원리는 6편에서 본다.
+`-p 8080:80`은 **모든 인터페이스(0.0.0.0)에 바인딩된다.** 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 `-p 127.0.0.1:5432:5432`로 묶는 습관을 들이는 게 좋다. 자세한 원리는 [6편](/post/docker-06-network)에서 본다.
 
 ### 환경변수와 설정
 
@@ -125,7 +125,7 @@ docker run -d \
 
 우선순위는 **`docker run -e` > `--env-file` > 이미지의 `ENV`** 순이다.
 
-비밀값을 `-e`로 넘기면 `docker inspect`와 호스트의 `ps`에 그대로 보인다. 로컬 개발이면 몰라도, 운영에서는 시크릿 매니저나 파일 마운트를 쓴다. 8편에서 다시 다룬다.
+비밀값을 `-e`로 넘기면 `docker inspect`와 호스트의 `ps`에 그대로 보인다. 로컬 개발이면 몰라도, 운영에서는 시크릿 매니저나 파일 마운트를 쓴다. [8편](/post/docker-08-optimize-operate)에서 다시 다룬다.
 
 ### 데이터
 
@@ -138,7 +138,7 @@ docker run -d \
 | `--tmpfs /tmp` | 메모리 파일시스템 |
 | `--read-only` | 루트 파일시스템을 읽기 전용으로 |
 
-5편의 주제다.
+[5편](/post/docker-05-volume-data)의 주제다.
 
 ### 재시작 정책
 
@@ -183,7 +183,7 @@ CMD npm start          # 셸 형식 → /bin/sh -c "npm start"
 CMD ["npm", "start"]   # exec 형식 → 앱이 직접 PID 1
 ```
 
-**exec 형식(JSON 배열)을 쓰는 것**이 첫 번째 해법이다. 4편에서 자세히 본다.
+**exec 형식(JSON 배열)을 쓰는 것**이 첫 번째 해법이다. [4편](/post/docker-04-dockerfile)에서 자세히 본다.
 
 ### 종료 코드 읽기
 
@@ -384,7 +384,7 @@ docker ps    # STATUS에 (healthy) / (unhealthy) 표시
 docker inspect -f '{{json .State.Health}}' web
 ```
 
-보통은 이걸 Dockerfile의 `HEALTHCHECK`에 넣거나 Compose에 적는다(4편, 7편).
+보통은 이걸 Dockerfile의 `HEALTHCHECK`에 넣거나 Compose에 적는다(4편, [7편](/post/docker-07-compose)).
 
 주의: **도커 단독에서는 unhealthy가 되어도 컨테이너를 자동으로 재시작해주지 않는다.** 상태 표시만 한다. 그 판단을 하는 건 Compose의 `depends_on: condition` 이나 오케스트레이터다.
 

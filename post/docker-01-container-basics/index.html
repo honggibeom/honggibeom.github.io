@@ -91,7 +91,7 @@
 <p class="pr-meta">2025.11.14 · <a href="/tags/docker">#docker</a> <a href="/tags/container">#container</a> <a href="/tags/devops">#devops</a> <a href="/tags/%EC%9D%B8%ED%94%84%EB%9D%BC">#인프라</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <h2>이 시리즈에 대해</h2>
 <p>도커는 명령어 대여섯 개만 외우면 당장 뭔가는 돌아간다. 문제는 그다음이다. 빌드가 느려지고, 컨테이너를 지웠더니 DB 데이터가 날아가고, 컨테이너끼리 <code>localhost</code>로 통신이 안 되고, 이미지가 1.2GB가 된다. 전부 <strong>컨테이너가 실제로 무엇인지를 모르고 명령어만 외웠을 때</strong> 생기는 일이다.</p>
-<p>그래서 밑에서부터 다시 정리한다. 목표는 "개발자가 자기 애플리케이션을 컨테이너로 만들어서 안전하게 굴릴 수 있는 수준"이다. 쿠버네티스 같은 오케스트레이션은 8편에서 경계만 그어둔다.</p>
+<p>그래서 밑에서부터 다시 정리한다. 목표는 "개발자가 자기 애플리케이션을 컨테이너로 만들어서 안전하게 굴릴 수 있는 수준"이다. 쿠버네티스 같은 오케스트레이션은 <a href="/post/docker-08-optimize-operate">8편</a>에서 경계만 그어둔다.</p>
 
 
 
@@ -133,8 +133,8 @@
 
 
 
-<table><thead><tr><th>편</th><th>주제</th></tr></thead><tbody><tr><td>1</td><td>컨테이너의 정체, 커널 기능, 도커 아키텍처</td></tr><tr><td>2</td><td>이미지와 레이어, 태그, 레지스트리</td></tr><tr><td>3</td><td>컨테이너 실행과 생명주기, 리소스 제한</td></tr><tr><td>4</td><td>Dockerfile 전 명령어와 빌드 캐시</td></tr><tr><td>5</td><td>볼륨과 바인드 마운트, 데이터 관리</td></tr><tr><td>6</td><td>네트워크 — 브리지, 포트 매핑, DNS</td></tr><tr><td>7</td><td>Docker Compose</td></tr><tr><td>8</td><td>이미지 최적화, 보안, 배포와 트러블슈팅</td></tr></tbody></table>
-<p>이 시리즈의 실습은 리눅스(또는 WSL2, Docker Desktop) 기준이며, 예제 애플리케이션은 4편에서 만드는 것을 계속 재사용한다.</p>
+<table><thead><tr><th>편</th><th>주제</th></tr></thead><tbody><tr><td>1</td><td>컨테이너의 정체, 커널 기능, 도커 아키텍처</td></tr><tr><td>2</td><td><a href="/post/docker-02-image-registry">이미지와 레이어, 태그, 레지스트리</a></td></tr><tr><td>3</td><td><a href="/post/docker-03-run-lifecycle">컨테이너 실행과 생명주기, 리소스 제한</a></td></tr><tr><td>4</td><td><a href="/post/docker-04-dockerfile">Dockerfile 전체 명령어와 빌드 캐시</a></td></tr><tr><td>5</td><td><a href="/post/docker-05-volume-data">볼륨과 바인드 마운트, 데이터 관리</a></td></tr><tr><td>6</td><td><a href="/post/docker-06-network">네트워크 — 브리지, 포트 매핑, DNS</a></td></tr><tr><td>7</td><td><a href="/post/docker-07-compose">Docker Compose</a></td></tr><tr><td>8</td><td><a href="/post/docker-08-optimize-operate">이미지 최적화, 보안, 배포와 트러블슈팅</a></td></tr></tbody></table>
+<p>이 시리즈의 실습은 리눅스(또는 WSL2, Docker Desktop) 기준이며, <a href="/post/docker-04-dockerfile">4편</a>부터는 Node·Spring Boot·Python 세 가지 예제를 반복해서 쓴다.</p>
 <h2>왜 도커를 쓰는가</h2>
 <p>"내 노트북에서는 됐는데요"라는 말의 정체는 대부분 이 셋 중 하나다.</p>
 <ul>
@@ -253,10 +253,10 @@
 <p>컨테이너 안에서 <code>ps</code>를 쳤을 때 호스트의 프로세스가 안 보이는 이유가 pid 네임스페이스다. <code>ifconfig</code>에 호스트 랜카드가 안 보이는 건 net 네임스페이스다.</p>
 <h3>2. cgroup — 얼마나 쓸 수 있는가</h3>
 <p>네임스페이스가 "시야"를 자른다면 cgroup은 <strong>자원 사용량</strong>을 자른다. CPU, 메모리, 디스크 I/O, 네트워크 대역폭을 그룹 단위로 제한하고 계측한다.</p>
-<p><code>docker run --memory=512m --cpus=1.5</code>가 그대로 cgroup 설정으로 내려간다. 3편에서 자세히 본다.</p>
+<p><code>docker run --memory=512m --cpus=1.5</code>가 그대로 cgroup 설정으로 내려간다. <a href="/post/docker-03-run-lifecycle">3편</a>에서 자세히 본다.</p>
 <p>메모리 한도를 넘기면 컨테이너 안의 프로세스가 커널 OOM Killer에 죽는다. 컨테이너가 종료 코드 137로 죽어 있으면 십중팔구 이것이다(128 + SIGKILL 9).</p>
 <h3>3. 유니온 파일시스템 (OverlayFS) — 파일이 어떻게 쌓이는가</h3>
-<p>여러 디렉터리를 겹쳐서 하나처럼 보여준다. 이미지 레이어의 근간이고, 2편의 주제다.</p>
+<p>여러 디렉터리를 겹쳐서 하나처럼 보여준다. 이미지 레이어의 근간이고, <a href="/post/docker-02-image-registry">2편</a>의 주제다.</p>
 <pre><code>       ┌──────────────────────────┐
        │ 컨테이너 레이어 (쓰기 가능) │  ← 컨테이너마다 하나씩
        ├──────────────────────────┤
@@ -267,7 +267,7 @@
                   ↓
           하나의 파일시스템으로 보임
 </code></pre>
-<p>아래 레이어의 파일을 수정하면 원본을 건드리지 않고 위 레이어로 복사해서 고친다(Copy-on-Write). <strong>컨테이너를 지우면 맨 위 레이어가 사라지므로 그 안의 변경도 같이 사라진다.</strong> DB 컨테이너를 지웠더니 데이터가 날아갔다는 이야기의 정체가 이것이고, 5편의 볼륨이 그 해법이다.</p>
+<p>아래 레이어의 파일을 수정하면 원본을 건드리지 않고 위 레이어로 복사해서 고친다(Copy-on-Write). <strong>컨테이너를 지우면 맨 위 레이어가 사라지므로 그 안의 변경도 같이 사라진다.</strong> DB 컨테이너를 지웠더니 데이터가 날아갔다는 이야기의 정체가 이것이고, <a href="/post/docker-05-volume-data">5편</a>의 볼륨이 그 해법이다.</p>
 <h3>4. 그 밖에</h3>
 <ul>
 <li><strong>capabilities</strong> — root 권한을 잘게 쪼갠 것. 컨테이너의 root는 호스트 root보다 훨씬 적은 권한만 갖는다.</li>
@@ -296,8 +296,8 @@ docker exec demo hostname  # 3f2a1b9c4d5e  ← 컨테이너 ID
 <p>여기서 따라오는 결론들이 있다.</p>
 <ul>
 <li><strong>컨테이너에는 "부팅"이 없다.</strong> 프로세스 하나를 실행할 뿐이다. 그래서 시작이 빠르다.</li>
-<li><strong>그 프로세스가 끝나면 컨테이너도 끝난다.</strong> <code>docker run ubuntu</code> 가 곧바로 종료되는 이유다. 실행할 게 <code>bash</code>인데 입력이 붙어 있지 않으니 바로 끝난다.</li>
-<li><strong>컨테이너 안의 PID 1은 특별한 책임을 진다.</strong> 시그널 처리와 좀비 프로세스 수거가 그것인데, 대부분의 앱은 그걸 안 하도록 만들어져 있다. 4편의 <code>ENTRYPOINT</code>와 <code>--init</code> 이야기가 여기서 나온다.</li>
+<li><strong>그 프로세스가 끝나면 컨테이너도 끝난다.</strong> <code>docker run ubuntu</code>가 곧바로 종료되는 이유다. 실행할 게 <code>bash</code>인데 입력이 붙어 있지 않으니 바로 끝난다.</li>
+<li><strong>컨테이너 안의 PID 1은 특별한 책임을 진다.</strong> 시그널 처리와 좀비 프로세스 수거가 그것인데, 대부분의 앱은 그걸 안 하도록 만들어져 있다. 3편의 <code>--init</code>과 4편의 <code>ENTRYPOINT</code> 이야기가 여기서 나온다.</li>
 </ul>
 <h2>도커의 실행 구조</h2>
 <p><code>docker run</code>을 쳤을 때 실제로 움직이는 것들이다.</p>
@@ -369,7 +369,7 @@ docker exec -it web sh   # 컨테이너 안에서 셸 열기
 docker stop web          # SIGTERM 후 10초 뒤 SIGKILL
 docker rm web            # 컨테이너 삭제 (중지 상태여야 함)
 </code></pre>
-<p><code>-p</code>를 빼먹으면 컨테이너는 잘 돌지만 밖에서 접근할 수 없다. 컨테이너가 자기만의 네트워크 네임스페이스를 갖기 때문인데, 6편에서 그 구조를 본다.</p>
+<p><code>-p</code>를 빼먹으면 컨테이너는 잘 돌지만 밖에서 접근할 수 없다. 컨테이너가 자기만의 네트워크 네임스페이스를 갖기 때문인데, <a href="/post/docker-06-network">6편</a>에서 그 구조를 본다.</p>
 <h2>명령어 지도</h2>
 <p>지금 전부 외울 필요는 없다. 어떤 대상에 어떤 동사가 붙는지의 <strong>구조</strong>만 잡아두면 된다.</p>
 

@@ -7,7 +7,7 @@ tags: [docker, docker-compose, 개발환경, 학습노트]
 summary: 여러 컨테이너를 파일 하나로 정의하는 Compose. 서비스 정의 필드 전체와 depends_on의 헬스체크 조건, 환경변수 치환과 .env, 프로파일과 여러 파일 병합으로 개발·운영 환경을 나누는 방법까지 정리한다.
 ---
 
-> 도커 학습 노트 시리즈 7편.
+> 도커 학습 노트 시리즈 7편. [6편](/post/docker-06-network)까지 컨테이너를 하나씩 띄우고 네트워크와 볼륨을 손으로 붙여봤다. 이번에는 그 전부를 파일 하나로 묶는다.
 
 ## 왜 필요한가
 
@@ -27,7 +27,7 @@ docker run -d --name web --network appnet -p 80:80 \
 이걸 매번 치거나 셸 스크립트로 관리하는 대신, **선언적인 파일 하나**로 적는 게 Compose다.
 
 ```bash
-docker compose up -d     # 위 다섯 줄이 이 한 줄로
+docker compose up -d     # 위 다섯 개 명령이 이 한 줄로
 docker compose down      # 정리도 한 줄로
 ```
 
@@ -225,7 +225,7 @@ services:
       - /tmp
 ```
 
-Compose에서는 **`./` 상대 경로가 쓸 수 있다.** 기준은 compose 파일이 있는 디렉터리다. CLI와 다른 점이다.
+Compose에서는 **`./` 상대 경로를 쓸 수 있다.** 기준은 compose 파일이 있는 디렉터리다. CLI와 다른 점이다.
 
 ### 의존성과 헬스체크
 
@@ -289,7 +289,7 @@ Compose에서는 **`./` 상대 경로가 쓸 수 있다.** 기준은 compose 파
       - no-new-privileges:true
 ```
 
-3편에서 본 로그 크기 제한을 여기서 서비스별로 걸어둘 수 있다. 보안 옵션은 8편에서 다룬다.
+[3편](/post/docker-03-run-lifecycle)에서 본 로그 크기 제한을 여기서 서비스별로 걸어둘 수 있다. 보안 옵션은 [8편](/post/docker-08-optimize-operate)에서 다룬다.
 
 ## 환경변수와 .env
 
@@ -529,7 +529,7 @@ docker compose -p myapp-staging up -d
 : 서로 다른 네트워크에 있거나, 오타이거나, 아직 안 떴다. `docker compose exec api getent hosts db`로 확인한다.
 
 **빌드 컨텍스트가 매번 오래 걸린다**
-: 4편의 `.dockerignore`를 확인한다.
+: [4편](/post/docker-04-dockerfile)의 `.dockerignore`를 확인한다.
 
 ## 정리
 

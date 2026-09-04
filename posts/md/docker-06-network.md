@@ -7,11 +7,11 @@ tags: [docker, network, bridge, dns, 학습노트]
 summary: 컨테이너가 어떻게 네트워크를 갖는지, 포트 매핑이 실제로 무엇을 하는지, 컨테이너끼리 이름으로 통신하는 원리와 localhost 함정, 그리고 네트워크 문제를 디버깅하는 방법을 정리한다.
 ---
 
-> 도커 학습 노트 시리즈 6편.
+> 도커 학습 노트 시리즈 6편. [5편](/post/docker-05-volume-data)에서 컨테이너의 데이터를 바깥으로 빼내는 방법까지 봤다. 이번에는 컨테이너끼리, 그리고 바깥과 어떻게 통신하는지다.
 
 ## 컨테이너는 자기만의 네트워크를 갖는다
 
-1편에서 본 net 네임스페이스가 여기서 전부다. 컨테이너는 자기만의 네트워크 인터페이스, IP, 라우팅 테이블, 포트 공간을 갖는다.
+[1편](/post/docker-01-container-basics)에서 net 네임스페이스를 잠깐 봤다. 이번 편의 내용은 사실상 전부 그 한 가지에서 파생된다. 컨테이너는 자기만의 네트워크 인터페이스, IP, 라우팅 테이블, 포트 공간을 갖는다.
 
 기본 구성은 이렇다.
 
@@ -50,6 +50,8 @@ ip link | grep veth      # 호스트 쪽 veth 인터페이스가 보인다
 ```
 
 ## 네트워크 드라이버
+
+방금 본 브리지 구조는 여러 드라이버 중 하나일 뿐이다. 도커가 기본 제공하는 것은 다섯 가지다.
 
 | 드라이버 | 용도 |
 | --- | --- |
@@ -185,7 +187,7 @@ sudo ufw deny 5432
 docker run -d -p 5432:5432 postgres:16-alpine    # 외부에서 접속된다
 ```
 
-`ufw`는 `INPUT` 체인을 보고, 도커의 DNAT는 그보다 앞선 `PREROUTING`에서 처리되기 때문이다. 개발 서버를 클라우드에 띄우고 "방화벽 걸어놨으니 괜찮겠지" 했다가 DB가 통째로 노출되는 사고가 여기서 난다.
+`ufw`가 관리하는 건 주로 `INPUT` 체인인데, PREROUTING에서 DNAT된 패킷은 목적지가 컨테이너 IP로 바뀌어 `INPUT`이 아니라 `FORWARD`를 탄다. 그리고 도커는 그 `FORWARD`의 맨 앞에 자기 `DOCKER` 체인을 끼워 넣어 먼저 허용해버린다. 개발 서버를 클라우드에 띄우고 "방화벽 걸어놨으니 괜찮겠지" 했다가 DB가 통째로 노출되는 사고가 여기서 난다.
 
 대응은 셋 중 하나다.
 
@@ -256,7 +258,7 @@ docker exec web netstat -tlnp    # 또는 ss -tlnp
 # 0.0.0.0:80 이어야 한다. 127.0.0.1:80 이면 밖에서 못 붙는다
 ```
 
-## host 네트워크 모드
+## host와 none 네트워크 모드
 
 ```bash
 docker run -d --network host nginx:alpine
@@ -270,7 +272,9 @@ docker run -d --network host nginx:alpine
 
 성능이 정말 문제가 되는 게 아니면 브리지를 쓴다.
 
-`none`은 반대다. 루프백만 있고 외부와 완전히 단절된다. 네트워크가 필요 없는 배치 작업에 쓴다.
+### none — 정반대 극단
+
+`host`가 격리를 전부 포기하는 쪽이라면 `none`은 그 반대편이다. 루프백만 있고 외부와 완전히 단절된다. 네트워크가 필요 없는 배치 작업에 쓴다.
 
 ```bash
 docker run --rm --network none alpine ip addr    # lo 만 있다
@@ -312,7 +316,7 @@ docker port web
 ss -tlnp | grep 8080
 ```
 
-셸이나 도구가 없는 이미지라면 3편에서 본 netshoot을 붙인다.
+셸이나 도구가 없는 이미지라면 [3편](/post/docker-03-run-lifecycle)에서 본 netshoot을 붙인다.
 
 ```bash
 docker run -it --rm --network container:api nicolaka/netshoot
@@ -333,7 +337,7 @@ docker run -it --rm --network container:api nicolaka/netshoot
 : 다른 네트워크에 있거나 방화벽/보안 그룹이 막고 있다. `refused`와 `timeout`은 원인이 다르니 구분해서 읽는다.
 
 **DB가 아직 준비되지 않았는데 앱이 먼저 붙는다**
-: 컨테이너가 "떴다"와 "준비됐다"는 다르다. 헬스체크와 재시도 로직이 필요하다. 7편에서 다룬다.
+: 컨테이너가 "떴다"와 "준비됐다"는 다르다. 헬스체크와 재시도 로직이 필요하다. [7편](/post/docker-07-compose)에서 다룬다.
 
 **컨테이너에서 외부 인터넷이 안 된다**
 : 호스트의 IP 포워딩이 꺼져 있거나(`net.ipv4.ip_forward`), 사내 DNS 문제일 수 있다. `docker run --rm alpine ping -c1 8.8.8.8`(IP)과 `ping -c1 google.com`(도메인)을 나눠서 시험하면 네트워크 문제인지 DNS 문제인지 갈린다.

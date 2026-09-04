@@ -89,7 +89,7 @@
 <h1>Docker Compose 정리 - 여러 컨테이너를 파일 하나로 묶기 (도커 학습 노트 7)</h1>
 <p class="pr-meta">2026.02.06 · <a href="/tags/docker">#docker</a> <a href="/tags/docker-compose">#docker-compose</a> <a href="/tags/%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD">#개발환경</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <blockquote>
-<p>도커 학습 노트 시리즈 7편.</p>
+<p>도커 학습 노트 시리즈 7편. <a href="/post/docker-06-network">6편</a>까지 컨테이너를 하나씩 띄우고 네트워크와 볼륨을 손으로 붙여봤다. 이번에는 그 전부를 파일 하나로 묶는다.</p>
 </blockquote>
 <h2>왜 필요한가</h2>
 <p>6편까지 오면 명령어가 이 지경이 된다.</p>
@@ -103,7 +103,7 @@ docker run -d --name web --network appnet -p 80:80 \
   -v ./nginx.conf:/etc/nginx/conf.d/default.conf:ro nginx:alpine
 </code></pre>
 <p>이걸 매번 치거나 셸 스크립트로 관리하는 대신, <strong>선언적인 파일 하나</strong>로 적는 게 Compose다.</p>
-<pre><code class="language-bash">docker compose up -d     # 위 다섯 줄이 이 한 줄로
+<pre><code class="language-bash">docker compose up -d     # 위 다섯 개 명령이 이 한 줄로
 docker compose down      # 정리도 한 줄로
 </code></pre>
 <p>Compose가 주는 건 편의만이 아니다. 네트워크와 볼륨을 알아서 만들고, 서비스 이름으로 DNS가 통하고, 구성이 <strong>git에 커밋되는 텍스트</strong>가 된다.</p>
@@ -268,7 +268,7 @@ docker compose config             # 병합·치환 결과를 최종 YAML로 출�
     tmpfs:
       - /tmp
 </code></pre>
-<p>Compose에서는 <strong><code>./</code> 상대 경로가 쓸 수 있다.</strong> 기준은 compose 파일이 있는 디렉터리다. CLI와 다른 점이다.</p>
+<p>Compose에서는 <strong><code>./</code> 상대 경로를 쓸 수 있다.</strong> 기준은 compose 파일이 있는 디렉터리다. CLI와 다른 점이다.</p>
 <h3>의존성과 헬스체크</h3>
 <pre><code class="language-yaml">    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
@@ -333,7 +333,7 @@ docker compose config             # 병합·치환 결과를 최종 YAML로 출�
     security_opt:
       - no-new-privileges:true
 </code></pre>
-<p>3편에서 본 로그 크기 제한을 여기서 서비스별로 걸어둘 수 있다. 보안 옵션은 8편에서 다룬다.</p>
+<p><a href="/post/docker-03-run-lifecycle">3편</a>에서 본 로그 크기 제한을 여기서 서비스별로 걸어둘 수 있다. 보안 옵션은 <a href="/post/docker-08-optimize-operate">8편</a>에서 다룬다.</p>
 <h2>환경변수와 .env</h2>
 <p>Compose는 파일과 같은 디렉터리의 <code>.env</code>를 자동으로 읽어서 <strong>YAML 안의 <code>${...}</code>를 치환한다.</strong></p>
 <p><code>.env</code>:</p>
@@ -534,7 +534,7 @@ services:
 <p><strong>서비스 이름으로 접속이 안 된다</strong>
 : 서로 다른 네트워크에 있거나, 오타이거나, 아직 안 떴다. <code>docker compose exec api getent hosts db</code>로 확인한다.</p>
 <p><strong>빌드 컨텍스트가 매번 오래 걸린다</strong>
-: 4편의 <code>.dockerignore</code>를 확인한다.</p>
+: <a href="/post/docker-04-dockerfile">4편</a>의 <code>.dockerignore</code>를 확인한다.</p>
 <h2>정리</h2>
 <p>이번 편에서 잡아야 할 것.</p>
 <ul>

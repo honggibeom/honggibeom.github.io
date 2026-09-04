@@ -90,7 +90,7 @@
 <h1>도커 이미지와 레이어, 태그, 레지스트리 정리 - latest의 함정까지 (도커 학습 노트 2)</h1>
 <p class="pr-meta">2025.11.26 · <a href="/tags/docker">#docker</a> <a href="/tags/image">#image</a> <a href="/tags/registry">#registry</a> <a href="/tags/layer">#layer</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <blockquote>
-<p>도커 학습 노트 시리즈 2편. 1편에서 컨테이너가 커널을 공유하는 격리된 프로세스라는 것까지 봤다.</p>
+<p>도커 학습 노트 시리즈 2편. <a href="/post/docker-01-container-basics">1편</a>에서 컨테이너가 커널을 공유하는 격리된 프로세스라는 것까지 봤다.</p>
 </blockquote>
 <h2>이미지는 무엇으로 이루어져 있나</h2>
 <p>"이미지 = 하나의 큰 파일"이라고 생각하면 나중에 전부 어긋난다. OCI 이미지는 <strong>세 종류의 조각</strong>으로 되어 있다.</p>
@@ -135,7 +135,7 @@ docker history --format '{{.Size}}\t{{.CreatedBy}}' myapp:1.0
 <h3>레이어가 공유된다</h3>
 <p>레이어는 다이제스트로 식별되므로 <strong>내용이 같으면 한 벌만 저장된다.</strong></p>
 <pre><code class="language-bash">docker pull node:20-alpine
-docker pull node:20-alpine-with-something  # 같은 베이스를 쓴다면
+docker pull node:22-alpine   # 공유하는 레이어는 Already exists 로 뜬다
 </code></pre>
 <p>두 이미지가 같은 alpine 베이스를 쓰면 그 레이어는 디스크에 하나만 있다. <code>docker images</code>의 SIZE를 다 더한 값과 실제 디스크 사용량이 다른 이유가 이것이다. 진짜 사용량은 이렇게 본다.</p>
 <pre><code class="language-bash">docker system df -v
@@ -156,7 +156,7 @@ RUN rm big-sdk.tar.gz        # ← 다음 레이어에서 지워봐야 소용없
  &#x26;&#x26; tar xf big-sdk.tar.gz \
  &#x26;&#x26; rm big-sdk.tar.gz
 </code></pre>
-<p><strong>한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다.</strong> 비밀키를 <code>COPY</code> 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. <code>docker history</code>나 레이어 tar를 풀면 나온다. 8편의 보안 이야기에서 다시 다룬다.</p>
+<p><strong>한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다.</strong> 비밀키를 <code>COPY</code> 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. <code>docker history</code>나 레이어 tar를 풀면 나온다. <a href="/post/docker-08-optimize-operate">8편</a>의 보안 이야기에서 다시 다룬다.</p>
 <h2>다이제스트와 태그</h2>
 <p>두 가지 방법으로 이미지를 가리킬 수 있다.</p>
 
@@ -218,8 +218,9 @@ honggibeom/app   → docker.io/honggibeom/app:latest
 ghcr.io/org/app  → GitHub Container Registry
 localhost:5000/app → 로컬에 띄운 사설 레지스트리
 </code></pre>
-<p><code>myregistry.com/app</code>처럼 <strong>점이나 포트가 들어가면 레지스트리 호스트로 해석</strong>한다. 이 규칙 때문에 <code>myapp/web</code>은 Docker Hub의 <code>myapp</code> 계정으로 해석된다.</p>
+<p><code>myregistry.com/app</code>처럼 <strong>점이나 포트가 들어가면 레지스트리 호스트로 해석</strong>한다. 거꾸로 <code>myapp/web</code>은 점도 포트도 없으므로 호스트가 아니라 Docker Hub의 <code>myapp</code> 계정으로 해석된다.</p>
 <h2>레지스트리</h2>
+<p>이미지를 주고받는 창구다. 어디에 올릴지는 대개 배포 환경이 정해준다.</p>
 
 
 

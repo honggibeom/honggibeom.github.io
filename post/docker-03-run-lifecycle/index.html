@@ -90,7 +90,7 @@
 <h1>docker run 옵션과 컨테이너 생명주기, 리소스 제한 정리 (도커 학습 노트 3)</h1>
 <p class="pr-meta">2025.12.12 · <a href="/tags/docker">#docker</a> <a href="/tags/container">#container</a> <a href="/tags/cli">#cli</a> <a href="/tags/%EC%9A%B4%EC%98%81">#운영</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <blockquote>
-<p>도커 학습 노트 시리즈 3편.</p>
+<p>도커 학습 노트 시리즈 3편. <a href="/post/docker-02-image-registry">2편</a>에서 이미지가 레이어로 쌓이는 구조와 태그·레지스트리까지 봤다. 이번에는 그 이미지로 컨테이너를 실제로 띄우고 관리하는 쪽이다.</p>
 </blockquote>
 <h2>컨테이너의 상태</h2>
 <p><code>docker ps -a</code>의 STATUS 칸에 뜨는 값들이 곧 상태다.</p>
@@ -237,7 +237,7 @@ echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i�
 
 
 <table><thead><tr><th>옵션</th><th>의미</th></tr></thead><tbody><tr><td><code>-p 8080:80</code></td><td>호스트 8080 → 컨테이너 80</td></tr><tr><td><code>-p 127.0.0.1:8080:80</code></td><td>로컬호스트에서만 접근 가능</td></tr><tr><td><code>-p 80</code></td><td>호스트 포트를 랜덤 배정</td></tr><tr><td><code>-P</code></td><td>이미지의 <code>EXPOSE</code> 포트를 전부 랜덤 배정</td></tr><tr><td><code>--network</code></td><td>붙일 네트워크</td></tr><tr><td><code>--network-alias</code></td><td>그 네트워크에서 쓸 DNS 별칭</td></tr><tr><td><code>--hostname</code></td><td>컨테이너 호스트명</td></tr><tr><td><code>--add-host</code></td><td><code>/etc/hosts</code>에 항목 추가</td></tr><tr><td><code>--dns</code></td><td>DNS 서버 지정</td></tr></tbody></table>
-<p><code>-p 8080:80</code>은 <strong>모든 인터페이스(0.0.0.0)에 바인딩된다.</strong> 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 <code>-p 127.0.0.1:5432:5432</code>로 묶는 습관을 들이는 게 좋다. 자세한 원리는 6편에서 본다.</p>
+<p><code>-p 8080:80</code>은 <strong>모든 인터페이스(0.0.0.0)에 바인딩된다.</strong> 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 <code>-p 127.0.0.1:5432:5432</code>로 묶는 습관을 들이는 게 좋다. 자세한 원리는 <a href="/post/docker-06-network">6편</a>에서 본다.</p>
 <h3>환경변수와 설정</h3>
 
 
@@ -267,7 +267,7 @@ echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i�
   --name db postgres:16-alpine
 </code></pre>
 <p>우선순위는 <strong><code>docker run -e</code> > <code>--env-file</code> > 이미지의 <code>ENV</code></strong> 순이다.</p>
-<p>비밀값을 <code>-e</code>로 넘기면 <code>docker inspect</code>와 호스트의 <code>ps</code>에 그대로 보인다. 로컬 개발이면 몰라도, 운영에서는 시크릿 매니저나 파일 마운트를 쓴다. 8편에서 다시 다룬다.</p>
+<p>비밀값을 <code>-e</code>로 넘기면 <code>docker inspect</code>와 호스트의 <code>ps</code>에 그대로 보인다. 로컬 개발이면 몰라도, 운영에서는 시크릿 매니저나 파일 마운트를 쓴다. <a href="/post/docker-08-optimize-operate">8편</a>에서 다시 다룬다.</p>
 <h3>데이터</h3>
 
 
@@ -303,7 +303,7 @@ echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i�
 
 
 <table><thead><tr><th>옵션</th><th>의미</th></tr></thead><tbody><tr><td><code>-v 이름:/경로</code></td><td>이름 있는 볼륨 마운트</td></tr><tr><td><code>-v /호스트경로:/경로</code></td><td>바인드 마운트</td></tr><tr><td><code>-v /경로</code></td><td>익명 볼륨</td></tr><tr><td><code>--mount type=...</code></td><td>명시적 문법 (권장)</td></tr><tr><td><code>--tmpfs /tmp</code></td><td>메모리 파일시스템</td></tr><tr><td><code>--read-only</code></td><td>루트 파일시스템을 읽기 전용으로</td></tr></tbody></table>
-<p>5편의 주제다.</p>
+<p><a href="/post/docker-05-volume-data">5편</a>의 주제다.</p>
 <h3>재시작 정책</h3>
 
 
@@ -350,7 +350,7 @@ docker kill -s HUP web  # 특정 시그널 보내기
 <p>이렇게 쓰면 PID 1은 <code>sh</code>가 되고, <code>sh</code>는 받은 SIGTERM을 자식에게 전달하지 않는다. 결과적으로 앱은 시그널을 못 받고 10초 뒤 SIGKILL로 강제 종료된다. 처리 중이던 요청은 끊기고, 트랜잭션은 롤백되고, 종료 코드는 137이 된다.</p>
 <pre><code class="language-dockerfile">CMD ["npm", "start"]   # exec 형식 → 앱이 직접 PID 1
 </code></pre>
-<p><strong>exec 형식(JSON 배열)을 쓰는 것</strong>이 첫 번째 해법이다. 4편에서 자세히 본다.</p>
+<p><strong>exec 형식(JSON 배열)을 쓰는 것</strong>이 첫 번째 해법이다. <a href="/post/docker-04-dockerfile">4편</a>에서 자세히 본다.</p>
 <h3>종료 코드 읽기</h3>
 
 
@@ -530,7 +530,7 @@ cat /sys/fs/cgroup/memory.max        # cgroup v2
 docker ps    # STATUS에 (healthy) / (unhealthy) 표시
 docker inspect -f '{{json .State.Health}}' web
 </code></pre>
-<p>보통은 이걸 Dockerfile의 <code>HEALTHCHECK</code>에 넣거나 Compose에 적는다(4편, 7편).</p>
+<p>보통은 이걸 Dockerfile의 <code>HEALTHCHECK</code>에 넣거나 Compose에 적는다(4편, <a href="/post/docker-07-compose">7편</a>).</p>
 <p>주의: <strong>도커 단독에서는 unhealthy가 되어도 컨테이너를 자동으로 재시작해주지 않는다.</strong> 상태 표시만 한다. 그 판단을 하는 건 Compose의 <code>depends_on: condition</code> 이나 오케스트레이터다.</p>
 <h2>자주 만나는 상황</h2>
 <p><strong>컨테이너가 뜨자마자 종료된다</strong>

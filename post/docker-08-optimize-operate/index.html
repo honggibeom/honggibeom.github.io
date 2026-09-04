@@ -91,9 +91,10 @@
 <h1>도커 멀티스테이지 빌드, 보안, 배포와 트러블슈팅 (도커 학습 노트 8)</h1>
 <p class="pr-meta">2026.02.24 · <a href="/tags/docker">#docker</a> <a href="/tags/%EB%A9%80%ED%8B%B0%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%A7%80">#멀티스테이지</a> <a href="/tags/%EB%B3%B4%EC%95%88">#보안</a> <a href="/tags/ci-cd">#ci-cd</a> <a href="/tags/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85">#트러블슈팅</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <blockquote>
-<p>도커 학습 노트 시리즈 8편(마지막).</p>
+<p>도커 학습 노트 시리즈 8편(마지막). <a href="/post/docker-07-compose">7편</a>에서 여러 컨테이너를 Compose로 묶는 데까지 왔다. 이번에는 이미지를 작게 만들고, 안전하게 굴리고, 문제가 났을 때 원인을 좁혀 들어가는 방법이다.</p>
 </blockquote>
 <h2>이미지가 큰 게 왜 문제인가</h2>
+<p>"돌아만 가면 되지"로 넘기기 쉽지만, 이미지 크기는 여러 군데에서 비용으로 돌아온다.</p>
 <ul>
 <li><strong>배포가 느려진다</strong> — 노드 수가 늘어날수록 pull 시간이 곱해진다</li>
 <li><strong>디스크와 전송 비용이 든다</strong> — 레지스트리 요금, CI 캐시</li>
@@ -250,6 +251,7 @@ docker build --target production  -t myapp:1.0 .
 </code></pre>
 <p>레이어를 하나씩 짚으며 어떤 파일이 추가됐는지 보여주고, 낭비(중복 추가 후 삭제)를 계산해준다.</p>
 <h2>보안</h2>
+<p>컨테이너 보안은 <a href="/post/docker-01-container-basics">1편</a>에서 본 "격리는 커널 경계일 뿐"이라는 사실에서 출발한다. 경계가 얇으니 그 위에 얹는 것을 최소로 줄이는 게 전부다. 순서대로 다섯 가지다.</p>
 <h3>1. root로 실행하지 않는다</h3>
 <pre><code class="language-dockerfile">RUN addgroup -S app &#x26;&#x26; adduser -S -G app app
 USER app
@@ -272,7 +274,7 @@ USER app
 <ul>
 <li><code>--cap-drop ALL</code> 후 필요한 것만 추가한다. 대부분의 웹 앱은 아무것도 필요 없다</li>
 <li><code>no-new-privileges</code>는 setuid 바이너리로 권한이 올라가는 걸 막는다</li>
-<li><code>--read-only</code> + <code>tmpfs</code>는 5편에서 본 구성이다</li>
+<li><code>--read-only</code> + <code>tmpfs</code>는 <a href="/post/docker-05-volume-data">5편</a>에서 본 구성이다</li>
 </ul>
 <h3>3. 절대 하지 말 것</h3>
 <pre><code class="language-bash">docker run --privileged ...                              # 모든 안전장치 해제
@@ -282,7 +284,7 @@ docker run --pid=host --net=host --ipc=host ...           # 격리 포기
 </code></pre>
 <p><code>docker.sock</code> 마운트는 CI 러너나 Watchtower 같은 도구가 흔히 요구한다. <strong>그 컨테이너가 침해되면 호스트 전체가 넘어간다</strong>는 걸 이해하고 쓰거나, 소켓 프록시(<code>tecnativa/docker-socket-proxy</code>)로 허용 API를 제한한다.</p>
 <h3>4. 시크릿을 이미지에 넣지 않는다</h3>
-<p>2편과 4편에서 본 대로, 레이어에 한 번 들어간 것은 지워도 남는다.</p>
+<p><a href="/post/docker-02-image-registry">2편</a>과 <a href="/post/docker-04-dockerfile">4편</a>에서 본 대로, 레이어에 한 번 들어간 것은 지워도 남는다.</p>
 
 
 
@@ -518,7 +520,7 @@ docker volume rm &#x3C;이름>                #   개별로 지운다
 <li>컨테이너가 죽으면 자동으로 다른 노드에서 살아나야 한다</li>
 </ul>
 <p>그 지점의 답이 오케스트레이션이고, 실질적인 표준은 쿠버네티스다. 도커 Swarm은 훨씬 단순하지만 생태계가 얇다.</p>
-<p>다만 순서가 중요하다. <strong>여기까지의 내용(이미지, 볼륨, 네트워크, 프로세스와 시그널)을 모른 채 쿠버네티스로 가면 전부 마법으로 보인다.</strong> 파드는 컨테이너의 묶음이고, 퍼시스턴트 볼륨은 5편의 볼륨이고, 서비스는 6편의 DNS다. 개념이 그대로 확장된다.</p>
+<p>다만 순서가 중요하다. <strong>여기까지의 내용(이미지, 볼륨, 네트워크, 프로세스와 시그널)을 모른 채 쿠버네티스로 가면 전부 마법으로 보인다.</strong> 파드는 컨테이너의 묶음이고, 퍼시스턴트 볼륨은 5편의 볼륨이고, 서비스는 <a href="/post/docker-06-network">6편</a>의 DNS다. 개념이 그대로 확장된다.</p>
 <p>단일 서버로 충분한 규모라면 Compose로 운영하는 것도 충분히 정당한 선택이다.</p>
 <h2>시리즈 정리</h2>
 <p>여덟 편에서 잡은 것들을 한 장으로 모으면 이렇다.</p>

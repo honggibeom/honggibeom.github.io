@@ -7,7 +7,7 @@ tags: [docker, dockerfile, buildkit, 빌드, 학습노트]
 summary: Dockerfile의 모든 명령어를 용도별로 정리하고 COPY와 ADD, CMD와 ENTRYPOINT, ARG와 ENV의 차이를 짚는다. 빌드 컨텍스트와 .dockerignore, 레이어 캐시가 언제 깨지는지와 BuildKit 캐시 마운트까지 다룬다.
 ---
 
-> 도커 학습 노트 시리즈 4편.
+> 도커 학습 노트 시리즈 4편. [3편](/post/docker-03-run-lifecycle)까지는 남이 만든 이미지를 실행하는 이야기였다. 이번에는 그 이미지를 직접 만드는 Dockerfile이다.
 
 ## 빌드할 때 실제로 무슨 일이 일어나나
 
@@ -87,7 +87,7 @@ FROM node:20.11-alpine3.19 AS builder    # 멀티스테이지용 이름
 FROM scratch                             # 완전히 빈 이미지
 ```
 
-한 Dockerfile에 여러 번 나올 수 있고, 그때마다 새 스테이지가 시작된다(8편).
+한 Dockerfile에 여러 번 나올 수 있고, 그때마다 새 스테이지가 시작된다([8편](/post/docker-08-optimize-operate)).
 
 ### RUN — 빌드 시점에 명령 실행
 
@@ -276,7 +276,7 @@ EXPOSE 8080
 VOLUME /var/lib/postgresql/data
 ```
 
-이 경로에 아무것도 마운트하지 않고 컨테이너를 만들면 **익명 볼륨이 자동 생성된다.** 편해 보이지만 이름 없는 볼륨이 계속 쌓여 디스크를 먹는 원인이 되기도 한다. 애플리케이션 이미지에는 잘 쓰지 않고, DB 같은 이미지에서 실수 방지용으로 쓰는 편이다(5편).
+이 경로에 아무것도 마운트하지 않고 컨테이너를 만들면 **익명 볼륨이 자동 생성된다.** 편해 보이지만 이름 없는 볼륨이 계속 쌓여 디스크를 먹는 원인이 되기도 한다. 애플리케이션 이미지에는 잘 쓰지 않고, DB 같은 이미지에서 실수 방지용으로 쓰는 편이다([5편](/post/docker-05-volume-data)).
 
 ### HEALTHCHECK
 
@@ -307,7 +307,7 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]   # 셸 형식 RUN이 쓸 셸 교�
 ONBUILD COPY . /app    # 이 이미지를 FROM 으로 쓰는 하위 빌드에서 실행 (거의 안 씀)
 ```
 
-`SHELL`로 `pipefail`을 켜두면 파이프 중간의 실패를 놓치지 않는다. 기본 `sh -c`는 마지막 명령의 종료 코드만 보기 때문에, `RUN curl ... | tar x` 에서 curl이 실패해도 빌드가 성공해버린다.
+`SHELL`로 `pipefail`을 켜두면 파이프 중간의 실패를 놓치지 않는다. 기본 `sh -c`는 마지막 명령의 종료 코드만 보기 때문에, `RUN curl ... | tar x`에서 curl이 실패해도 빌드가 성공해버린다.
 
 ## 빌드 캐시
 

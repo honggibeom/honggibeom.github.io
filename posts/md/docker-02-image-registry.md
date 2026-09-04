@@ -7,7 +7,7 @@ tags: [docker, image, registry, layer, 학습노트]
 summary: 이미지가 레이어로 쌓이는 구조와 Copy-on-Write, 다이제스트와 태그의 차이, latest의 함정, 베이스 이미지 선택 기준, 레지스트리 사용법과 멀티 아키텍처 이미지까지 정리한다.
 ---
 
-> 도커 학습 노트 시리즈 2편. 1편에서 컨테이너가 커널을 공유하는 격리된 프로세스라는 것까지 봤다.
+> 도커 학습 노트 시리즈 2편. [1편](/post/docker-01-container-basics)에서 컨테이너가 커널을 공유하는 격리된 프로세스라는 것까지 봤다.
 
 ## 이미지는 무엇으로 이루어져 있나
 
@@ -72,7 +72,7 @@ docker history --format '{{.Size}}\t{{.CreatedBy}}' myapp:1.0
 
 ```bash
 docker pull node:20-alpine
-docker pull node:20-alpine-with-something  # 같은 베이스를 쓴다면
+docker pull node:22-alpine   # 공유하는 레이어는 Already exists 로 뜬다
 ```
 
 두 이미지가 같은 alpine 베이스를 쓰면 그 레이어는 디스크에 하나만 있다. `docker images`의 SIZE를 다 더한 값과 실제 디스크 사용량이 다른 이유가 이것이다. 진짜 사용량은 이렇게 본다.
@@ -105,7 +105,7 @@ RUN wget https://example.com/big-sdk.tar.gz \
  && rm big-sdk.tar.gz
 ```
 
-**한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다.** 비밀키를 `COPY` 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. `docker history`나 레이어 tar를 풀면 나온다. 8편의 보안 이야기에서 다시 다룬다.
+**한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다.** 비밀키를 `COPY` 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. `docker history`나 레이어 tar를 풀면 나온다. [8편](/post/docker-08-optimize-operate)의 보안 이야기에서 다시 다룬다.
 
 ## 다이제스트와 태그
 
@@ -173,9 +173,11 @@ ghcr.io/org/app  → GitHub Container Registry
 localhost:5000/app → 로컬에 띄운 사설 레지스트리
 ```
 
-`myregistry.com/app`처럼 **점이나 포트가 들어가면 레지스트리 호스트로 해석**한다. 이 규칙 때문에 `myapp/web`은 Docker Hub의 `myapp` 계정으로 해석된다.
+`myregistry.com/app`처럼 **점이나 포트가 들어가면 레지스트리 호스트로 해석**한다. 거꾸로 `myapp/web`은 점도 포트도 없으므로 호스트가 아니라 Docker Hub의 `myapp` 계정으로 해석된다.
 
 ## 레지스트리
+
+이미지를 주고받는 창구다. 어디에 올릴지는 대개 배포 환경이 정해준다.
 
 | 레지스트리 | 특징 |
 | --- | --- |
