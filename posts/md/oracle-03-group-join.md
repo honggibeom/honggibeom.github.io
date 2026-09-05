@@ -14,14 +14,14 @@ summary: 집계 함수와 GROUP BY/HAVING, ROLLUP·CUBE 같은 소계 확장, �
 | 함수 | 설명 | NULL |
 | --- | --- | --- |
 | `COUNT(*)` | 행 수 | NULL 행도 센다 |
-| `COUNT(col)` | 값이 있는 행 수 | **NULL 제외** |
+| `COUNT(col)` | 값이 있는 행 수 | NULL 제외 |
 | `COUNT(DISTINCT col)` | 중복 제거한 값의 수 | NULL 제외 |
 | `SUM` / `AVG` | 합 / 평균 | NULL 제외 |
 | `MAX` / `MIN` | 최대 / 최소 | NULL 제외 |
 | `STDDEV` / `VARIANCE` | 표준편차 / 분산 | NULL 제외 |
 | `LISTAGG` | 문자열로 이어붙이기 | NULL 제외 |
 
-**`COUNT(*)`를 뺀 집계 함수는 전부 NULL을 무시한다.** 이게 평균에서 문제가 된다.
+`COUNT(*)`를 뺀 집계 함수는 전부 NULL을 무시한다. 이게 평균에서 문제가 된다.
 
 ```sql
 SELECT COUNT(*)              AS 전체,      -- 10
@@ -64,7 +64,7 @@ GROUP  BY department_id
 ORDER  BY department_id;
 ```
 
-규칙 하나만 지키면 된다. **`SELECT` 목록에는 `GROUP BY`에 넣은 컬럼이거나 집계 함수만 올 수 있다.**
+규칙 하나만 지키면 된다. `SELECT` 목록에는 `GROUP BY`에 넣은 컬럼이거나 집계 함수만 올 수 있다.
 
 ```sql
 SELECT department_id, emp_name, COUNT(*)   -- ORA-00979
@@ -93,7 +93,7 @@ ORDER  BY 1;
 
 ## HAVING
 
-`WHERE`는 그룹을 만들기 **전**의 행을, `HAVING`은 그룹을 만든 **후**의 결과를 거른다.
+`WHERE`는 그룹을 만들기 전의 행을, `HAVING`은 그룹을 만든 후의 결과를 거른다.
 
 ```sql
 SELECT department_id, COUNT(*) AS cnt, AVG(salary) AS avg_sal
@@ -126,7 +126,7 @@ GROUP  BY ROLLUP (department_id, job_id);
 GROUP BY CUBE (department_id, job_id)
 ```
 
-`(dept, job)`, `(dept)`, `(job)`, `()` — 2^n개 조합을 전부 만든다.
+`(dept, job)`, `(dept)`, `(job)`, `()` - 2^n개 조합을 전부 만든다.
 
 ### GROUPING SETS - 원하는 조합만
 
@@ -152,8 +152,8 @@ GROUP  BY ROLLUP (department_id, job_id);
 
 조인은 오라클 학습에서 가장 중요한 구간이다. 문법이 두 벌 있다는 게 처음엔 혼란스러운데, 정리하면 간단하다.
 
-- **ANSI 표준 문법** — `JOIN ... ON`. 새로 짜는 코드는 이걸 쓴다.
-- **오라클 전통 문법** — `FROM a, b WHERE a.x = b.x`. 기존 코드에 널려 있어서 읽을 줄 알아야 한다.
+- ANSI 표준 문법 - `JOIN ... ON`. 새로 짜는 코드는 이걸 쓴다.
+- 오라클 전통 문법 - `FROM a, b WHERE a.x = b.x`. 기존 코드에 널려 있어서 읽을 줄 알아야 한다.
 
 ### 내부 조인 (INNER JOIN)
 
@@ -173,7 +173,7 @@ WHERE  e.department_id = d.department_id;
 
 `INNER`는 생략할 수 있다.
 
-컬럼명이 같으면 `USING`으로 줄일 수 있다. 단, `USING`에 쓴 컬럼은 **별칭을 붙이면 안 된다.**
+컬럼명이 같으면 `USING`으로 줄일 수 있다. 단, `USING`에 쓴 컬럼은 별칭을 붙이면 안 된다.
 
 ```sql
 SELECT emp_name, department_name, department_id   -- 접두어 없이 써야 한다
@@ -201,7 +201,7 @@ RIGHT  JOIN departments d ON e.department_id = d.department_id;
 FULL JOIN departments d ON e.department_id = d.department_id;
 ```
 
-오라클 전통 문법에서는 `(+)` 기호를 쓴다. **데이터가 부족한(NULL을 채워 넣을) 쪽에 붙인다**는 게 헷갈리는 지점이다.
+오라클 전통 문법에서는 `(+)` 기호를 쓴다. 데이터가 부족한(NULL을 채워 넣을) 쪽에 붙인다는 게 헷갈리는 지점이다.
 
 ```sql
 -- LEFT JOIN과 같다: departments 쪽이 부족하니 그쪽에 (+)
@@ -218,7 +218,7 @@ WHERE  e.department_id = d.department_id(+);
 
 ### 외부 조인에서 조건의 위치
 
-이게 실전에서 가장 자주 틀리는 부분이다. **`ON`에 쓴 조건과 `WHERE`에 쓴 조건은 다르게 동작한다.**
+이게 실전에서 가장 자주 틀리는 부분이다. `ON`에 쓴 조건과 `WHERE`에 쓴 조건은 다르게 동작한다.
 
 ```sql
 -- 사원 전원 + 서울 부서인 경우에만 부서명 (사원은 다 나온다)
@@ -235,7 +235,7 @@ LEFT   JOIN departments d ON e.department_id = d.department_id
 WHERE  d.location = '서울';
 ```
 
-조인 후에 `WHERE`가 걸리는데, 짝이 없어 NULL로 채워진 행은 `d.location = '서울'`이 UNKNOWN이라 전부 탈락한다. **외부 조인의 "남기는 쪽이 아닌" 테이블에 대한 조건은 `ON`에 둔다.**
+조인 후에 `WHERE`가 걸리는데, 짝이 없어 NULL로 채워진 행은 `d.location = '서울'`이 UNKNOWN이라 전부 탈락한다. 외부 조인의 "남기는 쪽이 아닌" 테이블에 대한 조건은 `ON`에 둔다.
 
 전통 문법에서도 마찬가지로 `(+)`를 붙여야 한다.
 
@@ -348,6 +348,6 @@ FROM   employees e;
 - 소계·총계는 `ROLLUP`/`CUBE`, 소계 행 구분은 `GROUPING`
 - 새 코드는 ANSI 조인, 옛 코드의 `(+)`는 "부족한 쪽에 붙인다"로 읽는다
 - 외부 조인에서 상대 테이블 조건은 `WHERE`가 아니라 `ON`에 둔다
-- 1:N 조인 후 집계는 값이 부풀려진다 — 미리 집계하고 조인한다
+- 1:N 조인 후 집계는 값이 부풀려진다 - 미리 집계하고 조인한다
 
 다음 편은 서브쿼리와 집합 연산이다.

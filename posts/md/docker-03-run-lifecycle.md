@@ -30,12 +30,12 @@ summary: docker run의 옵션을 갈래별로 정리하고, 컨테이너 상태 
                         docker rm          (완전 삭제)
 ```
 
-- **created** — 만들어졌지만 아직 실행 전. 쓰기 레이어와 설정은 이미 잡혀 있다.
-- **running** — 안의 프로세스가 살아 있다.
-- **paused** — cgroup freezer로 프로세스를 얼려둔 상태. 메모리는 그대로 잡고 있다.
-- **restarting** — 재시작 정책에 따라 다시 올라오는 중.
-- **exited** — 안의 프로세스가 끝났다. **컨테이너는 아직 남아 있다.** 파일시스템도, 로그도 그대로다.
-- **dead** — 삭제에 실패한 비정상 상태. 드물다.
+- created - 만들어졌지만 아직 실행 전. 쓰기 레이어와 설정은 이미 잡혀 있다.
+- running - 안의 프로세스가 살아 있다.
+- paused - cgroup freezer로 프로세스를 얼려둔 상태. 메모리는 그대로 잡고 있다.
+- restarting - 재시작 정책에 따라 다시 올라오는 중.
+- exited - 안의 프로세스가 끝났다. 컨테이너는 아직 남아 있다. 파일시스템도, 로그도 그대로다.
+- dead - 삭제에 실패한 비정상 상태. 드물다.
 
 `exited` 상태가 남아 있다는 게 중요하다. 죽은 컨테이너의 로그를 읽어서 원인을 찾을 수 있다.
 
@@ -59,7 +59,7 @@ id=$(docker create -p 8080:80 --name web nginx:alpine)
 docker start $id
 ```
 
-**중요한 점: 대부분의 설정은 `create`/`run` 시점에만 정할 수 있다.** 포트, 볼륨, 네트워크, 환경변수는 이미 만들어진 컨테이너에 나중에 붙일 수 없다. 바꾸려면 지우고 다시 만들어야 한다. 컨테이너를 "고쳐 쓰는 것"이 아니라 "버리고 새로 만드는 것"으로 다루게 되는 이유다.
+중요한 점: 대부분의 설정은 `create`/`run` 시점에만 정할 수 있다. 포트, 볼륨, 네트워크, 환경변수는 이미 만들어진 컨테이너에 나중에 붙일 수 없다. 바꾸려면 지우고 다시 만들어야 한다. 컨테이너를 "고쳐 쓰는 것"이 아니라 "버리고 새로 만드는 것"으로 다루게 되는 이유다.
 
 ## run 옵션 정리
 
@@ -81,16 +81,16 @@ docker start $id
 
 `-it`를 왜 항상 같이 쓰는지 정확히 알아둘 만하다.
 
-- `-i`만 — 파이프로 입력은 넣을 수 있지만 프롬프트가 안 보인다
-- `-t`만 — 터미널은 붙지만 입력이 안 들어간다
-- `-it` — 우리가 기대하는 대화형 셸
+- `-i`만 - 파이프로 입력은 넣을 수 있지만 프롬프트가 안 보인다
+- `-t`만 - 터미널은 붙지만 입력이 안 들어간다
+- `-it` - 우리가 기대하는 대화형 셸
 
 ```bash
 docker run -it --rm alpine sh          # 대화형
 echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i만
 ```
 
-**스크립트나 CI에서 `-t`를 쓰면 안 된다.** TTY가 없는 환경에서 `the input device is not a TTY` 에러가 난다.
+스크립트나 CI에서 `-t`를 쓰면 안 된다. TTY가 없는 환경에서 `the input device is not a TTY` 에러가 난다.
 
 ### 포트와 네트워크
 
@@ -106,7 +106,7 @@ echo "hello" | docker run -i --rm alpine cat   # 파이프로 넣을 때는 -i�
 | `--add-host` | `/etc/hosts`에 항목 추가 |
 | `--dns` | DNS 서버 지정 |
 
-`-p 8080:80`은 **모든 인터페이스(0.0.0.0)에 바인딩된다.** 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 `-p 127.0.0.1:5432:5432`로 묶는 습관을 들이는 게 좋다. 자세한 원리는 [6편](/post/docker-06-network)에서 본다.
+`-p 8080:80`은 모든 인터페이스(0.0.0.0)에 바인딩된다. 방화벽 설정과 무관하게 외부에 열릴 수 있으니, 개발용 DB나 관리 도구는 `-p 127.0.0.1:5432:5432`로 묶는 습관을 들이는 게 좋다. 자세한 원리는 [6편](/post/docker-06-network)에서 본다.
 
 ### 환경변수와 설정
 
@@ -123,7 +123,7 @@ docker run -d \
   --name db postgres:16-alpine
 ```
 
-우선순위는 **`docker run -e` > `--env-file` > 이미지의 `ENV`** 순이다.
+우선순위는 `docker run -e` > `--env-file` > 이미지의 `ENV` 순이다.
 
 비밀값을 `-e`로 넘기면 `docker inspect`와 호스트의 `ps`에 그대로 보인다. 로컬 개발이면 몰라도, 운영에서는 시크릿 매니저나 파일 마운트를 쓴다. [8편](/post/docker-08-optimize-operate)에서 다시 다룬다.
 
@@ -146,7 +146,7 @@ docker run -d \
 | --- | --- |
 | `no` (기본) | 재시작하지 않음 |
 | `on-failure[:횟수]` | 0이 아닌 종료 코드일 때만 재시작 |
-| `always` | 항상 재시작. **도커 데몬 재시작 시에도 올라온다** |
+| `always` | 항상 재시작. 도커 데몬 재시작 시에도 올라온다 |
 | `unless-stopped` | `always`와 같지만, 내가 직접 stop 했다면 데몬 재시작 후에도 올리지 않는다 |
 
 ```bash
@@ -156,7 +156,7 @@ docker update --restart=always web    # 나중에 변경 가능한 몇 안 되�
 
 서버 재부팅 후에도 살아 있어야 하는 서비스는 `unless-stopped`가 무난하다. `always`는 "내가 꺼둔 것"까지 되살려서 곤란할 때가 있다.
 
-**재시작 정책은 크래시 루프를 숨긴다.** 컨테이너가 계속 죽으면서 다시 뜨고 있으면 `docker ps`에는 `Restarting (1) 3 seconds ago`로 보인다. 이때는 `docker logs`로 원인부터 봐야 한다.
+재시작 정책은 크래시 루프를 숨긴다. 컨테이너가 계속 죽으면서 다시 뜨고 있으면 `docker ps`에는 `Restarting (1) 3 seconds ago`로 보인다. 이때는 `docker logs`로 원인부터 봐야 한다.
 
 ## 종료와 시그널
 
@@ -169,7 +169,7 @@ docker kill web       # 즉시 SIGKILL
 docker kill -s HUP web  # 특정 시그널 보내기
 ```
 
-정상 종료(graceful shutdown)를 하려면 애플리케이션이 SIGTERM을 받아서 처리 중인 요청을 마치고 커넥션을 닫아야 한다. 그런데 **시그널이 애플리케이션까지 도달하지 못하는 경우**가 흔하다.
+정상 종료(graceful shutdown)를 하려면 애플리케이션이 SIGTERM을 받아서 처리 중인 요청을 마치고 커넥션을 닫아야 한다. 그런데 시그널이 애플리케이션까지 도달하지 못하는 경우가 흔하다.
 
 ### 셸 형식 CMD의 함정
 
@@ -183,7 +183,7 @@ CMD npm start          # 셸 형식 → /bin/sh -c "npm start"
 CMD ["npm", "start"]   # exec 형식 → 앱이 직접 PID 1
 ```
 
-**exec 형식(JSON 배열)을 쓰는 것**이 첫 번째 해법이다. [4편](/post/docker-04-dockerfile)에서 자세히 본다.
+exec 형식(JSON 배열)을 쓰는 것이 첫 번째 해법이다. [4편](/post/docker-04-dockerfile)에서 자세히 본다.
 
 ### 종료 코드 읽기
 
@@ -194,13 +194,13 @@ CMD ["npm", "start"]   # exec 형식 → 앱이 직접 PID 1
 | `125` | 도커 데몬 자체의 오류 (잘못된 옵션 등) |
 | `126` | 명령을 실행할 수 없음 (실행 권한 없음) |
 | `127` | 명령을 찾을 수 없음 (경로 오타, alpine에 bash 없음) |
-| `137` | SIGKILL — `docker kill` 또는 **OOM Killer** |
+| `137` | SIGKILL - `docker kill` 또는 OOM Killer |
 | `139` | SIGSEGV |
-| `143` | SIGTERM — 정상적인 `docker stop` |
+| `143` | SIGTERM - 정상적인 `docker stop` |
 
 `128 + 시그널번호` 규칙이다. `137 = 128 + 9`, `143 = 128 + 15`.
 
-**137을 봤다면 두 가지를 구분해야 한다.**
+137을 봤다면 두 가지를 구분해야 한다.
 
 ```bash
 docker inspect -f '{{.State.OOMKilled}}' <컨테이너>
@@ -212,7 +212,7 @@ docker inspect -f '{{.State.OOMKilled}}' <컨테이너>
 
 ## 로그
 
-컨테이너의 로그는 **PID 1의 표준 출력과 표준 에러**다. 파일에 쓰는 로그는 `docker logs`에 나오지 않는다.
+컨테이너의 로그는 PID 1의 표준 출력과 표준 에러다. 파일에 쓰는 로그는 `docker logs`에 나오지 않는다.
 
 ```bash
 docker logs web
@@ -223,11 +223,11 @@ docker logs -t web              # 타임스탬프 붙이기
 docker logs -f --tail 0 web     # 지금 이후만
 ```
 
-그래서 컨테이너용 애플리케이션의 원칙은 **"파일이 아니라 stdout으로 로그를 쓴다"**이다. 로그 파일을 컨테이너 안에 쌓으면 로테이션도, 수집도 곤란해진다.
+그래서 컨테이너용 애플리케이션의 원칙은 "파일이 아니라 stdout으로 로그를 쓴다"이다. 로그 파일을 컨테이너 안에 쌓으면 로테이션도, 수집도 곤란해진다.
 
 ### 로그 파일이 디스크를 다 먹는 문제
 
-기본 로그 드라이버 `json-file`은 **제한이 없다.** 오래 돌아가는 컨테이너가 디스크를 가득 채우는 사고가 여기서 난다.
+기본 로그 드라이버 `json-file`은 제한이 없다. 오래 돌아가는 컨테이너가 디스크를 가득 채우는 사고가 여기서 난다.
 
 컨테이너별로 걸거나,
 
@@ -263,8 +263,8 @@ docker exec web cat /etc/nginx/nginx.conf
 
 | | `exec` | `attach` |
 | --- | --- | --- |
-| 하는 일 | 컨테이너 안에서 **새 프로세스** 실행 | 이미 도는 **PID 1의 입출력에 연결** |
-| 나갈 때 | `exit` 해도 컨테이너는 계속 돈다 | `Ctrl+C`를 누르면 **컨테이너가 죽는다** |
+| 하는 일 | 컨테이너 안에서 새 프로세스 실행 | 이미 도는 PID 1의 입출력에 연결 |
+| 나갈 때 | `exit` 해도 컨테이너는 계속 돈다 | `Ctrl+C`를 누르면 컨테이너가 죽는다 |
 
 `attach`에서 안전하게 빠져나오려면 `Ctrl+P`, `Ctrl+Q`를 누른다. 실무에서 `attach`를 쓸 일은 거의 없다.
 
@@ -291,7 +291,7 @@ docker cp web:/var/log/. ./logs/                   # 디렉터리 내용 전부
 
 컨테이너가 멈춰 있어도 동작한다. 죽은 컨테이너에서 로그나 덤프를 꺼낼 때 유용하다.
 
-다만 `docker cp`로 넣은 변경은 **컨테이너를 지우면 사라진다.** 설정 변경이 필요하면 이미지를 다시 빌드하거나 볼륨을 쓴다.
+다만 `docker cp`로 넣은 변경은 컨테이너를 지우면 사라진다. 설정 변경이 필요하면 이미지를 다시 빌드하거나 볼륨을 쓴다.
 
 ## 상태 보기
 
@@ -323,14 +323,14 @@ docker events --filter 'container=web' --since 1h
 docker run -d --memory=512m --memory-swap=512m --name app myapp:1.0
 ```
 
-- `--memory` — 최대 메모리
-- `--memory-swap` — 메모리 + 스왑의 합. **`--memory`와 같은 값을 주면 스왑을 못 쓴다**
-- `--memory-reservation` — 소프트 리밋. 호스트가 여유 있으면 넘겨 쓸 수 있다
-- `--oom-kill-disable` — 위험하다. 호스트 전체가 멈출 수 있으니 쓰지 않는다
+- `--memory` - 최대 메모리
+- `--memory-swap` - 메모리 + 스왑의 합. `--memory`와 같은 값을 주면 스왑을 못 쓴다
+- `--memory-reservation` - 소프트 리밋. 호스트가 여유 있으면 넘겨 쓸 수 있다
+- `--oom-kill-disable` - 위험하다. 호스트 전체가 멈출 수 있으니 쓰지 않는다
 
 한도를 넘으면 컨테이너 안에서 가장 메모리를 많이 쓰는 프로세스가 죽는다. 대개 PID 1이므로 컨테이너가 종료 코드 137로 끝난다.
 
-**JVM을 쓴다면 반드시 확인할 것이 있다.** 최신 JVM은 cgroup 한도를 인식하지만, 구버전은 호스트의 전체 메모리를 보고 힙을 잡아서 곧바로 OOM으로 죽는다.
+JVM을 쓴다면 반드시 확인할 것이 있다. 최신 JVM은 cgroup 한도를 인식하지만, 구버전은 호스트의 전체 메모리를 보고 힙을 잡아서 곧바로 OOM으로 죽는다.
 
 ```bash
 docker run --memory=512m eclipse-temurin:21-jre \
@@ -347,7 +347,7 @@ docker run -d --cpuset-cpus="0,1" --name app myapp:1.0  # 0,1번 코어에만
 docker run -d --cpu-shares=512 --name app myapp:1.0     # 상대 가중치 (기본 1024)
 ```
 
-`--cpus`는 절대적인 상한이고, `--cpu-shares`는 **경합이 있을 때만 의미가 있는 상대 비율**이다. 한가한 호스트에서는 shares를 낮게 줘도 100%까지 쓴다.
+`--cpus`는 절대적인 상한이고, `--cpu-shares`는 경합이 있을 때만 의미가 있는 상대 비율이다. 한가한 호스트에서는 shares를 낮게 줘도 100%까지 쓴다.
 
 ### 그 밖
 
@@ -386,23 +386,23 @@ docker inspect -f '{{json .State.Health}}' web
 
 보통은 이걸 Dockerfile의 `HEALTHCHECK`에 넣거나 Compose에 적는다(4편, [7편](/post/docker-07-compose)).
 
-주의: **도커 단독에서는 unhealthy가 되어도 컨테이너를 자동으로 재시작해주지 않는다.** 상태 표시만 한다. 그 판단을 하는 건 Compose의 `depends_on: condition` 이나 오케스트레이터다.
+주의: 도커 단독에서는 unhealthy가 되어도 컨테이너를 자동으로 재시작해주지 않는다. 상태 표시만 한다. 그 판단을 하는 건 Compose의 `depends_on: condition` 이나 오케스트레이터다.
 
 ## 자주 만나는 상황
 
-**컨테이너가 뜨자마자 종료된다**
+컨테이너가 뜨자마자 종료된다
 : PID 1이 곧바로 끝난 것이다. `docker run -it ubuntu bash`처럼 대화형 프로세스를 붙이거나, 실제 서비스라면 포그라운드로 도는 명령인지 확인한다. nginx는 `daemon off;`, Apache는 `-DFOREGROUND`가 필요하다. 데몬으로 백그라운드에 보내면 PID 1이 즉시 끝나 컨테이너도 끝난다.
 
-**포트가 이미 쓰이고 있다**
+포트가 이미 쓰이고 있다
 : `bind: address already in use`. `docker ps`로 같은 포트를 쓰는 컨테이너를 찾거나 호스트 프로세스를 확인한다(`ss -tlnp | grep 8080`).
 
-**이름이 중복된다**
+이름이 중복된다
 : `Conflict. The container name "/web" is already in use`. 종료된 컨테이너가 그 이름을 잡고 있다. `docker rm web` 후 다시 만든다.
 
-**컨테이너 안에서 `localhost`로 다른 컨테이너에 접속이 안 된다**
+컨테이너 안에서 `localhost`로 다른 컨테이너에 접속이 안 된다
 : 컨테이너 안의 `localhost`는 그 컨테이너 자신이다. 6편의 주제다.
 
-**시간대가 UTC로 나온다**
+시간대가 UTC로 나온다
 : 대부분의 이미지가 UTC다. `-e TZ=Asia/Seoul`을 주거나 `/etc/localtime`을 읽기 전용으로 마운트한다. 다만 애플리케이션 레벨에서 타임존을 다루는 편이 더 안전하다.
 
 ## 정리
@@ -413,7 +413,7 @@ docker inspect -f '{{json .State.Health}}' web
 - 포트·볼륨·네트워크·환경변수는 `create` 시점에만 정한다. 바꾸려면 다시 만든다
 - `-it`는 stdin(`-i`)과 TTY(`-t`)다. CI에서는 `-t`를 빼야 한다
 - `docker stop`은 SIGTERM 후 10초 뒤 SIGKILL이다. 앱이 시그널을 받게 하려면 `CMD`를 exec 형식으로
-- 종료 코드 137은 SIGKILL — `OOMKilled` 값으로 원인을 구분한다. 143은 정상 종료
+- 종료 코드 137은 SIGKILL - `OOMKilled` 값으로 원인을 구분한다. 143은 정상 종료
 - 재시작 정책은 `unless-stopped`가 무난하고, 크래시 루프를 숨기니 로그를 본다
 - 로그는 stdout으로 쓴다. `json-file` 드라이버에 `max-size`를 반드시 걸어둔다
 - `exec`는 안전하고 `attach`는 Ctrl+C에 컨테이너가 죽는다

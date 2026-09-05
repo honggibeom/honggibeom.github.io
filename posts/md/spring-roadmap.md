@@ -9,11 +9,11 @@ summary: Spring 학습 로드맵. 자바 기초부터 IoC/DI, AOP, MVC, Boot, JP
 
 ## 왜 지도부터 그리는가
 
-Spring은 배울 게 많다기보다 **경계가 흐려서** 어렵다. "Spring을 공부한다"는 말 안에 자바 언어, 프레임워크 코어, 웹 계층, ORM, 트랜잭션, 보안, 배치, 배포가 전부 섞여 들어간다. 그래서 튜토리얼을 따라 CRUD 하나를 만들고 나면, 정작 "내가 뭘 아는지"를 스스로도 설명하지 못하는 상태가 된다.
+Spring은 배울 게 많다기보다 경계가 흐려서 어렵다. "Spring을 공부한다"는 말 안에 자바 언어, 프레임워크 코어, 웹 계층, ORM, 트랜잭션, 보안, 배치, 배포가 전부 섞여 들어간다. 그래서 튜토리얼을 따라 CRUD 하나를 만들고 나면, 정작 "내가 뭘 아는지"를 스스로도 설명하지 못하는 상태가 된다.
 
-그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 **알아야 할 항목과 체크리스트**를 정리한다. 이 글은 그 시리즈의 목차다.
+그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 알아야 할 항목과 체크리스트를 정리한다. 이 글은 그 시리즈의 목차다.
 
-원칙은 하나다. 순서를 건너뛰어도 되지만 **0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.** `@Transactional`이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.
+원칙은 하나다. 순서를 건너뛰어도 되지만 0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다. `@Transactional`이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.
 
 ---
 
@@ -43,25 +43,25 @@ Spring은 배울 게 많다기보다 **경계가 흐려서** 어렵다. "Spring�
 
 각 주제는 개별 글로 따로 정리한다.
 
-0. **[[준비] 자바와 객체지향](/post/spring-00-java)** — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle
-1. **[Spring Core: IoC 컨테이너와 의존성 주입](/post/spring-01-core-di)** — 빈 등록·주입·스코프·생명주기, 순환 참조
-2. **[AOP와 프록시](/post/spring-02-aop)** — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정
-3. **[Spring MVC](/post/spring-03-mvc)** — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계
-4. **[Spring Boot](/post/spring-04-boot)** — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣
-5. **[Spring Data JPA](/post/spring-05-jpa)** — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL
-6. **[트랜잭션](/post/spring-06-transaction)** — 전파 속성, 격리 수준, 롤백 규칙, `@Transactional`이 안 먹는 경우
-7. **[Spring Security](/post/spring-07-security)** — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인
-8. **[테스트](/post/spring-08-test)** — 단위/슬라이스/통합 테스트, Mockito, Testcontainers
-9. **[Spring Batch와 스케줄링](/post/spring-09-batch)** — Job/Step/Chunk, 재시작과 멱등성, `@Scheduled`, 락
-10. **[운영과 성능](/post/spring-10-ops)** — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포
+0. [[준비] 자바와 객체지향](/post/spring-00-java) - 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle
+1. [Spring Core: IoC 컨테이너와 의존성 주입](/post/spring-01-core-di) - 빈 등록·주입·스코프·생명주기, 순환 참조
+2. [AOP와 프록시](/post/spring-02-aop) - 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정
+3. [Spring MVC](/post/spring-03-mvc) - DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계
+4. [Spring Boot](/post/spring-04-boot) - 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣
+5. [Spring Data JPA](/post/spring-05-jpa) - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL
+6. [트랜잭션](/post/spring-06-transaction) - 전파 속성, 격리 수준, 롤백 규칙, `@Transactional`이 안 먹는 경우
+7. [Spring Security](/post/spring-07-security) - 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인
+8. [테스트](/post/spring-08-test) - 단위/슬라이스/통합 테스트, Mockito, Testcontainers
+9. [Spring Batch와 스케줄링](/post/spring-09-batch) - Job/Step/Chunk, 재시작과 멱등성, `@Scheduled`, 락
+10. [운영과 성능](/post/spring-10-ops) - Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포
 
 ---
 
 ## 공부하는 방법에 대해
 
-한 가지만 덧붙이면, 이 목록을 **읽어서** 끝내려고 하면 아무것도 남지 않는다. 각 단계마다 붙여둔 체크리스트는 "설명할 수 있는가"와 "직접 해봤는가"를 묻는 형태로 썼다. 문장을 눈으로 확인하는 게 아니라, 빈 에디터를 열고 그걸 재현할 수 있는지로 판단하는 게 맞다.
+한 가지만 덧붙이면, 이 목록을 읽어서 끝내려고 하면 아무것도 남지 않는다. 각 단계마다 붙여둔 체크리스트는 "설명할 수 있는가"와 "직접 해봤는가"를 묻는 형태로 썼다. 문장을 눈으로 확인하는 게 아니라, 빈 에디터를 열고 그걸 재현할 수 있는지로 판단하는 게 맞다.
 
-특히 다음 세 가지는 반드시 **직접 깨뜨려보는** 걸 권한다.
+특히 다음 세 가지는 반드시 직접 깨뜨려보는 걸 권한다.
 
 - 순환 참조를 일부러 만들어서 에러 메시지 읽어보기
 - 같은 클래스 안에서 `@Transactional` 메서드를 호출해 트랜잭션이 안 걸리는 걸 확인하기

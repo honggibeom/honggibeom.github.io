@@ -9,10 +9,10 @@ summary: StockAnalyst 파이썬 데이터 파이프라인 기록. run_pipeline.p
 
 > StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 개발기 1편은 [뉴스 감성 모델](/post/stockanalyst-sentiment-model)과 [종목 추출](/post/stockanalyst-ticker-extraction)이었고, 2편은 그것을 뺀 나머지를 주제별로 나눴다. 전체 목차는 [개발기 (2) 목차](/post/stockanalyst-dev-log-2-overview)에 있다.
 
-**한눈에 보기**
+한눈에 보기
 
 - `run_pipeline.py` 하나가 모든 단계를 돌린다. 설정 스위치 + `--only/--skip`. 원래 12단계였고, 변곡점 배치 둘을 지운 뒤로 10단계
-- 파이썬을 스프링에 합치지 않은 이유: 생태계, 수명주기, 장애 격리, 스케줄링. 대신 **스키마 주인이 둘**인 건 조심
+- 파이썬을 스프링에 합치지 않은 이유: 생태계, 수명주기, 장애 격리, 스케줄링. 대신 스키마 주인이 둘인 건 조심
 - 증분은 캔들·매크로·옵션 각각 기준이 다르고, DB가 최신이면 요청 자체를 안 보낸다. 실행 로그는 DB 테이블에
 - 하루 호출 약 7,800건 중 Yahoo가 4,800. 옵션이 그 절반. 429면 90초 멈춤
 
@@ -55,7 +55,7 @@ krx/
 
 `run_pipeline.py`가 단계(master, domestic, nasdaq, macro, bonds, news, short-balance, index-options, us-options, us-opinion, predict-kr, predict-us)를 순서대로 돌리고, `pipeline_config.json`의 `execute_*` 스위치로 켜고 끈다. `--only`, `--skip` 인자가 설정보다 우선한다.
 
-> 마지막 두 단계(`predict-kr`, `predict-us`)는 **지금은 없다.** 전 종목 변곡점 배치를 통째로 지우고 버튼을 눌렀을 때 백엔드가 계산하는 구조로 옮겼기 때문이다 → [변곡점 예측 v2](/post/stockanalyst-turning-point-v2). 아래 구조 설명은 12단계였던 시점 기준이고, 지금은 10단계다.
+> 마지막 두 단계(`predict-kr`, `predict-us`)는 지금은 없다. 전 종목 변곡점 배치를 통째로 지우고 버튼을 눌렀을 때 백엔드가 계산하는 구조로 옮겼기 때문이다 → [변곡점 예측 v2](/post/stockanalyst-turning-point-v2). 아래 구조 설명은 12단계였던 시점 기준이고, 지금은 10단계다.
 
 ## 왜 파이썬을 스프링으로 합치지 않았나
 
@@ -66,21 +66,21 @@ krx/
 | 장애 격리 | KRX가 차단해도 API는 멀쩡 | 같이 죽는다 |
 | 스케줄링 | Windows 작업 스케줄러에 `run_pipeline.py` 직접 | 스프링에서 파이썬을 실행하는 우회가 필요 |
 
-다만 **DB 스키마의 주인이 둘**이라는 점(파이썬의 `CREATE TABLE IF NOT EXISTS`와 JPA의 `ddl-auto`)은 조심해야 한다. 스키마가 안정되면 백엔드를 `validate`로 바꿔 기동 시 불일치를 잡을 생각이다.
+다만 DB 스키마의 주인이 둘이라는 점(파이썬의 `CREATE TABLE IF NOT EXISTS`와 JPA의 `ddl-auto`)은 조심해야 한다. 스키마가 안정되면 백엔드를 `validate`로 바꿔 기동 시 불일치를 잡을 생각이다.
 
 ## 증분과 실행 로그
 
 | 데이터 | 증분 기준 |
 |---|---|
-| 캔들 | 종목별 `MAX(target_date)` 이후만. DB가 최근 영업일까지 있으면 **요청 자체를 안 보냄**(벤치마크 ETF의 마지막 캔들 날짜 기준) |
+| 캔들 | 종목별 `MAX(target_date)` 이후만. DB가 최근 영업일까지 있으면 요청 자체를 안 보냄(벤치마크 ETF의 마지막 캔들 날짜 기준) |
 | 매크로 | 지표별 MAX 이후만 |
 | 옵션 · 투자의견 | 일별 스냅샷. 오늘 이미 받은 티커는 건너뜀 |
 
 종목별 MAX 쿼리 7,200번을 `GROUP BY` 1번으로 바꾼 것도 여기서다.
 
-증분에는 한 가지 함정이 있다. **"그 날짜 행이 있다"와 "그 날짜 값이 있다"는 다르다.** 행은 먼저 만들어지고 값은 늦게 채워지는 데이터가 있는데, `MAX(날짜)`만 보는 증분은 그런 행을 "이미 받았다"로 판정하고 두 번 다시 안 온다. 그러면 그 칸은 영원히 빈다. 같은 원인의 버그를 이 시리즈에서 두 번 더 만난다 — [미국 지수 종가가 NULL로 들어오던 건](/post/stockanalyst-dow-theory)과 [공매도 잔고 T+3 건](/post/stockanalyst-dev-log-3-signals-rates)이다. 증분 조건은 날짜가 아니라 **실제로 쓰는 컬럼이 채워졌는지**로 잡는 게 맞다.
+증분에는 한 가지 함정이 있다. "그 날짜 행이 있다"와 "그 날짜 값이 있다"는 다르다. 행은 먼저 만들어지고 값은 늦게 채워지는 데이터가 있는데, `MAX(날짜)`만 보는 증분은 그런 행을 "이미 받았다"로 판정하고 두 번 다시 안 온다. 그러면 그 칸은 영원히 빈다. 같은 원인의 버그를 이 시리즈에서 두 번 더 만난다 - [미국 지수 종가가 NULL로 들어오던 건](/post/stockanalyst-dow-theory)과 [공매도 잔고 T+3 건](/post/stockanalyst-dev-log-3-signals-rates)이다. 증분 조건은 날짜가 아니라 실제로 쓰는 컬럼이 채워졌는지로 잡는 게 맞다.
 
-콘솔 출력은 창을 닫으면 사라져서 "며칠 전 무엇이 왜 실패했는지"를 알 수 없었다. `pipeline_run` 테이블에 단계마다 상태·소요·요약(✔⚠✗가 들어간 마지막 줄)·마지막 30줄을 남기고, `--status`로 단계별 마지막 실행을 본다. 기록자는 `run_pipeline.py` 한 곳뿐이고 각 수집 스크립트는 건드리지 않았다. (이 `--status`가 조회 실패를 조용히 삼키고 있던 건 [3편](/post/stockanalyst-dev-log-3-signals-rates)에서 고쳤다.)
+콘솔 출력은 창을 닫으면 사라져서 "며칠 전 무엇이 왜 실패했는지"를 알 수 없었다. `pipeline_run` 테이블에 단계마다 상태·소요·요약(성공·경고·실패 표시가 붙은 마지막 줄)·마지막 30줄을 남기고, `--status`로 단계별 마지막 실행을 본다. 기록자는 `run_pipeline.py` 한 곳뿐이고 각 수집 스크립트는 건드리지 않았다. (이 `--status`가 조회 실패를 조용히 삼키고 있던 건 [3편](/post/stockanalyst-dev-log-3-signals-rates)에서 고쳤다.)
 
 ## 미국 유니버스는 DB 하나로
 
@@ -88,7 +88,7 @@ krx/
 
 | | 전 | 후 |
 |---|---|---|
-| 종목 목록 | 설정 파일 4곳, 스크립트마다 다른 키 | **stock 테이블 하나** |
+| 종목 목록 | 설정 파일 4곳, 스크립트마다 다른 키 | stock 테이블 하나 |
 | 범위 | 손으로 적은 25개 | S&P500 + 나스닥100 + 추가 종목 + SPY·QQQ ≈ 610종목. nasdaqtraded 1만 종목 중 유니버스만, ETF는 `sector='ETF'` |
 | 소비자 | 각자 설정을 읽음 | 캔들·펀더멘털·옵션·투자의견·예측·뉴스 검색어 전부 DB의 미국 종목을 읽음 |
 
@@ -139,17 +139,17 @@ KRX 차단 이후 전체 호출 지점을 표로 만들어 관리한다.
 
 ## 운영 메모 몇 가지
 
-- 미국 마스터 단계가 유니버스(S&P500 + 나스닥100 + 추가 + SPY·QQQ) 밖의 미국 종목을 stock·캔들에서 정리(prune)한다. 지수 목록을 하나라도 못 읽으면 **prune을 건너뛴다** — 목록 조회 실패로 멀쩡한 종목이 지워지는 사고를 막기 위해서다
+- 미국 마스터 단계가 유니버스(S&P500 + 나스닥100 + 추가 + SPY·QQQ) 밖의 미국 종목을 stock·캔들에서 정리(prune)한다. 지수 목록을 하나라도 못 읽으면 prune을 건너뛴다 - 목록 조회 실패로 멀쩡한 종목이 지워지는 사고를 막기 위해서다
 - 나스닥100 목록은 nasdaq.com API → 위키 → slickcharts → 인베스코 순으로 시도하고 `data/nasdaq100_cache.txt`에 캐시한다. 심볼 디렉터리도 `data/nasdaqtraded_cache.txt`에 캐시
 - 미국 캔들 백필은 `addStockCandleData.py --backfill`. 첫 캔들이 2015-01-01보다 45일 이상 늦은 종목만 채우고, 상장 전 구간의 400 응답은 정상으로 본다
 - `run_pipeline.py`가 자식 스크립트에 `PYTHONUNBUFFERED=1`을 넣어 진행 로그가 실시간으로 보인다. DB 현황은 `python common/dbStatus.py`
 
 ## 삽질 목록
 
-**JSONC 파서를 만들었는데 셋이 안 쓰고 있었다.** `pipeline_config.json`에 주석을 허용하려고 JSONC 파서를 만들었는데, 이 파일을 읽는 스크립트가 다섯 개였고 그중 셋(뉴스, 미국 캔들, 미국 펀더멘털)이 여전히 `json.load`를 쓰고 있었다. 셋 다 조용히 실패하고 기본값으로 떨어져서 검색어 5개, 미국 종목 25개, 펀더멘털 7종목만 돌고 있었다. 수집량이 안 늘 때 설정 파서부터 의심하자. 설정을 읽는 함수는 한 곳에 두고 다 그걸 쓰게 하는 게 맞다.
+JSONC 파서를 만들었는데 셋이 안 쓰고 있었다. `pipeline_config.json`에 주석을 허용하려고 JSONC 파서를 만들었는데, 이 파일을 읽는 스크립트가 다섯 개였고 그중 셋(뉴스, 미국 캔들, 미국 펀더멘털)이 여전히 `json.load`를 쓰고 있었다. 셋 다 조용히 실패하고 기본값으로 떨어져서 검색어 5개, 미국 종목 25개, 펀더멘털 7종목만 돌고 있었다. 수집량이 안 늘 때 설정 파서부터 의심하자. 설정을 읽는 함수는 한 곳에 두고 다 그걸 쓰게 하는 게 맞다.
 
-**PowerShell 인코딩.** `python x.py *> out.txt`로 받으면 파이썬 stdout이 cp949가 되어 "—" 하나에 죽는다. 이 하나로 며칠을 날린 이야기는 [감성 모델 글](/post/stockanalyst-sentiment-model)에 있다.
+PowerShell 인코딩. `python x.py *> out.txt`로 받으면 파이썬 stdout이 cp949가 되어 " - " 하나에 죽는다. 이 하나로 며칠을 날린 이야기는 [감성 모델 글](/post/stockanalyst-sentiment-model)에 있다.
 
-**`pip install -U`가 TensorFlow를 깨뜨렸다.** 의존성을 전부 최신으로 올려서 numpy/protobuf가 튀었다. `constraints.txt`를 두고 `pip install -c constraints.txt`로만 설치한다. numpy는 numba와 TF의 교집합인 1.26.x만 됐다 — TF를 걷어낸 [지금](/post/stockanalyst-turning-point-v2)은 이 제약이 없다.
+`pip install -U`가 TensorFlow를 깨뜨렸다. 의존성을 전부 최신으로 올려서 numpy/protobuf가 튀었다. `constraints.txt`를 두고 `pip install -c constraints.txt`로만 설치한다. numpy는 numba와 TF의 교집합인 1.26.x만 됐다 - TF를 걷어낸 [지금](/post/stockanalyst-turning-point-v2)은 이 제약이 없다.
 
-**미국 마스터가 한 번도 안 돌았다.** 아침 8시 스케줄에만 있어서 개발 환경에선 미국 주식 검색이 안 됐다. 기동 시 0건이면 백그라운드 데몬 스레드로 자동 동기화한다. 코드 검색이 대소문자를 구분해 `aapl`이 안 잡히던 것도 같이 고쳤다.
+미국 마스터가 한 번도 안 돌았다. 아침 8시 스케줄에만 있어서 개발 환경에선 미국 주식 검색이 안 됐다. 기동 시 0건이면 백그라운드 데몬 스레드로 자동 동기화한다. 코드 검색이 대소문자를 구분해 `aapl`이 안 잡히던 것도 같이 고쳤다.

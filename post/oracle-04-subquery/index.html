@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2025-09-02" />
 <meta property="article:section" content="Oracle" />
@@ -89,7 +89,7 @@
 <p class="pr-meta"><a href="/categories/oracle">Oracle</a></p>
 <h1>오라클 서브쿼리, 집합 연산, WITH 절, MERGE 정리 (오라클 학습 노트 4)</h1>
 <p class="pr-meta">2025.09.02 · <a href="/tags/oracle">#oracle</a> <a href="/tags/sql">#sql</a> <a href="/tags/%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC">#서브쿼리</a> <a href="/tags/merge">#merge</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
-<p><a href="/post/oracle-03-group-join">3편</a>에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, <strong>어디에 놓이는가</strong>와 <strong>몇 행을 돌려주는가</strong> 두 축으로 보면 정리된다.</p>
+<p><a href="/post/oracle-03-group-join">3편</a>에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, 어디에 놓이는가와 몇 행을 돌려주는가 두 축으로 보면 정리된다.</p>
 <h2>놓이는 자리에 따른 분류</h2>
 
 
@@ -117,7 +117,7 @@
 
 
 <table><thead><tr><th>위치</th><th>이름</th><th>특징</th></tr></thead><tbody><tr><td><code>WHERE</code> / <code>HAVING</code></td><td>중첩 서브쿼리 (Nested)</td><td>조건 값으로 쓴다</td></tr><tr><td><code>FROM</code></td><td>인라인 뷰 (Inline View)</td><td>테이블처럼 쓴다</td></tr><tr><td><code>SELECT</code></td><td>스칼라 서브쿼리 (Scalar)</td><td>값 하나를 컬럼처럼 쓴다</td></tr></tbody></table>
-<p>여기에 바깥 쿼리의 컬럼을 참조하면 <strong>상관 서브쿼리(Correlated)</strong> 라고 부른다.</p>
+<p>여기에 바깥 쿼리의 컬럼을 참조하면 상관 서브쿼리(Correlated) 라고 부른다.</p>
 <h2>WHERE 절 서브쿼리</h2>
 <h3>단일행 서브쿼리</h3>
 <p>결과가 한 행일 때만 <code>=</code>, <code>></code>, <code>&#x3C;</code> 같은 단일행 연산자를 쓸 수 있다.</p>
@@ -126,7 +126,7 @@ SELECT emp_name, salary
 FROM   employees
 WHERE  salary > (SELECT AVG(salary) FROM employees);
 </code></pre>
-<p>서브쿼리가 두 행 이상을 돌려주면 <code>ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다</code>가 난다. 개발할 때는 한 행이 나오다가 운영 데이터에서 두 행이 나오면서 터지는 게 전형적인 패턴이다. <strong>한 행임이 보장되지 않으면 다중행 연산자를 쓴다.</strong></p>
+<p>서브쿼리가 두 행 이상을 돌려주면 <code>ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다</code>가 난다. 개발할 때는 한 행이 나오다가 운영 데이터에서 두 행이 나오면서 터지는 게 전형적인 패턴이다. 한 행임이 보장되지 않으면 다중행 연산자를 쓴다.</p>
 <h3>다중행 서브쿼리</h3>
 
 
@@ -180,7 +180,7 @@ WHERE  salary > ANY (SELECT salary FROM employees WHERE department_id = 20);
 SELECT department_name FROM departments
 WHERE  department_id NOT IN (SELECT department_id FROM employees);
 </code></pre>
-<p><code>employees.department_id</code>에 NULL이 <strong>하나라도</strong> 있으면 이 쿼리는 <strong>한 건도 반환하지 않는다.</strong> <code>NOT IN</code>은 <code>&#x3C;> A AND &#x3C;> B AND &#x3C;> NULL</code>로 풀리고, 마지막 항이 UNKNOWN이라 전체가 절대 참이 되지 못한다.</p>
+<p><code>employees.department_id</code>에 NULL이 하나라도 있으면 이 쿼리는 한 건도 반환하지 않는다. <code>NOT IN</code>은 <code>&#x3C;> A AND &#x3C;> B AND &#x3C;> NULL</code>로 풀리고, 마지막 항이 UNKNOWN이라 전체가 절대 참이 되지 못한다.</p>
 <p>해결책 세 가지.</p>
 <pre><code class="language-sql">-- 1) NULL을 제거
 WHERE department_id NOT IN (SELECT department_id FROM employees WHERE department_id IS NOT NULL)
@@ -194,14 +194,14 @@ SELECT d.department_name
 FROM   departments d LEFT JOIN employees e ON d.department_id = e.department_id
 WHERE  e.employee_id IS NULL;
 </code></pre>
-<p><code>NOT EXISTS</code>는 NULL에 영향을 받지 않는다. <strong><code>NOT IN</code>을 보면 반사적으로 NULL 가능성을 확인하는 습관</strong>을 들이는 게 좋다.</p>
+<p><code>NOT EXISTS</code>는 NULL에 영향을 받지 않는다. <code>NOT IN</code>을 보면 반사적으로 NULL 가능성을 확인하는 습관을 들이는 게 좋다.</p>
 <h3>EXISTS</h3>
 <p>값을 비교하지 않고 "존재 여부"만 본다. 그래서 <code>SELECT</code> 목록에 무엇을 쓰든 상관없다. 관례적으로 <code>1</code>을 쓴다.</p>
 <pre><code class="language-sql">-- 주문을 한 건이라도 낸 사원
 SELECT e.emp_name FROM employees e
 WHERE  EXISTS (SELECT 1 FROM orders o WHERE o.employee_id = e.employee_id);
 </code></pre>
-<p><code>EXISTS</code>는 조건을 만족하는 첫 행을 찾으면 즉시 멈춘다. 그래서 <strong>자식 테이블이 크고 부모가 작을 때</strong> 유리하다. 반대 상황이면 <code>IN</code>이 나을 수 있다. 요즘 옵티마이저는 상당 부분 알아서 변환해주지만, 원리는 알아두는 게 좋다.</p>
+<p><code>EXISTS</code>는 조건을 만족하는 첫 행을 찾으면 즉시 멈춘다. 그래서 자식 테이블이 크고 부모가 작을 때 유리하다. 반대 상황이면 <code>IN</code>이 나을 수 있다. 요즘 옵티마이저는 상당 부분 알아서 변환해주지만, 원리는 알아두는 게 좋다.</p>
 <h3>다중 컬럼 서브쿼리</h3>
 <p>여러 컬럼을 한 번에 비교한다. 이걸 모르면 불필요한 조인을 만들게 된다.</p>
 <pre><code class="language-sql">-- 부서별 최고 연봉자
@@ -243,7 +243,7 @@ FROM   employees e;
 </code></pre>
 <p>특징 세 가지.</p>
 <ul>
-<li>결과가 없으면 오류가 아니라 <strong>NULL</strong>이다. 외부 조인처럼 동작한다.</li>
+<li>결과가 없으면 오류가 아니라 NULL이다. 외부 조인처럼 동작한다.</li>
 <li>두 행 이상이면 <code>ORA-01427</code>이다.</li>
 <li>오라클은 스칼라 서브쿼리 결과를 캐시한다(입력값 → 결과). 그래서 값의 종류가 적으면 매우 빠르고, 값이 다양하면 행마다 실행돼 느려진다.</li>
 </ul>
@@ -305,7 +305,7 @@ WHERE  e.salary &#x3C; (SELECT j.min_salary FROM jobs j WHERE j.job_id = e.job_i
 UNION ALL
 SELECT employee_id, emp_name FROM employees WHERE department_id = 30;
 </code></pre>
-<p><strong>중복이 없다는 걸 아는 상황이면 반드시 <code>UNION ALL</code>을 쓴다.</strong> <code>UNION</code>은 중복 제거를 위해 전체를 정렬하거나 해시한다. 습관적으로 <code>UNION</code>을 쓰는 것만 고쳐도 체감 성능이 달라지는 경우가 많다.</p>
+<p>중복이 없다는 걸 아는 상황이면 반드시 <code>UNION ALL</code>을 쓴다. <code>UNION</code>은 중복 제거를 위해 전체를 정렬하거나 해시한다. 습관적으로 <code>UNION</code>을 쓰는 것만 고쳐도 체감 성능이 달라지는 경우가 많다.</p>
 <p><code>MINUS</code>는 표준의 <code>EXCEPT</code>에 해당하는 오라클 방언이다. 21c부터는 <code>EXCEPT</code>도 지원한다.</p>
 <pre><code class="language-sql">-- 부서는 있는데 사원이 없는 부서
 SELECT department_id FROM departments
@@ -315,7 +315,7 @@ SELECT department_id FROM employees;
 <p>주의할 점.</p>
 <ul>
 <li><code>ORDER BY</code>는 마지막 쿼리에만 한 번 쓴다.</li>
-<li>컬럼명은 <strong>첫 번째 쿼리</strong> 기준이다.</li>
+<li>컬럼명은 첫 번째 쿼리 기준이다.</li>
 <li>타입이 다르면 <code>ORA-01790</code>. 자리를 맞추려고 넣는 더미는 <code>NULL</code> 대신 <code>TO_CHAR(NULL)</code>처럼 캐스팅해두는 게 안전하다.</li>
 </ul>
 <h2>WITH 절 (CTE)</h2>
@@ -361,7 +361,7 @@ WHEN NOT MATCHED THEN
 </code></pre>
 <p>포인트.</p>
 <ul>
-<li><code>ON</code> 절의 컬럼은 <code>UPDATE SET</code>에서 <strong>변경할 수 없다.</strong></li>
+<li><code>ON</code> 절의 컬럼은 <code>UPDATE SET</code>에서 변경할 수 없다.</li>
 <li><code>WHEN MATCHED THEN UPDATE ... DELETE WHERE ...</code>로 조건부 삭제도 붙일 수 있다.</li>
 <li><code>WHEN MATCHED</code>와 <code>WHEN NOT MATCHED</code> 중 하나만 써도 된다.</li>
 <li><code>USING</code>에 서브쿼리를 놓으면 대량 데이터를 한 번에 반영할 수 있다. 배치에서 이 형태를 가장 많이 쓴다.</li>
@@ -377,8 +377,8 @@ WHEN NOT MATCHED THEN INSERT VALUES (s.department_id, s.cnt, s.tot);
 <h2>정리</h2>
 <ul>
 <li>서브쿼리는 위치(<code>WHERE</code>/<code>FROM</code>/<code>SELECT</code>)와 반환 행 수로 나눠 본다</li>
-<li>단일행 연산자에 다중행이 오면 <code>ORA-01427</code> — 확신 없으면 <code>IN</code>을 쓴다</li>
-<li><strong><code>NOT IN</code> + NULL = 공집합.</strong> <code>NOT EXISTS</code>나 안티 조인으로 바꾼다</li>
+<li>단일행 연산자에 다중행이 오면 <code>ORA-01427</code> - 확신 없으면 <code>IN</code>을 쓴다</li>
+<li><code>NOT IN</code> + NULL = 공집합. <code>NOT EXISTS</code>나 안티 조인으로 바꾼다</li>
 <li>스칼라 서브쿼리는 결과 없으면 NULL, 캐시가 잘 들으면 빠르다</li>
 <li>중복이 없다면 <code>UNION</code>이 아니라 <code>UNION ALL</code></li>
 <li>복잡한 쿼리는 <code>WITH</code>로 이름을 붙여 위에서 아래로 읽히게 만든다</li>

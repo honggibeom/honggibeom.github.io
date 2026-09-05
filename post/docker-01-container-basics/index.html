@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2025-11-14" />
 <meta property="article:section" content="Docker" />
@@ -90,7 +90,7 @@
 <h1>도커 컨테이너란 무엇인가 - 가상머신과의 차이, 리눅스 커널 기능, 도커 구조 (도커 학습 노트 1)</h1>
 <p class="pr-meta">2025.11.14 · <a href="/tags/docker">#docker</a> <a href="/tags/container">#container</a> <a href="/tags/devops">#devops</a> <a href="/tags/%EC%9D%B8%ED%94%84%EB%9D%BC">#인프라</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <h2>이 시리즈에 대해</h2>
-<p>도커는 명령어 대여섯 개만 외우면 당장 뭔가는 돌아간다. 문제는 그다음이다. 빌드가 느려지고, 컨테이너를 지웠더니 DB 데이터가 날아가고, 컨테이너끼리 <code>localhost</code>로 통신이 안 되고, 이미지가 1.2GB가 된다. 전부 <strong>컨테이너가 실제로 무엇인지를 모르고 명령어만 외웠을 때</strong> 생기는 일이다.</p>
+<p>도커는 명령어 대여섯 개만 외우면 당장 뭔가는 돌아간다. 문제는 그다음이다. 빌드가 느려지고, 컨테이너를 지웠더니 DB 데이터가 날아가고, 컨테이너끼리 <code>localhost</code>로 통신이 안 되고, 이미지가 1.2GB가 된다. 전부 컨테이너가 실제로 무엇인지를 모르고 명령어만 외웠을 때 생기는 일이다.</p>
 <p>그래서 밑에서부터 다시 정리한다. 목표는 "개발자가 자기 애플리케이션을 컨테이너로 만들어서 안전하게 굴릴 수 있는 수준"이다. 쿠버네티스 같은 오케스트레이션은 <a href="/post/docker-08-optimize-operate">8편</a>에서 경계만 그어둔다.</p>
 
 
@@ -133,22 +133,22 @@
 
 
 
-<table><thead><tr><th>편</th><th>주제</th></tr></thead><tbody><tr><td>1</td><td>컨테이너의 정체, 커널 기능, 도커 아키텍처</td></tr><tr><td>2</td><td><a href="/post/docker-02-image-registry">이미지와 레이어, 태그, 레지스트리</a></td></tr><tr><td>3</td><td><a href="/post/docker-03-run-lifecycle">컨테이너 실행과 생명주기, 리소스 제한</a></td></tr><tr><td>4</td><td><a href="/post/docker-04-dockerfile">Dockerfile 전체 명령어와 빌드 캐시</a></td></tr><tr><td>5</td><td><a href="/post/docker-05-volume-data">볼륨과 바인드 마운트, 데이터 관리</a></td></tr><tr><td>6</td><td><a href="/post/docker-06-network">네트워크 — 브리지, 포트 매핑, DNS</a></td></tr><tr><td>7</td><td><a href="/post/docker-07-compose">Docker Compose</a></td></tr><tr><td>8</td><td><a href="/post/docker-08-optimize-operate">이미지 최적화, 보안, 배포와 트러블슈팅</a></td></tr></tbody></table>
+<table><thead><tr><th>편</th><th>주제</th></tr></thead><tbody><tr><td>1</td><td>컨테이너의 정체, 커널 기능, 도커 아키텍처</td></tr><tr><td>2</td><td><a href="/post/docker-02-image-registry">이미지와 레이어, 태그, 레지스트리</a></td></tr><tr><td>3</td><td><a href="/post/docker-03-run-lifecycle">컨테이너 실행과 생명주기, 리소스 제한</a></td></tr><tr><td>4</td><td><a href="/post/docker-04-dockerfile">Dockerfile 전체 명령어와 빌드 캐시</a></td></tr><tr><td>5</td><td><a href="/post/docker-05-volume-data">볼륨과 바인드 마운트, 데이터 관리</a></td></tr><tr><td>6</td><td><a href="/post/docker-06-network">네트워크 - 브리지, 포트 매핑, DNS</a></td></tr><tr><td>7</td><td><a href="/post/docker-07-compose">Docker Compose</a></td></tr><tr><td>8</td><td><a href="/post/docker-08-optimize-operate">이미지 최적화, 보안, 배포와 트러블슈팅</a></td></tr></tbody></table>
 <p>이 시리즈의 실습은 리눅스(또는 WSL2, Docker Desktop) 기준이며, <a href="/post/docker-04-dockerfile">4편</a>부터는 Node·Spring Boot·Python 세 가지 예제를 반복해서 쓴다.</p>
 <h2>왜 도커를 쓰는가</h2>
 <p>"내 노트북에서는 됐는데요"라는 말의 정체는 대부분 이 셋 중 하나다.</p>
 <ul>
-<li><strong>런타임 버전이 다르다</strong> — 로컬은 Node 20, 서버는 Node 16</li>
-<li><strong>시스템 라이브러리가 다르다</strong> — 로컬 Ubuntu에는 있고 서버 CentOS에는 없는 <code>.so</code></li>
-<li><strong>설정이 코드 밖에 있다</strong> — 누군가 서버에서 손으로 고쳐둔 환경변수, 심볼릭 링크, 커널 파라미터</li>
+<li>런타임 버전이 다르다 - 로컬은 Node 20, 서버는 Node 16</li>
+<li>시스템 라이브러리가 다르다 - 로컬 Ubuntu에는 있고 서버 CentOS에는 없는 <code>.so</code></li>
+<li>설정이 코드 밖에 있다 - 누군가 서버에서 손으로 고쳐둔 환경변수, 심볼릭 링크, 커널 파라미터</li>
 </ul>
-<p>도커는 이걸 "애플리케이션 + 그것이 필요로 하는 파일시스템 전체"를 한 덩어리(이미지)로 묶어서 해결한다. 실행 환경을 서버가 아니라 <strong>이미지가 들고 다닌다.</strong> 서버에 남는 요구사항은 "컨테이너 런타임이 깔려 있을 것" 하나로 줄어든다.</p>
+<p>도커는 이걸 "애플리케이션 + 그것이 필요로 하는 파일시스템 전체"를 한 덩어리(이미지)로 묶어서 해결한다. 실행 환경을 서버가 아니라 이미지가 들고 다닌다. 서버에 남는 요구사항은 "컨테이너 런타임이 깔려 있을 것" 하나로 줄어든다.</p>
 <p>부수 효과가 더 크다.</p>
 <ul>
-<li>환경 구성이 <code>Dockerfile</code>이라는 <strong>텍스트 파일로 버전 관리</strong>된다. 위키에 적힌 설치 절차와 달리 실행해서 검증할 수 있다.</li>
+<li>환경 구성이 <code>Dockerfile</code>이라는 텍스트 파일로 버전 관리된다. 위키에 적힌 설치 절차와 달리 실행해서 검증할 수 있다.</li>
 <li>같은 서버에서 서로 다른 버전의 MySQL을 동시에 띄울 수 있다.</li>
 <li>개발 환경 세팅이 <code>docker compose up</code> 한 줄이 된다.</li>
-<li>서버를 "고쳐 쓰는 것"이 아니라 <strong>버리고 새로 만드는 것</strong>으로 다루게 된다(불변 인프라).</li>
+<li>서버를 "고쳐 쓰는 것"이 아니라 버리고 새로 만드는 것으로 다루게 된다(불변 인프라).</li>
 </ul>
 <h2>가상머신과 컨테이너</h2>
 <p>가장 흔한 오해가 "컨테이너는 가벼운 가상머신"이다. 결과가 비슷해 보일 뿐 원리가 다르다.</p>
@@ -161,7 +161,7 @@
  호스트 OS 커널                       호스트 OS 커널  ← 공유
  하드웨어                             하드웨어
 </code></pre>
-<p>핵심은 <strong>커널을 공유하느냐</strong>다.</p>
+<p>핵심은 커널을 공유하느냐다.</p>
 
 
 
@@ -205,12 +205,12 @@
 <table><thead><tr><th></th><th>가상머신</th><th>컨테이너</th></tr></thead><tbody><tr><td>격리 단위</td><td>가상 하드웨어</td><td>프로세스</td></tr><tr><td>커널</td><td>게스트마다 별도</td><td>호스트 커널 공유</td></tr><tr><td>부팅 시간</td><td>수십 초</td><td>수십 밀리초</td></tr><tr><td>이미지 크기</td><td>GB 단위</td><td>MB 단위</td></tr><tr><td>격리 강도</td><td>강함 (하드웨어 경계)</td><td>상대적으로 약함 (커널 경계)</td></tr><tr><td>다른 OS 실행</td><td>가능 (리눅스 위에 윈도우)</td><td>불가 (커널이 같아야 함)</td></tr></tbody></table>
 <p>여기서 두 가지 실무 결론이 나온다.</p>
 <ol>
-<li><strong>컨테이너는 커널을 공유하므로, 리눅스 컨테이너는 리눅스 커널 위에서만 돈다.</strong> 맥이나 윈도우에서 도커가 도는 건 뒤에서 리눅스 VM을 하나 띄워두기 때문이다. 그래서 맥에서 바인드 마운트 I/O가 느린 것도 이 구조 때문이다.</li>
-<li><strong>격리가 VM만큼 강하지 않다.</strong> 커널 취약점 하나로 호스트까지 뚫릴 수 있다. 신뢰할 수 없는 코드를 남의 컨테이너와 같은 커널에서 돌리는 건 위험하다. 8편의 보안 이야기가 전부 여기서 출발한다.</li>
+<li>컨테이너는 커널을 공유하므로, 리눅스 컨테이너는 리눅스 커널 위에서만 돈다. 맥이나 윈도우에서 도커가 도는 건 뒤에서 리눅스 VM을 하나 띄워두기 때문이다. 그래서 맥에서 바인드 마운트 I/O가 느린 것도 이 구조 때문이다.</li>
+<li>격리가 VM만큼 강하지 않다. 커널 취약점 하나로 호스트까지 뚫릴 수 있다. 신뢰할 수 없는 코드를 남의 컨테이너와 같은 커널에서 돌리는 건 위험하다. 8편의 보안 이야기가 전부 여기서 출발한다.</li>
 </ol>
 <h2>컨테이너를 만드는 리눅스 커널 기능</h2>
 <p>컨테이너는 도커가 발명한 게 아니다. 리눅스 커널에 이미 있던 기능들을 조합해서 "격리된 프로세스"를 만든 것이고, 도커는 그걸 쓰기 편하게 포장했다.</p>
-<h3>1. 네임스페이스 (namespace) — 무엇이 보이는가</h3>
+<h3>1. 네임스페이스 (namespace) - 무엇이 보이는가</h3>
 <p>프로세스가 볼 수 있는 시스템 자원의 범위를 잘라낸다. "격리"의 실체다.</p>
 
 
@@ -249,13 +249,13 @@
 
 
 
-<table><thead><tr><th>네임스페이스</th><th>격리 대상</th></tr></thead><tbody><tr><td><code>pid</code></td><td>프로세스 ID — 컨테이너 안의 첫 프로세스가 PID 1이 된다</td></tr><tr><td><code>net</code></td><td>네트워크 인터페이스, IP, 포트, 라우팅 테이블</td></tr><tr><td><code>mnt</code></td><td>마운트 포인트 — 자기만의 파일시스템 트리</td></tr><tr><td><code>uts</code></td><td>호스트명, 도메인명</td></tr><tr><td><code>ipc</code></td><td>공유 메모리, 세마포어</td></tr><tr><td><code>user</code></td><td>UID/GID 매핑 — 컨테이너의 root를 호스트의 일반 유저로 매핑</td></tr><tr><td><code>cgroup</code></td><td>cgroup 계층 뷰</td></tr></tbody></table>
+<table><thead><tr><th>네임스페이스</th><th>격리 대상</th></tr></thead><tbody><tr><td><code>pid</code></td><td>프로세스 ID - 컨테이너 안의 첫 프로세스가 PID 1이 된다</td></tr><tr><td><code>net</code></td><td>네트워크 인터페이스, IP, 포트, 라우팅 테이블</td></tr><tr><td><code>mnt</code></td><td>마운트 포인트 - 자기만의 파일시스템 트리</td></tr><tr><td><code>uts</code></td><td>호스트명, 도메인명</td></tr><tr><td><code>ipc</code></td><td>공유 메모리, 세마포어</td></tr><tr><td><code>user</code></td><td>UID/GID 매핑 - 컨테이너의 root를 호스트의 일반 유저로 매핑</td></tr><tr><td><code>cgroup</code></td><td>cgroup 계층 뷰</td></tr></tbody></table>
 <p>컨테이너 안에서 <code>ps</code>를 쳤을 때 호스트의 프로세스가 안 보이는 이유가 pid 네임스페이스다. <code>ifconfig</code>에 호스트 랜카드가 안 보이는 건 net 네임스페이스다.</p>
-<h3>2. cgroup — 얼마나 쓸 수 있는가</h3>
-<p>네임스페이스가 "시야"를 자른다면 cgroup은 <strong>자원 사용량</strong>을 자른다. CPU, 메모리, 디스크 I/O, 네트워크 대역폭을 그룹 단위로 제한하고 계측한다.</p>
+<h3>2. cgroup - 얼마나 쓸 수 있는가</h3>
+<p>네임스페이스가 "시야"를 자른다면 cgroup은 자원 사용량을 자른다. CPU, 메모리, 디스크 I/O, 네트워크 대역폭을 그룹 단위로 제한하고 계측한다.</p>
 <p><code>docker run --memory=512m --cpus=1.5</code>가 그대로 cgroup 설정으로 내려간다. <a href="/post/docker-03-run-lifecycle">3편</a>에서 자세히 본다.</p>
 <p>메모리 한도를 넘기면 컨테이너 안의 프로세스가 커널 OOM Killer에 죽는다. 컨테이너가 종료 코드 137로 죽어 있으면 십중팔구 이것이다(128 + SIGKILL 9).</p>
-<h3>3. 유니온 파일시스템 (OverlayFS) — 파일이 어떻게 쌓이는가</h3>
+<h3>3. 유니온 파일시스템 (OverlayFS) - 파일이 어떻게 쌓이는가</h3>
 <p>여러 디렉터리를 겹쳐서 하나처럼 보여준다. 이미지 레이어의 근간이고, <a href="/post/docker-02-image-registry">2편</a>의 주제다.</p>
 <pre><code>       ┌──────────────────────────┐
        │ 컨테이너 레이어 (쓰기 가능) │  ← 컨테이너마다 하나씩
@@ -267,14 +267,14 @@
                   ↓
           하나의 파일시스템으로 보임
 </code></pre>
-<p>아래 레이어의 파일을 수정하면 원본을 건드리지 않고 위 레이어로 복사해서 고친다(Copy-on-Write). <strong>컨테이너를 지우면 맨 위 레이어가 사라지므로 그 안의 변경도 같이 사라진다.</strong> DB 컨테이너를 지웠더니 데이터가 날아갔다는 이야기의 정체가 이것이고, <a href="/post/docker-05-volume-data">5편</a>의 볼륨이 그 해법이다.</p>
+<p>아래 레이어의 파일을 수정하면 원본을 건드리지 않고 위 레이어로 복사해서 고친다(Copy-on-Write). 컨테이너를 지우면 맨 위 레이어가 사라지므로 그 안의 변경도 같이 사라진다. DB 컨테이너를 지웠더니 데이터가 날아갔다는 이야기의 정체가 이것이고, <a href="/post/docker-05-volume-data">5편</a>의 볼륨이 그 해법이다.</p>
 <h3>4. 그 밖에</h3>
 <ul>
-<li><strong>capabilities</strong> — root 권한을 잘게 쪼갠 것. 컨테이너의 root는 호스트 root보다 훨씬 적은 권한만 갖는다.</li>
-<li><strong>seccomp</strong> — 허용할 시스템 콜 목록. 도커는 기본 프로파일로 위험한 콜을 막는다.</li>
-<li><strong>AppArmor / SELinux</strong> — 강제 접근 제어.</li>
+<li>capabilities - root 권한을 잘게 쪼갠 것. 컨테이너의 root는 호스트 root보다 훨씬 적은 권한만 갖는다.</li>
+<li>seccomp - 허용할 시스템 콜 목록. 도커는 기본 프로파일로 위험한 콜을 막는다.</li>
+<li>AppArmor / SELinux - 강제 접근 제어.</li>
 </ul>
-<p><code>--privileged</code> 옵션은 이 안전장치를 <strong>전부 끈다.</strong> 편해 보인다고 습관적으로 쓰면 컨테이너 탈출 경로를 열어주는 것과 같다.</p>
+<p><code>--privileged</code> 옵션은 이 안전장치를 전부 끈다. 편해 보인다고 습관적으로 쓰면 컨테이너 탈출 경로를 열어주는 것과 같다.</p>
 <h2>컨테이너는 그냥 프로세스다</h2>
 <p>이 문장이 이번 편에서 가장 중요하다. 직접 확인해보자.</p>
 <pre><code class="language-bash">docker run -d --name demo nginx:alpine
@@ -289,15 +289,15 @@
 #   1   root     nginx: master process nginx -g daemon off;
 #  30   nginx    nginx: worker process
 </code></pre>
-<p>같은 프로세스인데 <strong>호스트에서는 12345번, 컨테이너 안에서는 1번</strong>이다. pid 네임스페이스가 번호를 다시 매긴 것이다. 호스트명도 마찬가지다.</p>
+<p>같은 프로세스인데 호스트에서는 12345번, 컨테이너 안에서는 1번이다. pid 네임스페이스가 번호를 다시 매긴 것이다. 호스트명도 마찬가지다.</p>
 <pre><code class="language-bash">hostname                 # my-laptop
 docker exec demo hostname  # 3f2a1b9c4d5e  ← 컨테이너 ID
 </code></pre>
 <p>여기서 따라오는 결론들이 있다.</p>
 <ul>
-<li><strong>컨테이너에는 "부팅"이 없다.</strong> 프로세스 하나를 실행할 뿐이다. 그래서 시작이 빠르다.</li>
-<li><strong>그 프로세스가 끝나면 컨테이너도 끝난다.</strong> <code>docker run ubuntu</code>가 곧바로 종료되는 이유다. 실행할 게 <code>bash</code>인데 입력이 붙어 있지 않으니 바로 끝난다.</li>
-<li><strong>컨테이너 안의 PID 1은 특별한 책임을 진다.</strong> 시그널 처리와 좀비 프로세스 수거가 그것인데, 대부분의 앱은 그걸 안 하도록 만들어져 있다. 3편의 <code>--init</code>과 4편의 <code>ENTRYPOINT</code> 이야기가 여기서 나온다.</li>
+<li>컨테이너에는 "부팅"이 없다. 프로세스 하나를 실행할 뿐이다. 그래서 시작이 빠르다.</li>
+<li>그 프로세스가 끝나면 컨테이너도 끝난다. <code>docker run ubuntu</code>가 곧바로 종료되는 이유다. 실행할 게 <code>bash</code>인데 입력이 붙어 있지 않으니 바로 끝난다.</li>
+<li>컨테이너 안의 PID 1은 특별한 책임을 진다. 시그널 처리와 좀비 프로세스 수거가 그것인데, 대부분의 앱은 그걸 안 하도록 만들어져 있다. 3편의 <code>--init</code>과 4편의 <code>ENTRYPOINT</code> 이야기가 여기서 나온다.</li>
 </ul>
 <h2>도커의 실행 구조</h2>
 <p><code>docker run</code>을 쳤을 때 실제로 움직이는 것들이다.</p>
@@ -316,21 +316,21 @@ docker exec demo hostname  # 3f2a1b9c4d5e  ← 컨테이너 ID
                                      내 프로세스
 </code></pre>
 <ul>
-<li><strong>docker CLI</strong> — 우리가 치는 명령어. 그냥 HTTP 클라이언트다. 기본적으로 <code>/var/run/docker.sock</code> 유닉스 소켓으로 데몬에 요청한다.</li>
-<li><strong>dockerd</strong> — 이미지 빌드, 네트워크·볼륨 관리, API 제공. 실제 실행은 아래로 넘긴다.</li>
-<li><strong>containerd</strong> — 이미지 가져오기와 컨테이너 수명 관리를 맡는 런타임. 지금은 CNCF 프로젝트로 독립해 있고, 쿠버네티스도 이걸 직접 쓴다.</li>
-<li><strong>runc</strong> — OCI 런타임 스펙 구현체. 네임스페이스를 만들고 cgroup을 걸고 프로세스를 띄우는, 진짜 일을 하는 부분.</li>
-<li><strong>shim</strong> — 데몬이 재시작돼도 컨테이너가 살아 있게 중간에서 붙잡아주는 프로세스.</li>
+<li>docker CLI - 우리가 치는 명령어. 그냥 HTTP 클라이언트다. 기본적으로 <code>/var/run/docker.sock</code> 유닉스 소켓으로 데몬에 요청한다.</li>
+<li>dockerd - 이미지 빌드, 네트워크·볼륨 관리, API 제공. 실제 실행은 아래로 넘긴다.</li>
+<li>containerd - 이미지 가져오기와 컨테이너 수명 관리를 맡는 런타임. 지금은 CNCF 프로젝트로 독립해 있고, 쿠버네티스도 이걸 직접 쓴다.</li>
+<li>runc - OCI 런타임 스펙 구현체. 네임스페이스를 만들고 cgroup을 걸고 프로세스를 띄우는, 진짜 일을 하는 부분.</li>
+<li>shim - 데몬이 재시작돼도 컨테이너가 살아 있게 중간에서 붙잡아주는 프로세스.</li>
 </ul>
 <p>두 가지를 기억할 만하다.</p>
 <ol>
-<li><strong><code>docker.sock</code>에 접근할 수 있다는 건 사실상 호스트 root 권한이다.</strong> 그 소켓으로 <code>--privileged</code> 컨테이너를 만들 수 있기 때문이다. 사용자를 <code>docker</code> 그룹에 넣는 것, 컨테이너에 소켓을 마운트하는 것 모두 이 의미를 갖는다.</li>
-<li><strong>OCI 표준(이미지 스펙 + 런타임 스펙)이 있어서 도커가 유일한 선택지가 아니다.</strong> Podman, containerd + nerdctl, CRI-O가 같은 이미지를 실행한다. 쿠버네티스는 1.24에서 도커 런타임 지원을 걷어냈지만, 도커로 만든 이미지는 그대로 쓴다. <strong>"도커 이미지"가 아니라 OCI 이미지</strong>라고 생각하는 편이 정확하다.</li>
+<li><code>docker.sock</code>에 접근할 수 있다는 건 사실상 호스트 root 권한이다. 그 소켓으로 <code>--privileged</code> 컨테이너를 만들 수 있기 때문이다. 사용자를 <code>docker</code> 그룹에 넣는 것, 컨테이너에 소켓을 마운트하는 것 모두 이 의미를 갖는다.</li>
+<li>OCI 표준(이미지 스펙 + 런타임 스펙)이 있어서 도커가 유일한 선택지가 아니다. Podman, containerd + nerdctl, CRI-O가 같은 이미지를 실행한다. 쿠버네티스는 1.24에서 도커 런타임 지원을 걷어냈지만, 도커로 만든 이미지는 그대로 쓴다. "도커 이미지"가 아니라 OCI 이미지라고 생각하는 편이 정확하다.</li>
 </ol>
 <h3>맥과 윈도우에서는</h3>
 <p>리눅스 커널이 없으므로 도커가 경량 리눅스 VM을 하나 띄우고 그 안에서 컨테이너를 돌린다. Docker Desktop이 그 VM과 파일 공유, 포트 포워딩을 대신 처리해준다.</p>
 <ul>
-<li>윈도우에서는 WSL2 백엔드를 쓰는 게 성능상 유리하다. 소스 코드도 <code>/mnt/c/...</code>가 아니라 <strong>WSL2 파일시스템 안(<code>~/projects/...</code>)에 두는 것</strong>이 빠르다. 파일시스템 경계를 넘을 때마다 비용이 붙는다.</li>
+<li>윈도우에서는 WSL2 백엔드를 쓰는 게 성능상 유리하다. 소스 코드도 <code>/mnt/c/...</code>가 아니라 WSL2 파일시스템 안(<code>~/projects/...</code>)에 두는 것이 빠르다. 파일시스템 경계를 넘을 때마다 비용이 붙는다.</li>
 <li>맥에서는 바인드 마운트가 느린 것이 구조적이다. <code>:cached</code>, <code>:delegated</code> 옵션이나 VirtioFS 설정으로 완화한다.</li>
 <li>Docker Desktop은 일정 규모 이상의 기업에서는 유료다. 대안으로 Colima, Rancher Desktop, Podman Desktop이 있다.</li>
 </ul>
@@ -345,9 +345,9 @@ docker info      # 스토리지 드라이버, 컨테이너 수, 루트 디렉터
 <p>이 한 줄에서 벌어지는 일은 이렇다.</p>
 <ol>
 <li>로컬에 <code>hello-world:latest</code> 이미지가 있는지 본다 → 없다</li>
-<li>Docker Hub에서 이미지를 <strong>pull</strong> 한다</li>
-<li>이미지로 컨테이너를 <strong>만든다</strong>(create) — 맨 위에 쓰기 가능 레이어를 얹는다</li>
-<li>컨테이너를 <strong>시작한다</strong>(start) — 네임스페이스·cgroup을 설정하고 지정된 프로세스를 실행한다</li>
+<li>Docker Hub에서 이미지를 pull 한다</li>
+<li>이미지로 컨테이너를 만든다(create) - 맨 위에 쓰기 가능 레이어를 얹는다</li>
+<li>컨테이너를 시작한다(start) - 네임스페이스·cgroup을 설정하고 지정된 프로세스를 실행한다</li>
 <li>프로세스가 메시지를 출력하고 종료 → 컨테이너도 종료(Exited)</li>
 </ol>
 <p><code>docker run</code>은 <code>pull</code> + <code>create</code> + <code>start</code>를 합친 편의 명령이다. 이 분해가 3편의 생명주기 이야기의 출발점이다.</p>
@@ -356,10 +356,10 @@ docker info      # 스토리지 드라이버, 컨테이너 수, 루트 디렉터
 </code></pre>
 <p>브라우저에서 <code>http://localhost:8080</code>을 열면 nginx 기본 페이지가 뜬다. 옵션의 의미는 이렇다.</p>
 <ul>
-<li><code>-d</code> (detach) — 백그라운드로 실행하고 컨테이너 ID를 출력한다</li>
-<li><code>-p 8080:80</code> — <strong>호스트의 8080을 컨테이너의 80으로</strong> 연결한다. 순서는 항상 <code>호스트:컨테이너</code></li>
-<li><code>--name web</code> — 이름을 붙인다. 안 붙이면 <code>hungry_einstein</code> 같은 이름이 자동 생성된다</li>
-<li><code>nginx:alpine</code> — <code>이미지이름:태그</code></li>
+<li><code>-d</code> (detach) - 백그라운드로 실행하고 컨테이너 ID를 출력한다</li>
+<li><code>-p 8080:80</code> - 호스트의 8080을 컨테이너의 80으로 연결한다. 순서는 항상 <code>호스트:컨테이너</code></li>
+<li><code>--name web</code> - 이름을 붙인다. 안 붙이면 <code>hungry_einstein</code> 같은 이름이 자동 생성된다</li>
+<li><code>nginx:alpine</code> - <code>이미지이름:태그</code></li>
 </ul>
 <p>상태를 확인하고 정리한다.</p>
 <pre><code class="language-bash">docker ps                # 실행 중인 컨테이너
@@ -371,7 +371,7 @@ docker rm web            # 컨테이너 삭제 (중지 상태여야 함)
 </code></pre>
 <p><code>-p</code>를 빼먹으면 컨테이너는 잘 돌지만 밖에서 접근할 수 없다. 컨테이너가 자기만의 네트워크 네임스페이스를 갖기 때문인데, <a href="/post/docker-06-network">6편</a>에서 그 구조를 본다.</p>
 <h2>명령어 지도</h2>
-<p>지금 전부 외울 필요는 없다. 어떤 대상에 어떤 동사가 붙는지의 <strong>구조</strong>만 잡아두면 된다.</p>
+<p>지금 전부 외울 필요는 없다. 어떤 대상에 어떤 동사가 붙는지의 구조만 잡아두면 된다.</p>
 
 
 
@@ -406,12 +406,12 @@ docker rm web            # 컨테이너 삭제 (중지 상태여야 함)
 
 
 <table><thead><tr><th>대상</th><th>자주 쓰는 명령</th></tr></thead><tbody><tr><td>이미지</td><td><code>pull</code> <code>push</code> <code>build</code> <code>images</code> <code>tag</code> <code>rmi</code> <code>history</code> <code>inspect</code> <code>save</code> <code>load</code></td></tr><tr><td>컨테이너</td><td><code>run</code> <code>create</code> <code>start</code> <code>stop</code> <code>restart</code> <code>kill</code> <code>rm</code> <code>ps</code> <code>logs</code> <code>exec</code> <code>cp</code> <code>stats</code> <code>top</code> <code>inspect</code></td></tr><tr><td>볼륨</td><td><code>volume create</code> <code>ls</code> <code>inspect</code> <code>rm</code> <code>prune</code></td></tr><tr><td>네트워크</td><td><code>network create</code> <code>ls</code> <code>inspect</code> <code>connect</code> <code>disconnect</code> <code>rm</code></td></tr><tr><td>시스템</td><td><code>info</code> <code>version</code> <code>system df</code> <code>system prune</code> <code>events</code></td></tr><tr><td>Compose</td><td><code>compose up</code> <code>down</code> <code>logs</code> <code>ps</code> <code>exec</code> <code>build</code> <code>pull</code></td></tr></tbody></table>
-<p>최신 도커는 <code>docker image ls</code>, <code>docker container ls</code>처럼 <strong>대상을 명시하는 형태</strong>를 정식으로 삼는다. <code>docker images</code>, <code>docker ps</code>는 짧은 별칭이다.</p>
+<p>최신 도커는 <code>docker image ls</code>, <code>docker container ls</code>처럼 대상을 명시하는 형태를 정식으로 삼는다. <code>docker images</code>, <code>docker ps</code>는 짧은 별칭이다.</p>
 <p>디스크가 부족해지면 이 두 줄을 기억해두면 된다.</p>
 <pre><code class="language-bash">docker system df           # 이미지/컨테이너/볼륨/캐시가 각각 얼마나 쓰는지
 docker system prune -a     # 안 쓰는 것 전부 삭제 (볼륨은 --volumes를 붙여야 포함)
 </code></pre>
-<p><code>prune -a</code>는 <strong>실행 중이 아닌 컨테이너가 참조하지 않는 모든 이미지</strong>를 지운다. 다시 받으면 그만인 개발 머신에서는 편하지만, 운영 서버에서는 롤백용 이전 버전 이미지까지 날아갈 수 있으니 주의한다.</p>
+<p><code>prune -a</code>는 실행 중이 아닌 컨테이너가 참조하지 않는 모든 이미지를 지운다. 다시 받으면 그만인 개발 머신에서는 편하지만, 운영 서버에서는 롤백용 이전 버전 이미지까지 날아갈 수 있으니 주의한다.</p>
 <h2>격리를 직접 확인해보기</h2>
 <p>읽는 것보다 한 번 깨보는 게 낫다.</p>
 <pre><code class="language-bash"># 1) 파일시스템이 분리되어 있다
@@ -430,24 +430,24 @@ docker run --rm alpine ip addr
 uname -r                          # 5.15.x (호스트)
 docker run --rm alpine uname -r   # 5.15.x ← 똑같다!
 </code></pre>
-<p>마지막 줄이 핵심이다. Alpine 이미지 안에는 커널이 들어 있지 않다. 우리가 "이미지"라고 부르는 건 <strong>커널을 뺀 나머지 파일시스템</strong>이다.</p>
+<p>마지막 줄이 핵심이다. Alpine 이미지 안에는 커널이 들어 있지 않다. 우리가 "이미지"라고 부르는 건 커널을 뺀 나머지 파일시스템이다.</p>
 <p>호스트 네임스페이스를 빌려 쓰면 격리가 어떻게 풀리는지도 볼 수 있다.</p>
 <pre><code class="language-bash">docker run --rm --pid=host alpine ps -ef | head
 # 호스트의 모든 프로세스가 보인다
 </code></pre>
 <h2>자주 하는 오해</h2>
 <ul>
-<li><strong>"컨테이너는 가벼운 VM이다"</strong> — 커널을 공유하는 격리된 프로세스다. OS가 통째로 들어 있지 않다.</li>
-<li><strong>"컨테이너 안은 안전하다"</strong> — 커널을 공유하므로 VM 수준의 경계가 아니다. <code>--privileged</code>, <code>docker.sock</code> 마운트, root 실행은 전부 그 경계를 더 얇게 만든다.</li>
-<li><strong>"이미지와 컨테이너는 같은 말이다"</strong> — 이미지는 클래스, 컨테이너는 인스턴스다. 이미지 하나로 컨테이너 100개를 만들 수 있다.</li>
-<li><strong>"컨테이너에 SSH를 넣어야 접속할 수 있다"</strong> — <code>docker exec</code>가 있다. 컨테이너에 sshd를 넣는 건 프로세스 하나 원칙을 깨는 안티패턴이다.</li>
-<li><strong>"컨테이너를 재시작하면 데이터가 사라진다"</strong> — 재시작(<code>restart</code>)은 살아남는다. 사라지는 건 컨테이너를 <strong>삭제</strong>(<code>rm</code>)했을 때다. 그래도 데이터를 붙잡아두려면 볼륨을 쓴다.</li>
-<li><strong>"도커가 없어졌으니 도커를 배울 필요 없다"</strong> — 쿠버네티스가 런타임으로 도커를 안 쓸 뿐, 이미지 포맷과 개념은 그대로다. 로컬 개발에서는 여전히 도커가 표준이다.</li>
+<li>"컨테이너는 가벼운 VM이다" - 커널을 공유하는 격리된 프로세스다. OS가 통째로 들어 있지 않다.</li>
+<li>"컨테이너 안은 안전하다" - 커널을 공유하므로 VM 수준의 경계가 아니다. <code>--privileged</code>, <code>docker.sock</code> 마운트, root 실행은 전부 그 경계를 더 얇게 만든다.</li>
+<li>"이미지와 컨테이너는 같은 말이다" - 이미지는 클래스, 컨테이너는 인스턴스다. 이미지 하나로 컨테이너 100개를 만들 수 있다.</li>
+<li>"컨테이너에 SSH를 넣어야 접속할 수 있다" - <code>docker exec</code>가 있다. 컨테이너에 sshd를 넣는 건 프로세스 하나 원칙을 깨는 안티패턴이다.</li>
+<li>"컨테이너를 재시작하면 데이터가 사라진다" - 재시작(<code>restart</code>)은 살아남는다. 사라지는 건 컨테이너를 삭제(<code>rm</code>)했을 때다. 그래도 데이터를 붙잡아두려면 볼륨을 쓴다.</li>
+<li>"도커가 없어졌으니 도커를 배울 필요 없다" - 쿠버네티스가 런타임으로 도커를 안 쓸 뿐, 이미지 포맷과 개념은 그대로다. 로컬 개발에서는 여전히 도커가 표준이다.</li>
 </ul>
 <h2>정리</h2>
 <p>이번 편에서 잡아야 할 것.</p>
 <ul>
-<li>컨테이너는 커널을 공유하는 <strong>격리된 프로세스</strong>다. VM이 아니다</li>
+<li>컨테이너는 커널을 공유하는 격리된 프로세스다. VM이 아니다</li>
 <li>격리는 네임스페이스(시야) + cgroup(자원) + 유니온 파일시스템(디스크)의 조합이다</li>
 <li>이미지에는 커널이 없다. 그래서 리눅스 컨테이너는 리눅스 커널 위에서만 돈다</li>
 <li>컨테이너의 쓰기 레이어는 컨테이너를 지우면 사라진다 → 5편 볼륨</li>

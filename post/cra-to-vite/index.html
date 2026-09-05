@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-08-31" />
 <meta property="article:section" content="Frontend" />
@@ -104,7 +104,7 @@
 <ol>
 <li><code>vite</code>, <code>@vitejs/plugin-react</code> 설치하고 <code>react-scripts</code> 제거</li>
 <li><code>public/index.html</code>을 프로젝트 루트로 옮기고 Vite 규칙에 맞게 수정</li>
-<li><code>vite.config.js</code> 작성 — 여기서 <code>.js</code> 안의 JSX 처리가 핵심</li>
+<li><code>vite.config.js</code> 작성 - 여기서 <code>.js</code> 안의 JSX 처리가 핵심</li>
 <li><code>process.env.*</code>를 <code>import.meta.env.*</code>로 교체</li>
 <li>환경변수 접두사를 <code>REACT_APP_</code>에서 <code>VITE_</code>로 변경</li>
 <li>CRA 잔재 파일 정리 (<code>reportWebVitals.js</code>, <code>setupTests.js</code>)</li>
@@ -133,14 +133,14 @@
 <ul>
 <li><code>react-scripts</code></li>
 <li><code>@testing-library/*</code> 네 개 (실제로 테스트를 쓰고 있지 않았다)</li>
-<li><code>web-vitals</code> — <code>reportWebVitals.js</code>를 지우면서 같이</li>
-<li><code>buffer</code>, <code>dotenv</code>, <code>js-pytorch</code> — <code>src</code> 전체를 grep 해보니 한 번도 import 되지 않고 있었다</li>
+<li><code>web-vitals</code> - <code>reportWebVitals.js</code>를 지우면서 같이</li>
+<li><code>buffer</code>, <code>dotenv</code>, <code>js-pytorch</code> - <code>src</code> 전체를 grep 해보니 한 번도 import 되지 않고 있었다</li>
 </ul>
 <p><code>"type": "module"</code>을 추가하는 걸 잊지 말자. Vite 설정 파일을 ESM으로 쓰려면 필요하다.</p>
 <p>한 가지 신경 쓴 건 <code>build</code> 스크립트다. Vite의 기본 출력 폴더는 <code>dist</code>인데, 이 저장소는 <code>gh-pages -d build</code>로 배포하고 있었다. 배포 스크립트를 그대로 두기 위해 Vite 쪽 출력 폴더를 <code>build</code>로 맞췄다.</p>
 <h2>2. index.html이 진입점이 된다</h2>
 <p>CRA에서 <code>public/index.html</code>은 그냥 템플릿이었다. 번들러가 만든 스크립트 태그를 알아서 꽂아줬다.</p>
-<p>Vite에서는 다르다. <code>index.html</code>이 <strong>프로젝트 루트에 있고, 그 자체가 진입점</strong>이다. 그래서 두 가지를 바꿔야 했다.</p>
+<p>Vite에서는 다르다. <code>index.html</code>이 프로젝트 루트에 있고, 그 자체가 진입점이다. 그래서 두 가지를 바꿔야 했다.</p>
 <pre><code class="language-html">&#x3C;script type="module" src="/src/index.js">&#x3C;/script>
 </code></pre>
 <p>이 한 줄을 <code>&#x3C;body></code> 안에 직접 넣어줘야 한다. 이게 없으면 앱이 아예 안 뜬다.</p>
@@ -158,7 +158,7 @@
 </code></pre>
 <h2>3. 가장 크게 막힌 곳: .js 안의 JSX</h2>
 <p>여기서 제일 오래 붙잡았다.</p>
-<p>이 프로젝트는 JSX를 전부 <code>.jsx</code>가 아닌 <code>.js</code> 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite 7까지는 변환에 esbuild를 쓰고, <strong>esbuild는 기본적으로 <code>.js</code> 파일에 JSX가 들어있을 거라고 가정하지 않는다.</strong> (Vite 8은 Oxc로 바뀌었지만 확장자로 판단한다는 전제는 같다.)</p>
+<p>이 프로젝트는 JSX를 전부 <code>.jsx</code>가 아닌 <code>.js</code> 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite 7까지는 변환에 esbuild를 쓰고, esbuild는 기본적으로 <code>.js</code> 파일에 JSX가 들어있을 거라고 가정하지 않는다. (Vite 8은 Oxc로 바뀌었지만 확장자로 판단한다는 전제는 같다.)</p>
 <p>그래서 첫 빌드에서 이런 에러를 만난다.</p>
 <pre><code>The JSX syntax extension is not currently enabled
 </code></pre>
@@ -191,9 +191,9 @@ export default defineConfig({
 </code></pre>
 <p>세 군데를 다 건드려야 한다는 게 포인트다.</p>
 <ul>
-<li><code>plugins</code>의 <code>include</code> — 플러그인이 <code>.js</code>도 React 파일로 취급하게</li>
-<li><code>esbuild.loader</code> — 빌드 시 <code>src</code> 아래 <code>.js</code>를 JSX로 파싱하게</li>
-<li><code>optimizeDeps.esbuildOptions.loader</code> — dev 서버의 의존성 사전 번들링 단계에서도 동일하게</li>
+<li><code>plugins</code>의 <code>include</code> - 플러그인이 <code>.js</code>도 React 파일로 취급하게</li>
+<li><code>esbuild.loader</code> - 빌드 시 <code>src</code> 아래 <code>.js</code>를 JSX로 파싱하게</li>
+<li><code>optimizeDeps.esbuildOptions.loader</code> - dev 서버의 의존성 사전 번들링 단계에서도 동일하게</li>
 </ul>
 <p>하나라도 빠지면 "dev는 되는데 build가 깨지거나", 반대로 "build는 되는데 dev 서버가 안 뜨는" 상황이 생긴다.</p>
 <h2>4. process.env를 import.meta.env로</h2>
@@ -211,7 +211,7 @@ const fileInfos = mdLink.map((key) => ({
   url: import.meta.env.BASE_URL + "posts/md/" + key,
 }));
 </code></pre>
-<p>여기서 실수하기 쉬운 부분이 있다. <code>PUBLIC_URL</code>은 뒤에 슬래시가 <strong>없고</strong>, <code>BASE_URL</code>은 뒤에 슬래시가 <strong>있다</strong>. 루트 배포면 <code>PUBLIC_URL</code>은 빈 문자열, <code>BASE_URL</code>은 <code>"/"</code>다. 그대로 <code>+ "/posts/..."</code>를 붙이면 <code>//posts/...</code>가 되어버린다. 앞 슬래시를 빼야 한다.</p>
+<p>여기서 실수하기 쉬운 부분이 있다. <code>PUBLIC_URL</code>은 뒤에 슬래시가 없고, <code>BASE_URL</code>은 뒤에 슬래시가 있다. 루트 배포면 <code>PUBLIC_URL</code>은 빈 문자열, <code>BASE_URL</code>은 <code>"/"</code>다. 그대로 <code>+ "/posts/..."</code>를 붙이면 <code>//posts/...</code>가 되어버린다. 앞 슬래시를 빼야 한다.</p>
 <p>개발/프로덕션 분기도 바꿨다.</p>
 <pre><code class="language-js">// before
 if (process.env.NODE_ENV === "development") return loadDevServerPost();
@@ -237,12 +237,12 @@ src/App.test.js
 <p><code>BrowserRouter</code> + <code>404.html</code> 리다이렉트 트릭으로 바꾸는 것도 가능하지만, 이번 작업의 목적은 빌드 도구 교체였다. 한 번에 여러 개를 바꾸면 무언가 깨졌을 때 원인을 찾기 어려워진다.</p>
 <h2>결과</h2>
 <ul>
-<li>dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. dev에서 앱 코드를 번들링하지 않고 요청이 들어온 파일만 변환하기 때문이다(<code>node_modules</code>는 예외로 미리 묶는다 — 위 <code>optimizeDeps</code> 설정이 그 단계다).</li>
+<li>dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. dev에서 앱 코드를 번들링하지 않고 요청이 들어온 파일만 변환하기 때문이다(<code>node_modules</code>는 예외로 미리 묶는다 - 위 <code>optimizeDeps</code> 설정이 그 단계다).</li>
 <li>HMR이 즉각적이다. 수정한 모듈만 교체하기 때문에 프로젝트 크기가 커져도 거의 일정하다.</li>
 <li><code>npm install</code>에서 쏟아지던 취약점 경고가 거의 사라졌다. 의존성 트리 자체가 훨씬 얕아졌다.</li>
 </ul>
 <h2>되돌아보며</h2>
-<p>작업 전에 "설정 파일 몇 개 바꾸면 되겠지"라고 생각했는데, 실제로 시간을 잡아먹은 건 <strong>CRA가 조용히 해주던 일들</strong>이었다. <code>%PUBLIC_URL%</code> 치환, <code>.js</code> 안의 JSX 처리, <code>process.env</code> 주입. 전부 명시적으로 설정해야 하는 것들로 바뀌었다.</p>
+<p>작업 전에 "설정 파일 몇 개 바꾸면 되겠지"라고 생각했는데, 실제로 시간을 잡아먹은 건 CRA가 조용히 해주던 일들이었다. <code>%PUBLIC_URL%</code> 치환, <code>.js</code> 안의 JSX 처리, <code>process.env</code> 주입. 전부 명시적으로 설정해야 하는 것들로 바뀌었다.</p>
 <p>거꾸로 말하면 이제 빌드 파이프라인에서 무슨 일이 일어나는지 눈에 보인다. <code>eject</code> 없이 설정을 고칠 수 있다는 것도 크다.</p>
 <p>CRA 프로젝트를 옮길 계획이 있다면, <code>.js</code> 안의 JSX 문제부터 확인해보길 권한다. 이게 전체 작업의 절반이었다.</p>
 </article><section><h2>Frontend의 다른 글</h2><ul class="pr-list"><li><a href="/post/buildtool-02-meta-frameworks">프론트엔드 빌드 도구는 왜 빨라졌나 (2) - 메타 프레임워크와 렌더링 방식</a><p>Next.js, Nuxt, SvelteKit, Astro가 서로 무엇을 다르게 하는지를 렌더링 방식이라는 축으로 정리한다. 하이드레이션이 왜 문제인지, RSC가 SSR과 어떻게 다른지, 아일랜드와 리주머빌리티가 무엇인지까지.</p><span class="pr-meta">2026.08.29</span></li><li><a href="/post/buildtool-01-bundlers">프론트엔드 빌드 도구는 왜 빨라졌나 (1) - 번들러 지도</a><p>CRA가 느렸던 이유와 Vite가 빠른 이유를 원리에서부터 정리한다. 네이티브 ESM 개발 서버, Go·Rust 툴체인, 증분 캐시라는 세 축으로 esbuild·SWC·Rollup·Rolldown·Rspack·Turbopack·Bun까지 2026년 현재의 지형을 그린다.</p><span class="pr-meta">2026.08.15</span></li></ul></section></main></div>

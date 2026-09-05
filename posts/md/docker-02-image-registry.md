@@ -11,7 +11,7 @@ summary: 이미지가 레이어로 쌓이는 구조와 Copy-on-Write, 다이제�
 
 ## 이미지는 무엇으로 이루어져 있나
 
-"이미지 = 하나의 큰 파일"이라고 생각하면 나중에 전부 어긋난다. OCI 이미지는 **세 종류의 조각**으로 되어 있다.
+"이미지 = 하나의 큰 파일"이라고 생각하면 나중에 전부 어긋난다. OCI 이미지는 세 종류의 조각으로 되어 있다.
 
 ```
 매니페스트 (manifest)
@@ -36,10 +36,10 @@ docker inspect nginx:1.27-alpine
 
 출력에서 눈여겨볼 것.
 
-- `RootFS.Layers` — 레이어 다이제스트 목록
-- `Config.Cmd`, `Config.Entrypoint` — 컨테이너로 실행할 때 무엇이 돌아가는지
-- `Config.Env` — 이미지에 박혀 있는 환경변수
-- `Architecture`, `Os` — 어떤 CPU/OS용인지
+- `RootFS.Layers` - 레이어 다이제스트 목록
+- `Config.Cmd`, `Config.Entrypoint` - 컨테이너로 실행할 때 무엇이 돌아가는지
+- `Config.Env` - 이미지에 박혀 있는 환경변수
+- `Architecture`, `Os` - 어떤 CPU/OS용인지
 
 특정 값만 뽑을 때는 Go 템플릿을 쓴다.
 
@@ -51,7 +51,7 @@ docker inspect -f '{{.Architecture}}/{{.Os}}' nginx:1.27-alpine
 
 ## 레이어
 
-이미지는 **파일시스템의 변경분을 순서대로 쌓은 것**이다. Dockerfile의 명령 하나가 대체로 레이어 하나를 만든다.
+이미지는 파일시스템의 변경분을 순서대로 쌓은 것이다. Dockerfile의 명령 하나가 대체로 레이어 하나를 만든다.
 
 ```dockerfile
 FROM alpine:3.20          # 레이어 1: alpine 루트 파일시스템
@@ -68,7 +68,7 @@ docker history --format '{{.Size}}\t{{.CreatedBy}}' myapp:1.0
 
 ### 레이어가 공유된다
 
-레이어는 다이제스트로 식별되므로 **내용이 같으면 한 벌만 저장된다.**
+레이어는 다이제스트로 식별되므로 내용이 같으면 한 벌만 저장된다.
 
 ```bash
 docker pull node:20-alpine
@@ -81,14 +81,14 @@ docker pull node:22-alpine   # 공유하는 레이어는 Already exists 로 뜬�
 docker system df -v
 ```
 
-pull 할 때 `Already exists`라고 뜨는 줄이 이미 갖고 있는 레이어다. **베이스 이미지를 팀 안에서 통일하면 pull 시간과 디스크가 같이 줄어든다.**
+pull 할 때 `Already exists`라고 뜨는 줄이 이미 갖고 있는 레이어다. 베이스 이미지를 팀 안에서 통일하면 pull 시간과 디스크가 같이 줄어든다.
 
 ### Copy-on-Write와 삭제 레이어
 
 이미지 레이어는 전부 읽기 전용이다. 컨테이너를 만들면 맨 위에 쓰기 가능한 레이어가 하나 얹힌다.
 
-- 아래 레이어의 파일을 **수정**하면 → 쓰기 레이어로 복사한 뒤 수정한다. 큰 파일을 고치면 그 크기만큼 복사 비용이 든다.
-- 아래 레이어의 파일을 **삭제**하면 → 실제로 지워지지 않고, 위 레이어에 "지워졌음" 표시(whiteout 파일)가 생긴다.
+- 아래 레이어의 파일을 수정하면 → 쓰기 레이어로 복사한 뒤 수정한다. 큰 파일을 고치면 그 크기만큼 복사 비용이 든다.
+- 아래 레이어의 파일을 삭제하면 → 실제로 지워지지 않고, 위 레이어에 "지워졌음" 표시(whiteout 파일)가 생긴다.
 
 두 번째가 중요하다. Dockerfile에서 이렇게 쓰면 이미지가 전혀 작아지지 않는다.
 
@@ -105,7 +105,7 @@ RUN wget https://example.com/big-sdk.tar.gz \
  && rm big-sdk.tar.gz
 ```
 
-**한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다.** 비밀키를 `COPY` 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. `docker history`나 레이어 tar를 풀면 나온다. [8편](/post/docker-08-optimize-operate)의 보안 이야기에서 다시 다룬다.
+한 번이라도 레이어에 들어간 파일은 이미지에서 사라지지 않는다. 비밀키를 `COPY` 했다가 다음 줄에서 지워도 이미지 안에 그대로 있다. `docker history`나 레이어 tar를 풀면 나온다. [8편](/post/docker-08-optimize-operate)의 보안 이야기에서 다시 다룬다.
 
 ## 다이제스트와 태그
 
@@ -113,8 +113,8 @@ RUN wget https://example.com/big-sdk.tar.gz \
 
 | | 예 | 성질 |
 | --- | --- | --- |
-| 태그 | `nginx:1.27-alpine` | 사람이 붙인 **이동 가능한** 라벨 |
-| 다이제스트 | `nginx@sha256:0f2c...` | 내용 해시. **절대 변하지 않는다** |
+| 태그 | `nginx:1.27-alpine` | 사람이 붙인 이동 가능한 라벨 |
+| 다이제스트 | `nginx@sha256:0f2c...` | 내용 해시. 절대 변하지 않는다 |
 
 태그는 언제든 다른 이미지를 가리키도록 바뀔 수 있다. `nginx:1.27`은 패치가 나오면 새 이미지로 옮겨간다. 반면 다이제스트는 내용이 곧 이름이므로 불변이다.
 
@@ -128,14 +128,14 @@ docker pull nginx@sha256:0f2c...
 
 ### `latest`의 함정
 
-`latest`는 "최신"이라는 뜻이 **아니다.** 그냥 태그를 생략했을 때 붙는 기본 문자열일 뿐이다. 아무도 갱신하지 않으면 3년 전 이미지가 `latest`로 남아 있을 수 있다.
+`latest`는 "최신"이라는 뜻이 아니다. 그냥 태그를 생략했을 때 붙는 기본 문자열일 뿐이다. 아무도 갱신하지 않으면 3년 전 이미지가 `latest`로 남아 있을 수 있다.
 
 - `docker run nginx` = `docker run nginx:latest`
 - `docker build -t myapp .` = `myapp:latest`
 
 운영에서 `latest`를 쓰면 이런 일이 생긴다. 어제 배포한 것과 오늘 배포한 것이 같은 태그인데 내용이 다르고, 롤백할 대상이 사라지고, 어떤 커밋이 돌고 있는지 추적할 수 없다.
 
-**태그 전략**은 이 정도면 충분하다.
+태그 전략은 이 정도면 충분하다.
 
 ```bash
 myapp:1.4.2            # 시맨틱 버전 — 릴리스 식별
@@ -145,7 +145,7 @@ myapp:2026-08-31       # 날짜 — 배치성 이미지에 유용
 myapp:latest           # 개발 편의용으로만
 ```
 
-CI에서는 커밋 SHA 태그와 버전 태그를 같이 붙이고, **배포 매니페스트에는 다이제스트나 SHA 태그를 쓰는 것**이 안전하다.
+CI에서는 커밋 SHA 태그와 버전 태그를 같이 붙이고, 배포 매니페스트에는 다이제스트나 SHA 태그를 쓰는 것이 안전하다.
 
 ### 태그 다시 붙이기
 
@@ -153,7 +153,7 @@ CI에서는 커밋 SHA 태그와 버전 태그를 같이 붙이고, **배포 매
 docker tag myapp:1.4.2 ghcr.io/honggibeom/myapp:1.4.2
 ```
 
-`docker tag`는 복사가 아니다. **같은 이미지에 이름표를 하나 더 다는 것**이라 디스크를 더 쓰지 않는다. `docker images`에 두 줄로 보이지만 IMAGE ID는 같다.
+`docker tag`는 복사가 아니다. 같은 이미지에 이름표를 하나 더 다는 것이라 디스크를 더 쓰지 않는다. `docker images`에 두 줄로 보이지만 IMAGE ID는 같다.
 
 ## 이미지 이름의 전체 구조
 
@@ -173,7 +173,7 @@ ghcr.io/org/app  → GitHub Container Registry
 localhost:5000/app → 로컬에 띄운 사설 레지스트리
 ```
 
-`myregistry.com/app`처럼 **점이나 포트가 들어가면 레지스트리 호스트로 해석**한다. 거꾸로 `myapp/web`은 점도 포트도 없으므로 호스트가 아니라 Docker Hub의 `myapp` 계정으로 해석된다.
+`myregistry.com/app`처럼 점이나 포트가 들어가면 레지스트리 호스트로 해석한다. 거꾸로 `myapp/web`은 점도 포트도 없으므로 호스트가 아니라 Docker Hub의 `myapp` 계정으로 해석된다.
 
 ## 레지스트리
 
@@ -202,14 +202,14 @@ docker push ghcr.io/honggibeom/myapp:1.4.2
 
 `--password-stdin`을 쓰는 이유는 명령행에 비밀번호를 적으면 셸 히스토리와 프로세스 목록에 남기 때문이다.
 
-`docker login`의 자격 증명은 기본적으로 `~/.docker/config.json`에 **base64로 (암호화가 아니라 인코딩만 되어) 저장된다.** 개인 머신이면 credential helper(`docker-credential-osxkeychain`, `pass` 등)를 붙이고, CI 서버라면 잡이 끝날 때 `docker logout`으로 지운다.
+`docker login`의 자격 증명은 기본적으로 `~/.docker/config.json`에 base64로 (암호화가 아니라 인코딩만 되어) 저장된다. 개인 머신이면 credential helper(`docker-credential-osxkeychain`, `pass` 등)를 붙이고, CI 서버라면 잡이 끝날 때 `docker logout`으로 지운다.
 
 ### Docker Hub pull 제한
 
 익명 사용자는 IP 기준으로 pull 횟수 제한이 걸린다. CI가 공용 IP를 쓰면 `toomanyrequests` 에러를 만나게 된다. 대응은 셋 중 하나다.
 
 - CI에서 `docker login`으로 인증된 pull 사용
-- 베이스 이미지를 사내 레지스트리에 **미러링**해두고 그쪽을 참조
+- 베이스 이미지를 사내 레지스트리에 미러링해두고 그쪽을 참조
 - 레지스트리 캐시(pull-through cache) 구성
 
 ### 사설 레지스트리 띄워보기
@@ -230,20 +230,20 @@ HTTPS가 아니면 도커가 push를 거부한다. 로컬 테스트라면 데몬
 { "insecure-registries": ["localhost:5000"] }
 ```
 
-`localhost`는 기본 허용이지만 다른 호스트라면 이 설정이 필요하다. **운영에서는 쓰지 않는다.** 실제로는 TLS 인증서를 붙인다.
+`localhost`는 기본 허용이지만 다른 호스트라면 이 설정이 필요하다. 운영에서는 쓰지 않는다. 실제로는 TLS 인증서를 붙인다.
 
 ## 멀티 아키텍처 이미지
 
 Apple Silicon과 ARM 서버가 흔해지면서 반드시 부딪히는 지점이다.
 
-이미지 태그 하나가 여러 아키텍처를 가리킬 수 있다. 이때 매니페스트는 **매니페스트 리스트(=이미지 인덱스)**가 되고, 그 안에 아키텍처별 매니페스트가 들어간다.
+이미지 태그 하나가 여러 아키텍처를 가리킬 수 있다. 이때 매니페스트는 매니페스트 리스트(=이미지 인덱스)가 되고, 그 안에 아키텍처별 매니페스트가 들어간다.
 
 ```bash
 docker manifest inspect nginx:1.27-alpine | head -40
 # linux/amd64, linux/arm64, linux/arm/v7 ... 목록이 보인다
 ```
 
-pull 하면 도커가 **호스트 아키텍처에 맞는 것을 알아서 고른다.** 여기서 전형적인 사고가 난다.
+pull 하면 도커가 호스트 아키텍처에 맞는 것을 알아서 고른다. 여기서 전형적인 사고가 난다.
 
 - M1 맥에서 `docker build` → `linux/arm64` 이미지가 만들어진다
 - 그걸 amd64 서버에 배포 → `exec format error`
@@ -270,7 +270,7 @@ docker buildx build \
 
 ## 베이스 이미지 고르기
 
-이미지 크기와 취약점 수의 절반은 **첫 줄에서 결정된다.**
+이미지 크기와 취약점 수의 절반은 첫 줄에서 결정된다.
 
 | 종류 | 크기 감각 | 성격 |
 | --- | --- | --- |
@@ -282,13 +282,13 @@ docker buildx build \
 
 ### alpine을 조심해야 할 때
 
-Alpine은 glibc가 아니라 **musl libc**를 쓴다. 대부분은 문제가 없지만 다음에서 걸린다.
+Alpine은 glibc가 아니라 musl libc를 쓴다. 대부분은 문제가 없지만 다음에서 걸린다.
 
-- 네이티브 확장이 있는 파이썬 패키지(`numpy`, `pandas`, `psycopg2`) — glibc용 휠을 못 써서 소스 빌드로 넘어가고, 빌드 시간이 몇 분씩 늘어난다
+- 네이티브 확장이 있는 파이썬 패키지(`numpy`, `pandas`, `psycopg2`) - glibc용 휠을 못 써서 소스 빌드로 넘어가고, 빌드 시간이 몇 분씩 늘어난다
 - glibc 전용으로 배포되는 상용 바이너리, 일부 JDK 배포판
 - DNS 리졸버 동작 차이, 스레드 스택 크기 차이로 인한 미묘한 버그
 
-**파이썬은 `-slim`이 대체로 낫고, Go는 `scratch`나 `distroless`가 가장 잘 맞는다.** Node는 alpine이 무난한 편이다.
+파이썬은 `-slim`이 대체로 낫고, Go는 `scratch`나 `distroless`가 가장 잘 맞는다. Node는 alpine이 무난한 편이다.
 
 ### 태그를 얼마나 고정할 것인가
 
@@ -315,7 +315,7 @@ docker export mycontainer -o fs.tar
 docker import fs.tar myapp:flat
 ```
 
-`export/import`는 히스토리를 뭉개서 이미지를 납작하게 만들 때만 쓴다. `CMD`, `ENTRYPOINT`, `ENV`가 전부 날아가므로 `import` 시 `--change`로 다시 넣어줘야 한다. **기본은 `save/load`다.**
+`export/import`는 히스토리를 뭉개서 이미지를 납작하게 만들 때만 쓴다. `CMD`, `ENTRYPOINT`, `ENV`가 전부 날아가므로 `import` 시 `--change`로 다시 넣어줘야 한다. 기본은 `save/load`다.
 
 ## 취약점 스캔과 정리
 
@@ -331,7 +331,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   aquasec/trivy image myapp:1.4.2
 ```
 
-취약점의 상당수는 애플리케이션이 아니라 **베이스 이미지에서 온다.** 베이스를 최신 패치로 올리는 것만으로 대부분 사라진다.
+취약점의 상당수는 애플리케이션이 아니라 베이스 이미지에서 온다. 베이스를 최신 패치로 올리는 것만으로 대부분 사라진다.
 
 ### 정리 명령
 

@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-09-02" />
 <meta property="article:section" content="StockAnalyst" />
@@ -91,17 +91,17 @@
 <h1>StockAnalyst 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</h1>
 <p class="pr-meta">2026.09.02 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/python">#python</a> <a href="/tags/pytorch">#pytorch</a> <a href="/tags/onnx">#onnx</a> <a href="/tags/%EB%B3%80%EA%B3%A1%EC%A0%90">#변곡점</a> <a href="/tags/%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D">#머신러닝</a></p>
 <blockquote>
-<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 이 글은 <a href="/post/stockanalyst-turning-point-model">변곡점 예측 1편</a>의 후속이다. 1편이 Keras 앙상블과 배치 예측을 만든 이야기라면, 이 글은 그 배치를 지우고 모델을 다시 학습시킨 뒤 **"이 모델이 실제로 얼마나 맞히는가"**를 정직하게 재본 이야기다.</p>
+<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 이 글은 <a href="/post/stockanalyst-turning-point-model">변곡점 예측 1편</a>의 후속이다. 1편이 Keras 앙상블과 배치 예측을 만든 이야기라면, 이 글은 그 배치를 지우고 모델을 다시 학습시킨 뒤 "이 모델이 실제로 얼마나 맞히는가"를 정직하게 재본 이야기다.</p>
 </blockquote>
-<p><strong>한눈에 보기</strong></p>
+<p>한눈에 보기</p>
 <ul>
-<li>전 종목 배치 예측(<code>predict_fast.py</code>, 파이프라인 predict 단계)을 <strong>삭제</strong>. "AI 가격예측" 버튼을 눌렀을 때 Spring이 계산한다</li>
-<li>국내 종목 신호가 망가진 원인은 학습 데이터가 아니라 <strong>임계값 이진 탐색의 목표가 도달 불가능</strong>했던 것. <code>TARGET_CAP=0.8</code>로 해결</li>
-<li>윈도우 TensorFlow 2.18은 GPU를 못 써서 학습 코드를 <strong>PyTorch로 이식</strong>. 국내 372 + 미국 380종목으로 v2 재학습</li>
-<li>평가를 다시 짜니 <strong>가격 지표 24개만으로는 정밀도 0.55~0.6이 상한</strong>. 학습 종목을 40→372로 늘려도 0.557→0.585에서 포화</li>
+<li>전 종목 배치 예측(<code>predict_fast.py</code>, 파이프라인 predict 단계)을 삭제. "AI 가격예측" 버튼을 눌렀을 때 Spring이 계산한다</li>
+<li>국내 종목 신호가 망가진 원인은 학습 데이터가 아니라 임계값 이진 탐색의 목표가 도달 불가능했던 것. <code>TARGET_CAP=0.8</code>로 해결</li>
+<li>윈도우 TensorFlow 2.18은 GPU를 못 써서 학습 코드를 PyTorch로 이식. 국내 372 + 미국 380종목으로 v2 재학습</li>
+<li>평가를 다시 짜니 가격 지표 24개만으로는 정밀도 0.55~0.6이 상한. 학습 종목을 40→372로 늘려도 0.557→0.585에서 포화</li>
 </ul>
 <h2>배치를 통째로 지웠다</h2>
-<p>1편의 마지막은 "종목당 1분이던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄였다"였다. 그런데 그 최적화의 전제 자체가 틀렸다. <strong>전 종목을 미리 계산할 이유가 없었다.</strong></p>
+<p>1편의 마지막은 "종목당 1분이던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄였다"였다. 그런데 그 최적화의 전제 자체가 틀렸다. 전 종목을 미리 계산할 이유가 없었다.</p>
 
 
 
@@ -138,9 +138,9 @@
 
 
 <table><thead><tr><th></th><th>배치(이전)</th><th>온디맨드(지금)</th></tr></thead><tbody><tr><td>언제 계산</td><td>파이프라인 20분 주기, 전 종목</td><td>종목 상세 캔들차트(프로)에서 "AI 가격예측"을 누를 때</td></tr><tr><td>계산 주체</td><td>Python <code>predict_fast.py</code></td><td>Spring 백엔드 (ONNX Runtime)</td></tr><tr><td>저장</td><td>DB에 신호 테이블 적재</td><td>Redis 캐시 <code>signal:v2:{ticker}:{asOf}</code></td></tr><tr><td>실제 사용률</td><td>전 종목 계산, 대부분 조회 안 됨</td><td>사용자가 본 종목만</td></tr><tr><td>코드</td><td>predict-kr / predict-us 단계</td><td>파이프라인에서 삭제</td></tr></tbody></table>
-<p>한 종목 계산은 밀리초 단위다. 사용자가 하루에 열어보는 종목은 많아야 수십 개인데 5,000종목을 20분마다 다시 계산하고 있었다. 최적화를 잘한 게 아니라 <strong>안 해도 되는 일을 빠르게 하고 있었던</strong> 셈이다.</p>
+<p>한 종목 계산은 밀리초 단위다. 사용자가 하루에 열어보는 종목은 많아야 수십 개인데 5,000종목을 20분마다 다시 계산하고 있었다. 최적화를 잘한 게 아니라 안 해도 되는 일을 빠르게 하고 있었던 셈이다.</p>
 <svg viewBox="0 0 760 190" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="배치 구조에서는 파이프라인이 전 종목을 계산해 DB에 넣었고, 온디맨드 구조에서는 버튼 클릭이 Spring의 ONNX 추론과 캐시로 이어진다">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">이전 — 배치</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">이전 - 배치</text>
 <rect x="0" y="26" width="176" height="46" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
 <text x="88" y="54" font-size="13" fill="var(--color-text)" text-anchor="middle">파이프라인 20분</text>
 <rect x="208" y="26" width="176" height="46" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
@@ -150,7 +150,7 @@
 <rect x="624" y="26" width="136" height="46" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
 <text x="692" y="54" font-size="13" fill="var(--color-text-dim)" text-anchor="middle">대부분 미조회</text>
 <path d="M176 49h26m-6-5l6 5-6 5M384 49h26m-6-5l6 5-6 5M592 49h26m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
-<text x="0" y="122" font-size="13" fill="var(--color-text-muted)">지금 — 온디맨드</text>
+<text x="0" y="122" font-size="13" fill="var(--color-text-muted)">지금 - 온디맨드</text>
 <rect x="0" y="134" width="176" height="46" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
 <text x="88" y="162" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">버튼 클릭</text>
 <rect x="208" y="134" width="176" height="46" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
@@ -162,9 +162,9 @@
 <path d="M176 157h26m-6-5l6 5-6 5M384 157h26m-6-5l6 5-6 5M592 157h26m-6-5l6 5-6 5" stroke="var(--color-text-dim)" stroke-width="1.5" fill="none"></path>
 </svg>
 <h2>국내 종목만 신호가 무너진 이유</h2>
-<p>온디맨드로 옮기고 나서 삼성전자를 눌러 봤더니 신호가 엉망이었다. 임계값이 0.01, 즉 사실상 <strong>모든 확률 봉우리가 신호</strong>가 됐다. 미국 종목은 멀쩡했다.</p>
-<p>처음 의심한 것은 학습 데이터였다. "미국 종목 위주로 학습해서 국내 종목에 안 맞는 것 아닌가." 그럴듯했지만 <strong>틀렸다.</strong> 원인은 임계값을 정하는 이진 탐색 자체에 있었다.</p>
-<p>1편에서 임계값은 "ZigZag 정답 개수의 1.8배만큼 신호가 나오는 값"을 이진 탐색으로 찾는다고 썼다. 여기에 함정이 있다. 신호는 <strong>최소 10일 간격</strong>(<code>MIN_DISTANCE</code>)을 지켜야 하므로, 아무리 임계값을 낮춰도 나올 수 있는 봉우리 수에는 상한이 있다.</p>
+<p>온디맨드로 옮기고 나서 삼성전자를 눌러 봤더니 신호가 엉망이었다. 임계값이 0.01, 즉 사실상 모든 확률 봉우리가 신호가 됐다. 미국 종목은 멀쩡했다.</p>
+<p>처음 의심한 것은 학습 데이터였다. "미국 종목 위주로 학습해서 국내 종목에 안 맞는 것 아닌가." 그럴듯했지만 틀렸다. 원인은 임계값을 정하는 이진 탐색 자체에 있었다.</p>
+<p>1편에서 임계값은 "ZigZag 정답 개수의 1.8배만큼 신호가 나오는 값"을 이진 탐색으로 찾는다고 썼다. 여기에 함정이 있다. 신호는 최소 10일 간격(<code>MIN_DISTANCE</code>)을 지켜야 하므로, 아무리 임계값을 낮춰도 나올 수 있는 봉우리 수에는 상한이 있다.</p>
 
 
 
@@ -190,10 +190,10 @@
 
 
 
-<table><thead><tr><th></th><th>미국 종목</th><th>국내 종목</th></tr></thead><tbody><tr><td>변동성</td><td>상대적으로 낮음</td><td>높음 → ZigZag(5%) 극점이 많음</td></tr><tr><td>목표 개수 (극점 × 1.8)</td><td>상한 안</td><td><strong>상한 초과</strong></td></tr><tr><td>이진 탐색 결과</td><td>정상 수렴</td><td>0.01 바닥으로 붕괴</td></tr></tbody></table>
-<p>목표가 도달 불가능하면 이진 탐색은 "더 낮추면 되겠지"를 반복하다 하한에 처박힌다. 코드가 잘못된 게 아니라 <strong>불가능한 목표를 주고 있었다.</strong></p>
+<table><thead><tr><th></th><th>미국 종목</th><th>국내 종목</th></tr></thead><tbody><tr><td>변동성</td><td>상대적으로 낮음</td><td>높음 → ZigZag(5%) 극점이 많음</td></tr><tr><td>목표 개수 (극점 × 1.8)</td><td>상한 안</td><td>상한 초과</td></tr><tr><td>이진 탐색 결과</td><td>정상 수렴</td><td>0.01 바닥으로 붕괴</td></tr></tbody></table>
+<p>목표가 도달 불가능하면 이진 탐색은 "더 낮추면 되겠지"를 반복하다 하한에 처박힌다. 코드가 잘못된 게 아니라 불가능한 목표를 주고 있었다.</p>
 <svg viewBox="0 0 700 150" width="100%" style="max-width:700px;display:block;margin:22px auto" role="img" aria-label="국내 종목은 목표 신호 개수가 10일 간격으로 나올 수 있는 최대 봉우리 수를 넘어 이진 탐색이 붕괴했다">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">국내 종목 예시 — 신호 개수</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">국내 종목 예시 - 신호 개수</text>
 <text x="0" y="46" font-size="13" fill="var(--color-text)">가능한 최대</text>
 <rect x="112" y="31" width="230" height="20" rx="4" fill="var(--color-border-strong)"></rect>
 <text x="352" y="46" font-size="12" fill="var(--color-text-muted)">10일 간격이 만드는 상한</text>
@@ -204,7 +204,7 @@
 <rect x="112" y="111" width="184" height="20" rx="4" fill="var(--color-accent)"></rect>
 <text x="306" y="126" font-size="12" fill="var(--color-text-muted)">전체 봉우리 × 0.8 로 자름</text>
 </svg>
-<p>고친 방법은 한 줄이다. 목표를 <strong>전체 봉우리 수 × <code>TARGET_CAP</code>(0.8)</strong> 으로 잘랐다.</p>
+<p>고친 방법은 한 줄이다. 목표를 전체 봉우리 수 × <code>TARGET_CAP</code>(0.8) 으로 잘랐다.</p>
 <pre><code class="language-python"># signal_core.py
 TARGET_CAP = 0.8
 
@@ -238,7 +238,7 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>선택지</th><th>판단</th></tr></thead><tbody><tr><td>WSL/우분투 설치</td><td>환경을 하나 더 관리해야 함 — 안 하기로 함</td></tr><tr><td>CPU로 학습</td><td>종목 400개 × 3모델은 현실적이지 않음</td></tr><tr><td><strong>PyTorch로 이식</strong></td><td>감성 모델용 conda 환경(<code>stock-sentiment</code>)에 이미 torch 2.6 + CUDA가 있음 → 채택</td></tr></tbody></table>
+<table><thead><tr><th>선택지</th><th>판단</th></tr></thead><tbody><tr><td>WSL/우분투 설치</td><td>환경을 하나 더 관리해야 함 - 안 하기로 함</td></tr><tr><td>CPU로 학습</td><td>종목 400개 × 3모델은 현실적이지 않음</td></tr><tr><td>PyTorch로 이식</td><td>감성 모델용 conda 환경(<code>stock-sentiment</code>)에 이미 torch 2.6 + CUDA가 있음 → 채택</td></tr></tbody></table>
 <p>이미 뉴스 감성 모델을 그 환경에서 학습시키고 있었으니 GPU(RTX 3070 Ti)는 그대로 쓸 수 있었다. 모델 3종을 PyTorch로 옮겨 <code>train_v2_torch.py</code>를 만들었다.</p>
 
 
@@ -269,13 +269,13 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>파일</th><th>역할</th></tr></thead><tbody><tr><td><code>signal_core.py</code></td><td>지표·ZigZag·임계값 탐색·후처리. <strong>Java 포팅의 기준</strong> — 여기 수식이 바뀌면 백엔드도 같이 바뀐다</td></tr><tr><td><code>train_v2.py</code></td><td>데이터 로드(DB 시총 상위 N), 라벨 완화, 시간순 분할, 평가 함수</td></tr><tr><td><code>train_v2_torch.py</code></td><td>실제 학습. 모델 3종 + focal loss + 조기 종료 + <code>torch.onnx.export</code></td></tr><tr><td><code>export_onnx.py</code></td><td>산출물을 백엔드로 복사하고 대조 정답 덤프 (base 환경, 서버 불필요)</td></tr><tr><td><code>compare_java.py</code></td><td>백엔드 <code>/api/v1/stocknews/predict?debug=true</code> 와 값 대조</td></tr></tbody></table>
+<table><thead><tr><th>파일</th><th>역할</th></tr></thead><tbody><tr><td><code>signal_core.py</code></td><td>지표·ZigZag·임계값 탐색·후처리. Java 포팅의 기준 - 여기 수식이 바뀌면 백엔드도 같이 바뀐다</td></tr><tr><td><code>train_v2.py</code></td><td>데이터 로드(DB 시총 상위 N), 라벨 완화, 시간순 분할, 평가 함수</td></tr><tr><td><code>train_v2_torch.py</code></td><td>실제 학습. 모델 3종 + focal loss + 조기 종료 + <code>torch.onnx.export</code></td></tr><tr><td><code>export_onnx.py</code></td><td>산출물을 백엔드로 복사하고 대조 정답 덤프 (base 환경, 서버 불필요)</td></tr><tr><td><code>compare_java.py</code></td><td>백엔드 <code>/api/v1/stocknews/predict?debug=true</code> 와 값 대조</td></tr></tbody></table>
 <p>학습 명령은 이렇게 생겼다.</p>
 <pre><code class="language-bash">python findPoint/train_v2_torch.py --kr 400 --us 400 \
   --out saved_models_v2_400 --baseline models/signal \
   --copy-to ..\stock_infomation_backend\models\signal
 </code></pre>
-<p>ONNX는 <code>torch.onnx.export</code>(opset 17)로 바로 내보낸다. 입력은 <code>input</code> <code>[N, 40, 24]</code> float32, 출력은 <code>[N, 3]</code> 확률이다. 산출물 폴더 구조(<code>model_0..2.onnx</code>, <code>scaler.json</code>, <code>config.json</code>)를 이전 Keras 경로와 <strong>똑같이</strong> 맞춰서 백엔드는 무엇으로 학습했는지 몰라도 되게 했다.</p>
+<p>ONNX는 <code>torch.onnx.export</code>(opset 17)로 바로 내보낸다. 입력은 <code>input</code> <code>[N, 40, 24]</code> float32, 출력은 <code>[N, 3]</code> 확률이다. 산출물 폴더 구조(<code>model_0..2.onnx</code>, <code>scaler.json</code>, <code>config.json</code>)를 이전 Keras 경로와 똑같이 맞춰서 백엔드는 무엇으로 학습했는지 몰라도 되게 했다.</p>
 <p>이식이 맞는지는 값으로 확인했다. <code>compare_java.py</code>로 삼성전자 22개 신호 전부, AAPL 26개 신호 전부가 일치했고 확률 오차는 1e-6 수준이었다. TensorFlow는 이제 이 프로젝트에서 완전히 빠졌다.</p>
 <h2>v2는 무엇을 바꿨나</h2>
 
@@ -318,12 +318,12 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>항목</th><th>기존</th><th>v2</th></tr></thead><tbody><tr><td>학습 종목</td><td>소수 표본</td><td>국내 372 + 미국 380 (DB 시총 상위)</td></tr><tr><td>기간</td><td>제한적</td><td>2015~2026 DB 캔들</td></tr><tr><td>라벨</td><td>ZigZag 극점 당일만 정답</td><td><strong>±2일 완화</strong> — 하루 차이를 오답으로 보지 않음</td></tr><tr><td>분할</td><td>무작위</td><td>종목별 <strong>시간순 70/15/15</strong>, 조기 종료는 검증만</td></tr><tr><td>클래스 불균형</td><td>그대로</td><td>정상 구간 시퀀스 35%만 남김 + focal loss</td></tr><tr><td>프레임워크</td><td>Keras (CPU)</td><td>PyTorch (GPU)</td></tr></tbody></table>
+<table><thead><tr><th>항목</th><th>기존</th><th>v2</th></tr></thead><tbody><tr><td>학습 종목</td><td>소수 표본</td><td>국내 372 + 미국 380 (DB 시총 상위)</td></tr><tr><td>기간</td><td>제한적</td><td>2015~2026 DB 캔들</td></tr><tr><td>라벨</td><td>ZigZag 극점 당일만 정답</td><td>±2일 완화 - 하루 차이를 오답으로 보지 않음</td></tr><tr><td>분할</td><td>무작위</td><td>종목별 시간순 70/15/15, 조기 종료는 검증만</td></tr><tr><td>클래스 불균형</td><td>그대로</td><td>정상 구간 시퀀스 35%만 남김 + focal loss</td></tr><tr><td>프레임워크</td><td>Keras (CPU)</td><td>PyTorch (GPU)</td></tr></tbody></table>
 <p>모델 3종은 BiLSTM+Attention, CNN+BiLSTM, Transformer이고 셋의 확률을 평균 낸다. 입력은 40일 창 × 지표 24개다(이동평균 이격도 4, MACD 3, RSI, 스토캐스틱 2, 볼린저 2, ATR, 거래량비, OBV, 수익률 5, 구간내 위치 3, 변동성).</p>
-<p><strong>시간순 분할</strong>이 특히 중요했다. 무작위로 나누면 같은 종목의 인접한 창이 학습과 테스트에 나뉘어 들어가 성능이 부풀려진다. 종목별로 앞 70%를 학습, 다음 15%를 검증, 마지막 15%를 테스트로 두고 테스트는 마지막에 딱 한 번만 봤다.</p>
+<p>시간순 분할이 특히 중요했다. 무작위로 나누면 같은 종목의 인접한 창이 학습과 테스트에 나뉘어 들어가 성능이 부풀려진다. 종목별로 앞 70%를 학습, 다음 15%를 검증, 마지막 15%를 테스트로 두고 테스트는 마지막에 딱 한 번만 봤다.</p>
 <h2>평가를 정직하게 다시 짰다</h2>
-<p>여기서부터가 이 작업의 본론이다. 모델을 새로 만들었으면 <strong>좋아졌는지 확인</strong>해야 하는데, 기존 평가로는 v2와 기존 모델이 거의 같아 보였다. 평가 방식이 잘못돼 있었다.</p>
-<h3>① 모델 자체 — 후처리 없이</h3>
+<p>여기서부터가 이 작업의 본론이다. 모델을 새로 만들었으면 좋아졌는지 확인해야 하는데, 기존 평가로는 v2와 기존 모델이 거의 같아 보였다. 평가 방식이 잘못돼 있었다.</p>
+<h3>① 모델 자체 - 후처리 없이</h3>
 <p>먼저 후처리(스냅·검증·교차·변동률)를 전부 끄고, 모델이 내놓은 확률만으로 ZigZag 극점을 ±2일 안에 맞히는지 AP(정밀도-재현율 곡선 아래 면적)로 봤다.</p>
 
 
@@ -345,10 +345,10 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th></th><th>기존 (고점 / 저점)</th><th>v2 (고점 / 저점)</th></tr></thead><tbody><tr><td>국내</td><td>0.480 / 0.527</td><td><strong>0.547 / 0.626</strong></td></tr><tr><td>미국</td><td>0.316 / 0.413</td><td><strong>0.392 / 0.505</strong></td></tr></tbody></table>
+<table><thead><tr><th></th><th>기존 (고점 / 저점)</th><th>v2 (고점 / 저점)</th></tr></thead><tbody><tr><td>국내</td><td>0.480 / 0.527</td><td>0.547 / 0.626</td></tr><tr><td>미국</td><td>0.316 / 0.413</td><td>0.392 / 0.505</td></tr></tbody></table>
 <p>전 구간에서 올랐고, 무작위로 찍었을 때 대비 1.9~2.7배다. 모델 자체는 분명히 좋아졌다.</p>
-<h3>② 실사용 — 미래를 보지 않고 매일 판정</h3>
-<p>문제는 이쪽이다. 화면에 그려지는 과거 신호는 뒤 데이터를 알고 있는 상태에서 계산된다. 실제로 쓸모가 있으려면 **그날까지의 데이터만으로 "오늘이 변곡점인가"**를 답할 수 있어야 한다. 그래서 매일 그 시점까지의 확률로만 신호를 내고, ±3일 안에 실제 극점이 있으면 적중으로 쳤다.</p>
+<h3>② 실사용 - 미래를 보지 않고 매일 판정</h3>
+<p>문제는 이쪽이다. 화면에 그려지는 과거 신호는 뒤 데이터를 알고 있는 상태에서 계산된다. 실제로 쓸모가 있으려면 그날까지의 데이터만으로 "오늘이 변곡점인가"를 답할 수 있어야 한다. 그래서 매일 그 시점까지의 확률로만 신호를 내고, ±3일 안에 실제 극점이 있으면 적중으로 쳤다.</p>
 
 
 
@@ -374,7 +374,7 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>방식</th><th>국내 정밀도</th><th>미국 정밀도</th></tr></thead><tbody><tr><td>모델 없이 "가격이 최근 10일 극점" 규칙만</td><td>0.52</td><td>0.35</td></tr><tr><td>기존 모델</td><td>0.563</td><td>0.423</td></tr><tr><td>v2 모델 (×0.6 설정)</td><td><strong>0.568</strong></td><td><strong>0.459</strong></td></tr></tbody></table>
+<table><thead><tr><th>방식</th><th>국내 정밀도</th><th>미국 정밀도</th></tr></thead><tbody><tr><td>모델 없이 "가격이 최근 10일 극점" 규칙만</td><td>0.52</td><td>0.35</td></tr><tr><td>기존 모델</td><td>0.563</td><td>0.423</td></tr><tr><td>v2 모델 (×0.6 설정)</td><td>0.568</td><td>0.459</td></tr></tbody></table>
 <svg viewBox="0 0 700 208" width="100%" style="max-width:700px;display:block;margin:22px auto" role="img" aria-label="실사용 정밀도 비교. 국내는 규칙 0.52, 기존 0.563, v2 0.568. 미국은 규칙 0.35, 기존 0.423, v2 0.459">
 <text x="0" y="14" font-size="13" fill="var(--color-text-muted)">미래를 보지 않은 신호의 정밀도 (±3일 적중)</text>
 <text x="0" y="40" font-size="12" fill="var(--color-text-dim)">국내</text>
@@ -398,7 +398,7 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 <rect x="96" y="196" width="291" height="17" rx="4" fill="var(--color-accent)"></rect>
 <text x="397" y="210" font-size="12" fill="var(--color-text-muted)">0.459</text>
 </svg>
-<p>국내에서 모델이 가격 규칙보다 나은 폭은 <strong>0.52 → 0.568</strong>, 5%p 남짓이다. 미국은 0.35 → 0.459로 폭이 크지만, 미국은 애초에 규칙만으로는 잘 안 되는 시장이라는 뜻이기도 하다.</p>
+<p>국내에서 모델이 가격 규칙보다 나은 폭은 0.52 → 0.568, 5%p 남짓이다. 미국은 0.35 → 0.459로 폭이 크지만, 미국은 애초에 규칙만으로는 잘 안 되는 시장이라는 뜻이기도 하다.</p>
 <h3>③ 데이터를 더 넣으면 되지 않을까</h3>
 <p>가장 먼저 떠오르는 처방은 "종목을 더 넣자"다. 실제로 해봤다. 국내 학습 종목을 40 → 120 → 372로 늘렸다.</p>
 <svg viewBox="0 0 700 170" width="100%" style="max-width:700px;display:block;margin:22px auto" role="img" aria-label="국내 학습 종목을 40, 120, 372개로 늘렸을 때 정밀도는 0.557, 0.582, 0.585로 포화됐다">
@@ -418,9 +418,9 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 <text x="330" y="148" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">120종목</text>
 <text x="600" y="148" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">372종목</text>
 </svg>
-<p>40 → 120에서 0.025 오르고, 120 → 372에서는 0.003 오른다. <strong>포화다.</strong> 과적합도 아니다. 학습 손실이 검증 손실보다 낮지 않았으니 모델이 데이터를 외운 게 아니라, 더 배울 게 남지 않은 것이다.</p>
-<h3>결론 — 상한은 0.6 근처다</h3>
-<p>세 실험을 합치면 답이 나온다. <strong>가격에서 뽑은 지표 24개만으로는 "지금 이 국소 극점이 진짜 5% 반전의 시작인지"를 동전 던지기보다 조금 나은 수준으로만 판별할 수 있다.</strong> 정밀도 상한은 0.55~0.6이다. 모델 구조를 바꾸거나 데이터를 더 넣어서 넘을 수 있는 벽이 아니다.</p>
+<p>40 → 120에서 0.025 오르고, 120 → 372에서는 0.003 오른다. 포화다. 과적합도 아니다. 학습 손실이 검증 손실보다 낮지 않았으니 모델이 데이터를 외운 게 아니라, 더 배울 게 남지 않은 것이다.</p>
+<h3>결론 - 상한은 0.6 근처다</h3>
+<p>세 실험을 합치면 답이 나온다. 가격에서 뽑은 지표 24개만으로는 "지금 이 국소 극점이 진짜 5% 반전의 시작인지"를 동전 던지기보다 조금 나은 수준으로만 판별할 수 있다. 정밀도 상한은 0.55~0.6이다. 모델 구조를 바꾸거나 데이터를 더 넣어서 넘을 수 있는 벽이 아니다.</p>
 <p>넘으려면 입력이나 목표를 바꿔야 한다.</p>
 
 
@@ -439,8 +439,8 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>방향</th><th>내용</th></tr></thead><tbody><tr><td>비가격 입력</td><td>뉴스 감성 점수, 공매도 잔고, 투자자별 매매 동향, 지수 대비 상대강도</td></tr><tr><td>목표 변경</td><td>"지금이 극점인가" 대신 <strong>"향후 10일 안에 ±5% 움직일 확률"</strong> — 시점을 맞히지 않아도 되는 문제로</td></tr></tbody></table>
-<p>둘 다 별도 과제로 남겼다. 지금 중요한 건 <strong>상한을 알고 쓰는 것</strong>이다.</p>
+<table><thead><tr><th>방향</th><th>내용</th></tr></thead><tbody><tr><td>비가격 입력</td><td>뉴스 감성 점수, 공매도 잔고, 투자자별 매매 동향, 지수 대비 상대강도</td></tr><tr><td>목표 변경</td><td>"지금이 극점인가" 대신 "향후 10일 안에 ±5% 움직일 확률" - 시점을 맞히지 않아도 되는 문제로</td></tr></tbody></table>
+<p>둘 다 별도 과제로 남겼다. 지금 중요한 건 상한을 알고 쓰는 것이다.</p>
 <h2>평가 규칙에서 걷어낸 두 가지</h2>
 <p>처음에 v2와 기존 모델이 실사용 평가에서 거의 같게 나왔다. 모델이 안 좋아진 게 아니라 평가가 차이를 지우고 있었다.</p>
 
@@ -461,11 +461,11 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 <table><thead><tr><th>문제</th><th>왜 차이를 지웠나</th></tr></thead><tbody><tr><td>확률이 "최근 5일 중 최고"일 때만 신호로 인정</td><td>v2는 라벨을 ±2일로 완화해 확률 곡선이 평탄해졌다. 뾰족함을 요구하는 조건이 v2에 불리하게 작용했다</td></tr><tr><td>개수를 맞추는 임계값을 평가에도 그대로 사용</td><td>목표 개수를 채우려고 임계값이 알아서 내려가 신호를 억지로 만들어낸다. 모델이 나빠도 개수는 채워진다</td></tr></tbody></table>
-<p>두 조건을 평가에서 빼고 변형별로 비교하도록 바꾸자 그제야 v2가 앞선다는 게 보였다. <strong>평가 규칙이 모델보다 먼저 의심 대상</strong>이라는 걸 배웠다.</p>
+<p>두 조건을 평가에서 빼고 변형별로 비교하도록 바꾸자 그제야 v2가 앞선다는 게 보였다. 평가 규칙이 모델보다 먼저 의심 대상이라는 걸 배웠다.</p>
 <h2>이건 예측인가, 표시인가</h2>
-<p>한 가지 정직하게 적어둘 것이 있다. 화면에 보이는 과거 신호는 위치가 꽤 정확한데, 그건 후처리 1단계에서 <strong>신호일을 근처 실제 고가·저가 날짜로 스냅</strong>하기 때문이다. 가격을 보고 맞춘 것이므로 예측이라기보다 **"지나간 변곡점 표시"**에 가깝다.</p>
+<p>한 가지 정직하게 적어둘 것이 있다. 화면에 보이는 과거 신호는 위치가 꽤 정확한데, 그건 후처리 1단계에서 신호일을 근처 실제 고가·저가 날짜로 스냅하기 때문이다. 가격을 보고 맞춘 것이므로 예측이라기보다 "지나간 변곡점 표시"에 가깝다.</p>
 <p>미래를 모르는 상태에서의 성능은 위 ②번 표의 0.57 / 0.46이 전부다. 잘 맞는 것처럼 보이는 과거 그림과 실제 예측력 사이의 간극을 사용자가 오해하지 않는 게 더 중요하다.</p>
-<p>이 숙제는 문구를 고치는 대신 <strong>신호 자체를 두 종류로 나누는 것</strong>으로 풀었다. 그날까지의 데이터만 보고 찍혀 다시는 안 바뀌는 신호와, 전 구간을 다시 보고 찍는 사후 분석을 차트에서 모양으로 구분한다 → <a href="/post/stockanalyst-dev-log-3-signals-rates">개발기 (3)</a>.</p>
+<p>이 숙제는 문구를 고치는 대신 신호 자체를 두 종류로 나누는 것으로 풀었다. 그날까지의 데이터만 보고 찍혀 다시는 안 바뀌는 신호와, 전 구간을 다시 보고 찍는 사후 분석을 차트에서 모양으로 구분한다 → <a href="/post/stockanalyst-dev-log-3-signals-rates">개발기 (3)</a>.</p>
 <h2>운영 메모</h2>
 <p>모델을 갱신할 때 순서를 헷갈리면 백엔드와 파이썬이 다른 모델을 보게 된다. 네 단계로 고정했다.</p>
 
@@ -498,21 +498,21 @@ def find_threshold_for_count(prob_series, target_count, min_distance):
 
 
 
-<table><thead><tr><th>#</th><th>단계</th><th>명령 / 확인</th></tr></thead><tbody><tr><td>1</td><td>학습</td><td><code>train_v2_torch.py --kr 400 --us 400 --copy-to ..\stock_infomation_backend\models\signal</code></td></tr><tr><td>2</td><td>정답 덤프</td><td>base 환경에서 <code>export_onnx.py --skip-export --model-dir saved_models_v2_400 --dump 005930,AAPL</code></td></tr><tr><td>3</td><td>백엔드 재빌드·재시작</td><td>새 <code>models/signal</code>을 물고 뜨는지 확인</td></tr><tr><td>4</td><td>대조</td><td><code>compare_java.py</code> — 신호 위치와 확률이 파이썬과 같은지</td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>단계</th><th>명령 / 확인</th></tr></thead><tbody><tr><td>1</td><td>학습</td><td><code>train_v2_torch.py --kr 400 --us 400 --copy-to ..\stock_infomation_backend\models\signal</code></td></tr><tr><td>2</td><td>정답 덤프</td><td>base 환경에서 <code>export_onnx.py --skip-export --model-dir saved_models_v2_400 --dump 005930,AAPL</code></td></tr><tr><td>3</td><td>백엔드 재빌드·재시작</td><td>새 <code>models/signal</code>을 물고 뜨는지 확인</td></tr><tr><td>4</td><td>대조</td><td><code>compare_java.py</code> - 신호 위치와 확률이 파이썬과 같은지</td></tr></tbody></table>
 <p>나머지 메모.</p>
 <ul>
-<li>파이프라인 스크립트는 전부 <strong>DB에 직접 붙는다.</strong> 백엔드가 떠 있어야 하는 건 <code>compare_java.py</code> 하나뿐이다</li>
-<li><code>saved_models_v2*/</code> 와 <code>models/</code> 는 gitignore. 대신 <strong>Docker 배포 이미지에는 <code>models/signal</code>을 꼭 포함</strong>해야 한다</li>
+<li>파이프라인 스크립트는 전부 DB에 직접 붙는다. 백엔드가 떠 있어야 하는 건 <code>compare_java.py</code> 하나뿐이다</li>
+<li><code>saved_models_v2*/</code> 와 <code>models/</code> 는 gitignore. 대신 Docker 배포 이미지에는 <code>models/signal</code>을 꼭 포함해야 한다</li>
 </ul>
 <p>유니버스 prune, 나스닥100 목록 캐시, 미국 캔들 백필처럼 모델과 상관없는 운영 항목은 <a href="/post/stockanalyst-data-pipeline">데이터 파이프라인 글</a>로 모아 뒀다.</p>
 <h2>정리</h2>
 <p>이번 작업에서 실제로 배운 것은 모델이 아니라 셋이다.</p>
 <ol>
-<li><strong>안 해도 되는 계산을 빠르게 만들지 말 것.</strong> 배치 최적화는 잘 만든 낭비였다</li>
-<li><strong>이상 동작의 원인을 데이터에서 먼저 찾지 말 것.</strong> 국내 신호 붕괴는 학습이 아니라 임계값 목표가 도달 불가능해서였다</li>
-<li><strong>평가를 모델보다 먼저 의심할 것.</strong> 그리고 평가가 정직해지면 대개 좋은 소식이 아니라 상한을 알려준다</li>
+<li>안 해도 되는 계산을 빠르게 만들지 말 것. 배치 최적화는 잘 만든 낭비였다</li>
+<li>이상 동작의 원인을 데이터에서 먼저 찾지 말 것. 국내 신호 붕괴는 학습이 아니라 임계값 목표가 도달 불가능해서였다</li>
+<li>평가를 모델보다 먼저 의심할 것. 그리고 평가가 정직해지면 대개 좋은 소식이 아니라 상한을 알려준다</li>
 </ol>
 <p>가격만 보는 모델의 상한을 확인했으니, 다음은 뉴스 감성과 수급 데이터를 입력으로 넣는 쪽이다. 아직 손대지 않았고, 그 사이에 한 일은 <a href="/post/stockanalyst-dev-log-3-signals-rates">개발기 (3)</a>에 있다.</p>
-</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-oci-deploy">StockAnalyst OCI 무료 티어 배포 준비 - 홈 리전, 요청 수 병목, ARM 빌드, 유휴 회수</a><p>주식 분석 서비스를 오라클 클라우드 Always Free에 올리기까지의 판단 기록. 2026년 6월에 반토막 난 A1 스펙, 홈 리전이 춘천이면 A1을 못 쓴다는 되돌릴 수 없는 제약, 관리형 MySQL 대신 직접 설치를 고른 세 가지 이유, 용량이 아니라 요청 수가 먼저 바닥나는 Object Storage, 유휴 인스턴스 회수, aarch64 빌드 함정, mem_limit 없는 컨테이너에서 JVM이 호스트를 노리는 문제.</p><span class="pr-meta">2026.09.04</span></li><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-risk-analysis">StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAnalyst 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-4-deploy">StockAnalyst 개발기 (4) - 클라우드 견적을 내다 집에 서버를 올린 기록</a><p>주식 분석 서비스를 실제로 배포한 기록. OCI 무료 티어가 계속 용량 부족으로 막혀 유료까지 전부 견적을 냈고, 결국 데이터가 이미 있는 집 PC 로 갔다. mem_limit 을 근거를 세워 다시 계산하고, Cloudflare Tunnel 로 포트를 열지 않고 공개하고, TLS 종단 때문에 OAuth 가 깨지던 문제와 MySQL 이 두 개가 되는 사고를 잡았다.</p><span class="pr-meta">2026.09.05</span></li><li><a href="/post/stockanalyst-oci-deploy">StockAnalyst OCI 무료 티어 배포 준비 - 홈 리전, 요청 수 병목, ARM 빌드, 유휴 회수</a><p>주식 분석 서비스를 오라클 클라우드 Always Free에 올리기까지의 판단 기록. 2026년 6월에 반토막 난 A1 스펙, 홈 리전이 춘천이면 A1을 못 쓴다는 되돌릴 수 없는 제약, 관리형 MySQL 대신 직접 설치를 고른 세 가지 이유, 용량이 아니라 요청 수가 먼저 바닥나는 Object Storage, 유휴 인스턴스 회수, aarch64 빌드 함정, mem_limit 없는 컨테이너에서 JVM이 호스트를 노리는 문제.</p><span class="pr-meta">2026.09.04</span></li><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
   </body>
 </html>

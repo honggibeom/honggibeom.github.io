@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-05-20" />
 <meta property="article:section" content="Spring" />
@@ -93,19 +93,19 @@
 <p>Spring 공부 로드맵 시리즈 4편. 1~<a href="/post/spring-03-mvc">3편</a>에서 빈 등록과 MVC 설정을 손으로 짚었다. 이번엔 그 손작업이 왜 대부분 사라졌는지, 그리고 필요할 때 어떻게 되돌리는지를 본다.</p>
 </blockquote>
 <h2>Boot는 무엇을 대신해주는가</h2>
-<p>Spring Boot는 별개의 프레임워크가 아니다. <strong>의존성 묶음 + 자동 설정 + 내장 서버</strong>를 얹어서, 원래는 손으로 하던 조립을 대신해주는 층이다. 그래서 Core와 MVC를 먼저 본 다음에 Boot를 보면 "아, 이걸 안 써도 되게 해준 거구나"가 명확해진다.</p>
+<p>Spring Boot는 별개의 프레임워크가 아니다. 의존성 묶음 + 자동 설정 + 내장 서버를 얹어서, 원래는 손으로 하던 조립을 대신해주는 층이다. 그래서 Core와 MVC를 먼저 본 다음에 Boot를 보면 "아, 이걸 안 써도 되게 해준 거구나"가 명확해진다.</p>
 <h2>1. 자동 설정의 원리</h2>
 <ul>
 <li><code>@SpringBootApplication</code> = <code>@SpringBootConfiguration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code></li>
 <li><code>META-INF/spring/...AutoConfiguration.imports</code>로 후보 설정 클래스를 읽는다 (2.7 이전에는 <code>spring.factories</code>였고, 자동 설정 용도로는 3.0에서 제거됐다)</li>
 <li><code>@Conditional</code> 계열이 "적용할지 말지"를 결정한다
 <ul>
-<li><code>@ConditionalOnClass</code> — 클래스패스에 그 라이브러리가 있으면</li>
-<li><code>@ConditionalOnMissingBean</code> — 내가 직접 등록한 빈이 없으면</li>
-<li><code>@ConditionalOnProperty</code> — 설정값이 특정 값이면</li>
+<li><code>@ConditionalOnClass</code> - 클래스패스에 그 라이브러리가 있으면</li>
+<li><code>@ConditionalOnMissingBean</code> - 내가 직접 등록한 빈이 없으면</li>
+<li><code>@ConditionalOnProperty</code> - 설정값이 특정 값이면</li>
 </ul>
 </li>
-<li><strong>내가 빈을 직접 등록하면 자동 설정이 물러난다</strong>는 규칙이 핵심이다</li>
+<li>내가 빈을 직접 등록하면 자동 설정이 물러난다는 규칙이 핵심이다</li>
 <li>무엇이 적용됐는지 확인하는 법: <code>--debug</code> 실행 시 나오는 Condition Evaluation Report</li>
 </ul>
 <h2>2. 스타터와 의존성</h2>
@@ -118,9 +118,9 @@
 <ul>
 <li><code>application.yml</code> / <code>application.properties</code></li>
 <li>설정 우선순위: 명령행 인자 > 환경 변수 > 프로파일별 파일 > 기본 파일</li>
-<li><code>@Value</code> vs <code>@ConfigurationProperties</code> — 묶음 설정은 후자가 낫다</li>
+<li><code>@Value</code> vs <code>@ConfigurationProperties</code> - 묶음 설정은 후자가 낫다</li>
 <li>타입 안전 설정 + 검증 (<code>@Validated</code>)</li>
-<li><strong>민감 정보 관리</strong> — API 키를 yml에 그대로 커밋하지 않기, 환경 변수/시크릿 사용</li>
+<li>민감 정보 관리 - API 키를 yml에 그대로 커밋하지 않기, 환경 변수/시크릿 사용</li>
 </ul>
 <h2>4. 프로파일</h2>
 <ul>
@@ -131,7 +131,7 @@
 </ul>
 <h2>5. 내장 서버와 실행</h2>
 <ul>
-<li>내장 Tomcat(또는 Undertow, Jetty) — WAR 배포와의 차이</li>
+<li>내장 Tomcat(또는 Undertow, Jetty) - WAR 배포와의 차이</li>
 <li>실행 가능한 JAR의 구조와 <code>java -jar</code></li>
 <li>포트, 컨텍스트 패스, 커넥션·스레드 풀 설정</li>
 <li>애플리케이션 기동 훅: <code>ApplicationRunner</code>, <code>CommandLineRunner</code></li>
@@ -145,7 +145,7 @@
 <h2>7. 개발 편의</h2>
 <ul>
 <li>DevTools (자동 재시작)</li>
-<li>Actuator 맛보기 — <code>/actuator/health</code>, <code>/actuator/env</code> (자세한 건 운영 편에서)</li>
+<li>Actuator 맛보기 - <code>/actuator/health</code>, <code>/actuator/env</code> (자세한 건 운영 편에서)</li>
 <li>Lombok과 그 한계 (과용하지 않기)</li>
 </ul>
 <h2>체크리스트</h2>

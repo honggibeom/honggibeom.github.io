@@ -25,8 +25,8 @@ ORDER BY    (6)          (6) ORDER BY
 
 결론 두 가지.
 
-- `SELECT`에서 붙인 별칭은 `WHERE` / `GROUP BY` / `HAVING`에서 **쓸 수 없다.** `SELECT`가 나중에 실행되기 때문이다.
-- `ORDER BY`에서는 **쓸 수 있다.** `SELECT` 다음에 실행되기 때문이다.
+- `SELECT`에서 붙인 별칭은 `WHERE` / `GROUP BY` / `HAVING`에서 쓸 수 없다. `SELECT`가 나중에 실행되기 때문이다.
+- `ORDER BY`에서는 쓸 수 있다. `SELECT` 다음에 실행되기 때문이다.
 
 ```sql
 SELECT salary * 12 AS annual_salary
@@ -98,8 +98,8 @@ WHERE (department_id = 20 OR department_id = 30) AND salary >= 5000000 -- 맞음
 
 ### LIKE
 
-- `%` — 0글자 이상
-- `_` — 정확히 1글자
+- `%` - 0글자 이상
+- `_` - 정확히 1글자
 
 와일드카드 자체를 찾으려면 `ESCAPE`를 쓴다.
 
@@ -111,7 +111,7 @@ WHERE code LIKE 'A\_%' ESCAPE '\'   -- 'A_'로 시작하는 것
 
 ### NULL
 
-오라클에서 가장 많이 실수하는 부분이다. NULL은 "값이 없음"이지 0도 빈 문자열도 아니다. **NULL과의 모든 비교 연산은 참도 거짓도 아닌 UNKNOWN**이다.
+오라클에서 가장 많이 실수하는 부분이다. NULL은 "값이 없음"이지 0도 빈 문자열도 아니다. NULL과의 모든 비교 연산은 참도 거짓도 아닌 UNKNOWN이다.
 
 ```sql
 WHERE commission_pct = NULL      -- 아무것도 안 나온다
@@ -142,7 +142,7 @@ ORDER BY 2 DESC                          -- SELECT 목록의 2번째 (권장하�
 ORDER BY salary DESC NULLS LAST          -- NULL 위치 지정
 ```
 
-**오라클의 NULL 정렬 기본값**: `ASC`면 NULL이 마지막, `DESC`면 NULL이 처음이다. 다른 DB와 반대인 경우가 많아서 `NULLS FIRST` / `NULLS LAST`를 명시하는 게 안전하다.
+오라클의 NULL 정렬 기본값: `ASC`면 NULL이 마지막, `DESC`면 NULL이 처음이다. 다른 DB와 반대인 경우가 많아서 `NULLS FIRST` / `NULLS LAST`를 명시하는 게 안전하다.
 
 한글은 기본적으로 유니코드 코드 포인트 순으로 정렬된다. 사전 순이 필요하면 `NLSSORT`를 쓴다.
 
@@ -174,7 +174,7 @@ FETCH FIRST 3 ROWS WITH TIES;
 
 ### 11g 이하 (ROWNUM)
 
-`ROWNUM`은 **결과 행이 확정될 때마다 1부터 붙는 의사 컬럼**이다. 여기에 함정이 있다.
+`ROWNUM`은 결과 행이 확정될 때마다 1부터 붙는 의사 컬럼이다. 여기에 함정이 있다.
 
 ```sql
 -- 연봉 상위 3명? 아니다.
@@ -204,7 +204,7 @@ SELECT * FROM (
 WHERE rn > 10;
 ```
 
-`ROWNUM > 1` 같은 조건은 **절대 참이 될 수 없다.** 첫 행이 조건을 만족해야 1번이 확정되는데, 조건 자체가 그걸 막기 때문이다.
+`ROWNUM > 1` 같은 조건은 절대 참이 될 수 없다. 첫 행이 조건을 만족해야 1번이 확정되는데, 조건 자체가 그걸 막기 때문이다.
 
 ## 단일행 함수 - 문자
 
@@ -212,7 +212,7 @@ WHERE rn > 10;
 | --- | --- | --- |
 | `UPPER` / `LOWER` / `INITCAP` | 대소문자 | `INITCAP('hello world')` → `Hello World` |
 | `LENGTH` / `LENGTHB` | 문자 수 / 바이트 수 | `LENGTHB('한글')` → 6 |
-| `SUBSTR(s, pos, len)` | 부분 문자열, **1부터 시작** | `SUBSTR('20260831', 5, 2)` → `08` |
+| `SUBSTR(s, pos, len)` | 부분 문자열, 1부터 시작 | `SUBSTR('20260831', 5, 2)` → `08` |
 | `INSTR(s, sub, pos, n)` | 위치 찾기, 없으면 0 | `INSTR('a@b.com','@')` → 2 |
 | `REPLACE(s, from, to)` | 치환 | `REPLACE('a-b-c','-','')` → `abc` |
 | `TRANSLATE(s, from, to)` | 문자 1:1 치환 | `TRANSLATE('abc','ab','xy')` → `xyc` |
@@ -268,7 +268,7 @@ SELECT TRUNC(1234.5678, -3) FROM dual;  -- 1000
 
 ## 단일행 함수 - 날짜
 
-`DATE`끼리 빼면 **일 수(숫자)** 가 나온다. 여기에 소수점이 붙는다는 게 포인트다.
+`DATE`끼리 빼면 일 수(숫자) 가 나온다. 여기에 소수점이 붙는다는 게 포인트다.
 
 ```sql
 SELECT SYSDATE - hire_date FROM employees;   -- 근무 일수 (소수 포함)
@@ -279,7 +279,7 @@ SELECT TRUNC(SYSDATE - hire_date) FROM employees;
 | --- | --- |
 | `SYSDATE` | DB 서버 시각 (DATE) |
 | `SYSTIMESTAMP` | DB 서버 시각 (TIMESTAMP, 타임존 포함) |
-| `CURRENT_DATE` | **세션** 타임존 기준 시각 |
+| `CURRENT_DATE` | 세션 타임존 기준 시각 |
 | `ADD_MONTHS(d, n)` | n개월 후 |
 | `MONTHS_BETWEEN(d1, d2)` | 개월 차 (소수 포함) |
 | `NEXT_DAY(d, '월요일')` | 다음 요일 |
@@ -300,7 +300,7 @@ SELECT TRUNC(SYSDATE, 'HH')    FROM dual;  -- 정시
 
 `ADD_MONTHS`는 말일 보정을 해준다. `2026-01-31`에 1개월을 더하면 `2026-02-28`이다.
 
-날짜 산술의 단위는 **일**이다.
+날짜 산술의 단위는 일이다.
 
 ```sql
 SYSDATE + 1          -- 하루 뒤
@@ -342,7 +342,7 @@ SELECT TO_CHAR(SYSDATE, 'DAY', 'NLS_DATE_LANGUAGE=KOREAN') FROM dual;
 | `MI` / `SS` | 분 / 초 |
 | `Q` / `WW` / `IW` | 분기 / 주 / ISO 주 |
 
-**`MM`과 `MI`를 헷갈리면 안 된다.** `HH:MM:SS`로 쓰면 분 자리에 월이 나온다. 실제로 자주 나오는 버그다.
+`MM`과 `MI`를 헷갈리면 안 된다. `HH:MM:SS`로 쓰면 분 자리에 월이 나온다. 실제로 자주 나오는 버그다.
 
 ### TO_CHAR - 숫자
 
@@ -353,9 +353,9 @@ SELECT TO_CHAR(1234567,     'L999,999,999')    FROM dual;  -- 통화 기호
 SELECT TO_CHAR(0.35,        'FM990.00')        FROM dual;  -- '0.35'
 ```
 
-- `9` — 자리 없으면 공백
-- `0` — 자리 없으면 0으로 채움
-- `FM` — 앞뒤 공백 제거 (양수 부호 자리)
+- `9` - 자리 없으면 공백
+- `0` - 자리 없으면 0으로 채움
+- `FM` - 앞뒤 공백 제거 (양수 부호 자리)
 
 ### TO_DATE / TO_NUMBER
 
@@ -381,7 +381,7 @@ WHERE emp_no = 1001
 WHERE emp_no = '1001'   -- 이렇게 타입을 맞춘다
 ```
 
-문자와 숫자를 비교하면 **문자 쪽이 숫자로 변환**된다. 이 방향을 기억해두면 인덱스가 안 먹는 원인을 빨리 찾을 수 있다.
+문자와 숫자를 비교하면 문자 쪽이 숫자로 변환된다. 이 방향을 기억해두면 인덱스가 안 먹는 원인을 빨리 찾을 수 있다.
 
 ## NULL 처리 함수
 
@@ -402,7 +402,7 @@ SELECT emp_name,
 FROM   employees;
 ```
 
-`NVL`은 인자 타입이 달라도 암시적으로 변환해 넘어가지만 두 인자를 **모두 평가**한다. `COALESCE`는 앞에서부터 필요한 만큼만 평가하고 멈추며 인자 개수 제한도 없어서, 인자가 두 개여도 `COALESCE`를 쓰는 습관이 나쁘지 않다.
+`NVL`은 인자 타입이 달라도 암시적으로 변환해 넘어가지만 두 인자를 모두 평가한다. `COALESCE`는 앞에서부터 필요한 만큼만 평가하고 멈추며 인자 개수 제한도 없어서, 인자가 두 개여도 `COALESCE`를 쓰는 습관이 나쁘지 않다.
 
 ## 조건 함수
 
@@ -469,7 +469,7 @@ ORDER  BY e.salary DESC NULLS LAST;
 
 - 실행 순서는 `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY`. 별칭은 `ORDER BY`에서만 쓸 수 있다
 - NULL 비교는 `IS NULL`, 연산에 NULL이 끼면 결과도 NULL, `NOT IN (…, NULL)`은 항상 공집합
-- 오라클은 `ASC`에서 NULL이 뒤로 간다 — `NULLS FIRST/LAST`를 명시하자
+- 오라클은 `ASC`에서 NULL이 뒤로 간다 - `NULLS FIRST/LAST`를 명시하자
 - 행 제한은 12c부터 `FETCH FIRST`, 이전에는 인라인 뷰 + `ROWNUM`
 - `DATE` 비교는 `>= 시작 AND < 다음시작`
 - 날짜 포맷의 분은 `MI`다 (`MM`은 월)

@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-06-21" />
 <meta property="article:section" content="Spring" />
@@ -93,12 +93,12 @@
 <p>Spring 공부 로드맵 시리즈 6편. <a href="/post/spring-05-jpa">5편</a>에서 영속성 컨텍스트가 언제 flush 되는지를 봤다. 그 경계를 실제로 긋는 게 트랜잭션이고, <a href="/post/spring-02-aop">2편</a>의 프록시가 여기서 다시 등장한다.</p>
 </blockquote>
 <h2>애노테이션 하나의 무게</h2>
-<p><code>@Transactional</code>은 붙이기는 쉬운데 <strong>정확히 어디서 시작해 어디서 끝나는지</strong>를 모르면 데이터 정합성이 조용히 깨진다. 게다가 이건 AOP 프록시로 동작하므로, 2편에서 본 프록시 이야기가 그대로 다시 나온다.</p>
+<p><code>@Transactional</code>은 붙이기는 쉬운데 정확히 어디서 시작해 어디서 끝나는지를 모르면 데이터 정합성이 조용히 깨진다. 게다가 이건 AOP 프록시로 동작하므로, 2편에서 본 프록시 이야기가 그대로 다시 나온다.</p>
 <h2>1. 기본 개념</h2>
 <ul>
 <li>ACID와 트랜잭션의 경계</li>
 <li>선언적 트랜잭션(<code>@Transactional</code>) vs 프로그래밍 방식(<code>TransactionTemplate</code>)</li>
-<li>트랜잭션은 보통 <strong>서비스 계층</strong>에 건다 — 왜 컨트롤러나 리포지토리가 아닌지</li>
+<li>트랜잭션은 보통 서비스 계층에 건다 - 왜 컨트롤러나 리포지토리가 아닌지</li>
 <li><code>PlatformTransactionManager</code>, JPA에서는 <code>JpaTransactionManager</code></li>
 </ul>
 <h2>2. 전파 속성 (propagation)</h2>
@@ -142,7 +142,7 @@
 
 <table><thead><tr><th>속성</th><th>동작</th></tr></thead><tbody><tr><td>REQUIRED (기본)</td><td>있으면 참여, 없으면 새로 시작</td></tr><tr><td>REQUIRES_NEW</td><td>항상 새 트랜잭션, 기존 것은 잠시 보류</td></tr><tr><td>SUPPORTS</td><td>있으면 참여, 없으면 트랜잭션 없이</td></tr><tr><td>NOT_SUPPORTED</td><td>트랜잭션 없이 실행</td></tr><tr><td>MANDATORY</td><td>없으면 예외</td></tr><tr><td>NEVER</td><td>있으면 예외</td></tr><tr><td>NESTED</td><td>세이브포인트 기반 중첩</td></tr></tbody></table>
 <ul>
-<li>로그 기록처럼 <strong>본 작업이 롤백돼도 남겨야 하는 것</strong>에 REQUIRES_NEW를 쓴다</li>
+<li>로그 기록처럼 본 작업이 롤백돼도 남겨야 하는 것에 REQUIRES_NEW를 쓴다</li>
 <li>내부 트랜잭션에서 예외가 나면 외부까지 rollback-only로 마킹되는 현상 (<code>UnexpectedRollbackException</code>)</li>
 </ul>
 <h2>3. 격리 수준 (isolation)</h2>
@@ -154,14 +154,14 @@
 </ul>
 <h2>4. 롤백 규칙 - 자주 틀리는 부분</h2>
 <ul>
-<li>기본적으로 <strong>unchecked(RuntimeException)와 Error만 롤백</strong>된다</li>
+<li>기본적으로 unchecked(RuntimeException)와 Error만 롤백된다</li>
 <li>checked 예외는 기본적으로 롤백되지 않는다 → <code>rollbackFor</code> 지정 필요</li>
 <li>예외를 <code>try-catch</code>로 삼켜버리면 롤백은 일어나지 않는다</li>
 <li><code>readOnly = true</code>의 의미와 이점(플러시 생략, 성능)</li>
 </ul>
 <h2>5. 트랜잭션이 안 걸리는 경우</h2>
 <ul>
-<li><strong>self-invocation</strong>: 같은 클래스 내부 호출은 프록시를 거치지 않는다</li>
+<li>self-invocation: 같은 클래스 내부 호출은 프록시를 거치지 않는다</li>
 <li><code>private</code> / <code>final</code> 메서드에 붙인 경우</li>
 <li>빈이 아닌 객체에서 호출한 경우</li>
 <li>트랜잭션 매니저가 여러 개인데 지정하지 않은 경우</li>
@@ -169,7 +169,7 @@
 </ul>
 <h2>6. 실무 감각</h2>
 <ul>
-<li>트랜잭션 범위는 <strong>짧게</strong>. 외부 API 호출을 트랜잭션 안에 넣지 않기</li>
+<li>트랜잭션 범위는 짧게. 외부 API 호출을 트랜잭션 안에 넣지 않기</li>
 <li>커넥션 풀 고갈과 긴 트랜잭션의 관계</li>
 <li>이벤트 기반 후처리: <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code></li>
 <li>배치성 작업에서의 청크 단위 커밋</li>

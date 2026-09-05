@@ -11,7 +11,7 @@ summary: Spring Security 정리. 설정을 외우는 방식으로는 반드시 �
 
 ## 구조를 먼저
 
-Spring Security를 어렵게 만드는 건 문법이 아니라 **어디에 무엇이 끼어드는지 안 보인다는 점**이다. 그래서 설정 예제를 복사하기 전에 필터체인이라는 골격부터 잡아야 한다.
+Spring Security를 어렵게 만드는 건 문법이 아니라 어디에 무엇이 끼어드는지 안 보인다는 점이다. 그래서 설정 예제를 복사하기 전에 필터체인이라는 골격부터 잡아야 한다.
 
 핵심 구조는 이렇다.
 
@@ -28,12 +28,12 @@ Spring Security를 어렵게 만드는 건 문법이 아니라 **어디에 무�
  → DispatcherServlet
 ```
 
-정리하면 Security는 **MVC 앞단의 필터 뭉치**다. 그래서 필터 단계에서 던진 예외는 `@ControllerAdvice`로 잡히지 않고 `AuthenticationEntryPoint` / `AccessDeniedHandler`가 받는다 — 이 사실 하나만 알아도 삽질이 크게 준다. (반대로 `@PreAuthorize` 같은 메서드 보안 예외는 컨트롤러 안쪽에서 나므로 `@ControllerAdvice`로 잡힌다.)
+정리하면 Security는 MVC 앞단의 필터 뭉치다. 그래서 필터 단계에서 던진 예외는 `@ControllerAdvice`로 잡히지 않고 `AuthenticationEntryPoint` / `AccessDeniedHandler`가 받는다 - 이 사실 하나만 알아도 삽질이 크게 준다. (반대로 `@PreAuthorize` 같은 메서드 보안 예외는 컨트롤러 안쪽에서 나므로 `@ControllerAdvice`로 잡힌다.)
 
 ## 1. 인증과 인가 구분
 
-- **인증(Authentication)**: 너는 누구인가
-- **인가(Authorization)**: 너는 이걸 해도 되는가
+- 인증(Authentication): 너는 누구인가
+- 인가(Authorization): 너는 이걸 해도 되는가
 - `SecurityContextHolder` → `SecurityContext` → `Authentication` → `Principal`, `GrantedAuthority`
 - `SecurityContextHolder`가 ThreadLocal 기반이라는 점과, 비동기 작업에서 컨텍스트가 안 넘어가는 문제
 
@@ -43,7 +43,7 @@ JWT로 바로 가지 말고 세션 기반 폼 로그인을 먼저 굴려보는 �
 
 - `SecurityFilterChain` 빈으로 설정하기 (5.7부터 권장, `WebSecurityConfigurerAdapter`는 6.0에서 제거)
 - `UserDetailsService`와 `UserDetails` 구현
-- `PasswordEncoder` — BCrypt, 평문 저장 금지
+- `PasswordEncoder` - BCrypt, 평문 저장 금지
 - `AuthenticationManager`, `AuthenticationProvider`의 역할
 - 로그인 성공/실패 핸들러
 - 세션 관리, 동시 세션 제어, 로그아웃

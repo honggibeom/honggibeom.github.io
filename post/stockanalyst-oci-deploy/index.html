@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-09-04" />
 <meta property="article:section" content="StockAnalyst" />
@@ -91,15 +91,15 @@
 <h1>StockAnalyst OCI 무료 티어 배포 준비 - 홈 리전, 요청 수 병목, ARM 빌드, 유휴 회수</h1>
 <p class="pr-meta">2026.09.04 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/oci">#oci</a> <a href="/tags/%EB%B0%B0%ED%8F%AC">#배포</a> <a href="/tags/docker">#docker</a> <a href="/tags/%EC%9D%B8%ED%94%84%EB%9D%BC">#인프라</a> <a href="/tags/arm">#arm</a></p>
 <blockquote>
-<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 전체 구조는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있고, 이 글은 그것을 오라클 클라우드 Always Free 티어에 올리기로 하고 <strong>준비하면서 내린 판단들을 근거와 함께 남긴 기록</strong>이다. "이렇게 하면 됩니다" 가이드가 아니다.</p>
+<p>StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 전체 구조는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있고, 이 글은 그것을 오라클 클라우드 Always Free 티어에 올리기로 하고 준비하면서 내린 판단들을 근거와 함께 남긴 기록이다. "이렇게 하면 됩니다" 가이드가 아니다.</p>
 </blockquote>
-<p><strong>한눈에 보기</strong></p>
+<p>한눈에 보기</p>
 <ul>
-<li>인터넷에 도는 "A1 4 OCPU / 24 GB"는 옛날 값이다. 2026년 6월에 <strong>2 OCPU / 12 GB</strong>로 반토막 났다</li>
-<li><strong>홈 리전이 춘천이면 A1을 아예 못 만든다.</strong> 그리고 홈 리전은 되돌릴 수 없다. 여기서 막히면 나머지가 무의미하다</li>
-<li>관리형 MySQL 대신 직접 설치. 결정적인 이유는 용량이 아니라 <strong>백업 보관 1일 · PITR 없음</strong>이었다</li>
-<li>진짜 병목은 용량이 아니라 <strong>Object Storage 요청 50,000건/월 = 하루 83 페이지뷰</strong></li>
-<li>걱정한 CPU·메모리는 12 GB 중 8.75 GB로 여유. <strong>짐작한 병목과 실제 병목이 달랐다</strong></li>
+<li>인터넷에 도는 "A1 4 OCPU / 24 GB"는 옛날 값이다. 2026년 6월에 2 OCPU / 12 GB로 반토막 났다</li>
+<li>홈 리전이 춘천이면 A1을 아예 못 만든다. 그리고 홈 리전은 되돌릴 수 없다. 여기서 막히면 나머지가 무의미하다</li>
+<li>관리형 MySQL 대신 직접 설치. 결정적인 이유는 용량이 아니라 백업 보관 1일 · PITR 없음이었다</li>
+<li>진짜 병목은 용량이 아니라 Object Storage 요청 50,000건/월 = 하루 83 페이지뷰</li>
+<li>걱정한 CPU·메모리는 12 GB 중 8.75 GB로 여유. 짐작한 병목과 실제 병목이 달랐다</li>
 </ul>
 <p>구성은 이렇다.</p>
 
@@ -131,11 +131,11 @@
 
 
 
-<table><thead><tr><th>구성요소</th><th>내용</th></tr></thead><tbody><tr><td>백엔드</td><td>Spring Boot 4, JDK 17</td></tr><tr><td>프론트</td><td>React 19 + Vite + Tailwind v4</td></tr><tr><td>DB</td><td>MySQL 8 (약 1.7 GB, 일봉 950만 행)</td></tr><tr><td>캐시</td><td>Redis 7</td></tr><tr><td>배치</td><td>파이썬 — 시세·뉴스·공매도 수집, ONNX 감성 분석</td></tr></tbody></table>
-<p>트래픽이 많은 서비스가 아니다. <a href="/post/stockanalyst-data-pipeline">한국투자증권 API 호출 제한</a>에 묶여 있어서 애초에 폭주할 수가 없는 구조다. 그래서 "무료 티어로 충분한가"보다 **"무료 티어의 제약 중 뭐가 진짜로 발목을 잡는가"**가 핵심 질문이었다.</p>
+<table><thead><tr><th>구성요소</th><th>내용</th></tr></thead><tbody><tr><td>백엔드</td><td>Spring Boot 4, JDK 17</td></tr><tr><td>프론트</td><td>React 19 + Vite + Tailwind v4</td></tr><tr><td>DB</td><td>MySQL 8 (약 1.7 GB, 일봉 950만 행)</td></tr><tr><td>캐시</td><td>Redis 7</td></tr><tr><td>배치</td><td>파이썬 - 시세·뉴스·공매도 수집, ONNX 감성 분석</td></tr></tbody></table>
+<p>트래픽이 많은 서비스가 아니다. <a href="/post/stockanalyst-data-pipeline">한국투자증권 API 호출 제한</a>에 묶여 있어서 애초에 폭주할 수가 없는 구조다. 그래서 "무료 티어로 충분한가"보다 "무료 티어의 제약 중 뭐가 진짜로 발목을 잡는가"가 핵심 질문이었다.</p>
 <p>결론부터 말하면, 발목을 잡은 건 CPU도 메모리도 아니었다.</p>
-<h2>1. 먼저 정정 — A1 스펙이 2026년 6월에 반토막 났다</h2>
-<p>인터넷에 돌아다니는 OCI 무료 티어 글은 대부분 "Ampere A1 4 OCPU / 24 GB 무료"라고 쓰여 있다. <strong>지금은 아니다.</strong></p>
+<h2>1. 먼저 정정 - A1 스펙이 2026년 6월에 반토막 났다</h2>
+<p>인터넷에 돌아다니는 OCI 무료 티어 글은 대부분 "Ampere A1 4 OCPU / 24 GB 무료"라고 쓰여 있다. 지금은 아니다.</p>
 
 
 
@@ -161,18 +161,18 @@
 
 
 
-<table><thead><tr><th></th><th>예전 (대부분의 글)</th><th>현재 (2026-06-15~)</th></tr></thead><tbody><tr><td>Ampere A1</td><td>4 OCPU / 24 GB</td><td><strong>2 OCPU / 12 GB</strong></td></tr><tr><td>OCPU-시간</td><td>3,000/월</td><td><strong>1,500/월</strong></td></tr><tr><td>GB-시간</td><td>18,000/월</td><td><strong>9,000/월</strong></td></tr></tbody></table>
-<p>오라클이 별도 공지 없이 문서만 고쳤다. 기존에 만들어 둔 인스턴스는 유지되지만, <strong>종료하면 그 스펙으로는 다시 못 만든다.</strong></p>
+<table><thead><tr><th></th><th>예전 (대부분의 글)</th><th>현재 (2026-06-15~)</th></tr></thead><tbody><tr><td>Ampere A1</td><td>4 OCPU / 24 GB</td><td>2 OCPU / 12 GB</td></tr><tr><td>OCPU-시간</td><td>3,000/월</td><td>1,500/월</td></tr><tr><td>GB-시간</td><td>18,000/월</td><td>9,000/월</td></tr></tbody></table>
+<p>오라클이 별도 공지 없이 문서만 고쳤다. 기존에 만들어 둔 인스턴스는 유지되지만, 종료하면 그 스펙으로는 다시 못 만든다.</p>
 <p>무료 티어 글을 읽을 때는 작성일부터 확인하는 게 좋다. 이 글의 숫자도 2026년 9월 기준이다.</p>
 <h2>2. 홈 리전이 모든 걸 결정한다</h2>
 <p>가장 먼저 확인해야 할 항목인데 의외로 언급하는 글이 없다. 오라클 공식 문서에 이런 두 문장이 있다.</p>
 <blockquote>
-<p>Always Free 컴퓨트 인스턴스는 <strong>홈 리전에 생성해야 한다.</strong></p>
-<p>A1 인스턴스는 어느 가용 도메인에서도 만들 수 있다 — <strong>South Korea North(춘천)은 예외.</strong></p>
+<p>Always Free 컴퓨트 인스턴스는 홈 리전에 생성해야 한다.</p>
+<p>A1 인스턴스는 어느 가용 도메인에서도 만들 수 있다 - South Korea North(춘천)은 예외.</p>
 </blockquote>
-<p>두 문장을 겹치면 결론이 나온다. <strong>홈 리전이 춘천이면 A1을 아예 못 쓴다.</strong> 그리고 홈 리전은 테넌시를 만들 때 정해지고 나중에 바꾸는 게 사실상 불가능하다.</p>
+<p>두 문장을 겹치면 결론이 나온다. 홈 리전이 춘천이면 A1을 아예 못 쓴다. 그리고 홈 리전은 테넌시를 만들 때 정해지고 나중에 바꾸는 게 사실상 불가능하다.</p>
 <svg viewBox="0 0 760 132" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="홈 리전이 춘천이면 A1을 만들 수 없고 그 결정은 되돌릴 수 없다">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">가장 먼저 확인할 것 — 되돌릴 수 없는 유일한 제약</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">가장 먼저 확인할 것 - 되돌릴 수 없는 유일한 제약</text>
 <rect x="0" y="30" width="200" height="66" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
 <text x="100" y="56" font-size="13" fill="var(--color-text)" text-anchor="middle">테넌시 홈 리전</text>
 <text x="100" y="74" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">생성 때 정해지고 못 바꾼다</text>
@@ -190,8 +190,8 @@
 </svg>
 <p>내 계정은 홈 리전이 오사카(Japan Central)라 통과했다. 한국에서 오사카는 RTT 30~40ms 수준이라 웹 응답에 체감될 정도는 아니다. 배치가 한국투자증권·KRX를 국외에서 호출하게 되지만, 어차피 호출 제한에 묶여 있어서 영향이 없다.</p>
 <p>콘솔 우측 상단 리전 메뉴에서 <code>(Home)</code> 표시부터 확인하자. 다른 모든 항목은 나중에 고칠 수 있지만 이건 아니다.</p>
-<h2>3. 가장 오래 고민한 결정 — DB를 어디에 둘 것인가</h2>
-<p>오라클은 <strong>MySQL HeatWave Database Service</strong>라는 관리형 MySQL을 Always Free로 준다. 인스턴스에 직접 설치하는 것과 어느 쪽이 나은지가 제일 어려운 판단이었다.</p>
+<h2>3. 가장 오래 고민한 결정 - DB를 어디에 둘 것인가</h2>
+<p>오라클은 MySQL HeatWave Database Service라는 관리형 MySQL을 Always Free로 준다. 인스턴스에 직접 설치하는 것과 어느 쪽이 나은지가 제일 어려운 판단이었다.</p>
 
 
 
@@ -237,23 +237,23 @@
 
 
 
-<table><thead><tr><th></th><th>A1에 직접 설치</th><th>MySQL HeatWave Always Free</th></tr></thead><tbody><tr><td>CPU</td><td>A1의 2 OCPU 공유</td><td><strong>1 ECPU</strong> (<code>MySQL.Free</code> shape)</td></tr><tr><td>용량</td><td>블록스토리지 200 GB 내 자유</td><td><strong>50 GB 고정</strong></td></tr><tr><td>백업</td><td>직접 구성</td><td>자동, 단 <strong>보관 1일 · PITR 없음</strong></td></tr><tr><td>HA</td><td>없음</td><td>없음 (standalone만)</td></tr><tr><td>리전</td><td>인스턴스와 동일</td><td>홈 리전 전용</td></tr><tr><td>튜닝</td><td>자유</td><td>대부분 잠김</td></tr><tr><td>인스턴스 회수 시</td><td><strong>같이 날아감</strong></td><td>살아남음</td></tr></tbody></table>
+<table><thead><tr><th></th><th>A1에 직접 설치</th><th>MySQL HeatWave Always Free</th></tr></thead><tbody><tr><td>CPU</td><td>A1의 2 OCPU 공유</td><td>1 ECPU (<code>MySQL.Free</code> shape)</td></tr><tr><td>용량</td><td>블록스토리지 200 GB 내 자유</td><td>50 GB 고정</td></tr><tr><td>백업</td><td>직접 구성</td><td>자동, 단 보관 1일 · PITR 없음</td></tr><tr><td>HA</td><td>없음</td><td>없음 (standalone만)</td></tr><tr><td>리전</td><td>인스턴스와 동일</td><td>홈 리전 전용</td></tr><tr><td>튜닝</td><td>자유</td><td>대부분 잠김</td></tr><tr><td>인스턴스 회수 시</td><td>같이 날아감</td><td>살아남음</td></tr></tbody></table>
 <h3>처음엔 용량 때문에 직접 설치라고 생각했다</h3>
-<p>10년치 일봉이 쌓여 있으니 50 GB로는 모자랄 거라 짐작했다. 재봤더니 <strong>1.69 GB</strong>였다. 50 GB의 3.4%다.</p>
+<p>10년치 일봉이 쌓여 있으니 50 GB로는 모자랄 거라 짐작했다. 재봤더니 1.69 GB였다. 50 GB의 3.4%다.</p>
 <pre><code class="language-sql">SELECT table_schema, ROUND(SUM(data_length+index_length)/1024/1024/1024, 2) AS gb
 FROM information_schema.tables GROUP BY table_schema;
 </code></pre>
-<p>10년치가 이미 다 들어간 상태에서 1.69 GB면 일일 증분은 종목당 한 행씩이라 연간 수백 MB 수준이다. 50 GB는 수십 년치다. <strong>용량 논거는 완전히 틀렸다.</strong> 짐작으로 아키텍처를 정하면 안 된다는 걸 확인한 셈이다.</p>
+<p>10년치가 이미 다 들어간 상태에서 1.69 GB면 일일 증분은 종목당 한 행씩이라 연간 수백 MB 수준이다. 50 GB는 수십 년치다. 용량 논거는 완전히 틀렸다. 짐작으로 아키텍처를 정하면 안 된다는 걸 확인한 셈이다.</p>
 <h3>그래서 진짜 이유는 세 가지로 좁혀졌다</h3>
-<p><strong>하나, <code>MySQL.Free</code>는 1 ECPU다.</strong> 야간 배치가 수천 종목의 일봉을 대량 UPSERT하는데 여기서 느려진다. 반면 A1에 직접 올리면 <code>innodb_buffer_pool_size=2G</code>로 1.7 GB짜리 DB가 통째로 램에 올라간다. 디스크를 거의 안 친다.</p>
-<p><strong>둘, 백업 보관이 1일이고 PITR이 없다.</strong> 이게 더 컸다. 잘못된 배치가 데이터를 망가뜨렸는데 이틀 뒤에 알아채면 복구할 방법이 없다. 직접 설치하면 <code>mysqldump</code> gzip이 300~400 MB라 Object Storage 20 GB에 두 달치를 쌓을 수 있다. 관리형은 보관 기간을 늘리는 옵션 자체가 없다.</p>
-<p><strong>셋, <code>docker-compose.yml</code>이 이미 그 구성이다.</strong> mysql + redis + backend + frontend가 다 들어 있고 로컬에서 동작한다(<a href="/post/stockanalyst-infra-oci">함정 네 개를 잡은 기록</a>). 그대로 A1에 올리면 추가 작업이 거의 없다. 관리형으로 가면 compose에서 mysql을 빼고, 접속 정보를 환경변수로 갈아끼우고, VCN 보안목록을 손봐야 한다. 얻는 것에 비해 품이 든다.</p>
-<p><strong>결정: A1에 직접 설치.</strong> 다만 관리형의 장점 하나는 진짜다 — 인스턴스가 회수돼도 DB가 살아있다는 것. 이건 6절에서 따로 대응한다.</p>
+<p>하나, <code>MySQL.Free</code>는 1 ECPU다. 야간 배치가 수천 종목의 일봉을 대량 UPSERT하는데 여기서 느려진다. 반면 A1에 직접 올리면 <code>innodb_buffer_pool_size=2G</code>로 1.7 GB짜리 DB가 통째로 램에 올라간다. 디스크를 거의 안 친다.</p>
+<p>둘, 백업 보관이 1일이고 PITR이 없다. 이게 더 컸다. 잘못된 배치가 데이터를 망가뜨렸는데 이틀 뒤에 알아채면 복구할 방법이 없다. 직접 설치하면 <code>mysqldump</code> gzip이 300~400 MB라 Object Storage 20 GB에 두 달치를 쌓을 수 있다. 관리형은 보관 기간을 늘리는 옵션 자체가 없다.</p>
+<p>셋, <code>docker-compose.yml</code>이 이미 그 구성이다. mysql + redis + backend + frontend가 다 들어 있고 로컬에서 동작한다(<a href="/post/stockanalyst-infra-oci">함정 네 개를 잡은 기록</a>). 그대로 A1에 올리면 추가 작업이 거의 없다. 관리형으로 가면 compose에서 mysql을 빼고, 접속 정보를 환경변수로 갈아끼우고, VCN 보안목록을 손봐야 한다. 얻는 것에 비해 품이 든다.</p>
+<p>결정: A1에 직접 설치. 다만 관리형의 장점 하나는 진짜다 - 인스턴스가 회수돼도 DB가 살아있다는 것. 이건 6절에서 따로 대응한다.</p>
 <h2>4. 로드밸런서는 안 쓴다</h2>
-<p>Always Free에 Flexible LB가 하나 포함되는데 <strong>10 Mbps 제한</strong>이 걸려 있다. 이미지가 섞인 페이지에서는 답답해질 수 있는 대역폭이다.</p>
+<p>Always Free에 Flexible LB가 하나 포함되는데 10 Mbps 제한이 걸려 있다. 이미지가 섞인 페이지에서는 답답해질 수 있는 대역폭이다.</p>
 <p>DNS를 인스턴스 공인 IP에 바로 붙이고 nginx + certbot으로 TLS를 끝내면 이 제한을 아예 우회한다. 아웃바운드는 월 10 TB까지 무료라 여유가 많다. 인스턴스가 하나뿐인 구성에서 LB는 부하 분산도 못 하니 실익이 없다.</p>
 <h2>5. 진짜 병목은 Object Storage 요청 수였다</h2>
-<p>용량이 아니라 <strong>요청 수</strong>다.</p>
+<p>용량이 아니라 요청 수다.</p>
 
 
 
@@ -271,7 +271,7 @@ FROM information_schema.tables GROUP BY table_schema;
 
 
 
-<table><thead><tr><th></th><th>한도</th></tr></thead><tbody><tr><td>Object Storage 용량</td><td>20 GB</td></tr><tr><td><strong>API 요청</strong></td><td><strong>50,000건/월</strong></td></tr></tbody></table>
+<table><thead><tr><th></th><th>한도</th></tr></thead><tbody><tr><td>Object Storage 용량</td><td>20 GB</td></tr><tr><td>API 요청</td><td>50,000건/월</td></tr></tbody></table>
 <p>뉴스 목록 한 페이지에 이미지가 20장이면 조회 1회당 20 요청이다. 계산하면 이렇게 된다.</p>
 
 
@@ -294,12 +294,12 @@ FROM information_schema.tables GROUP BY table_schema;
 
 
 
-<table><thead><tr><th>가정</th><th>계산</th></tr></thead><tbody><tr><td>페이지뷰당 이미지 20장</td><td>요청 20건</td></tr><tr><td>월 50,000건 ÷ 30일</td><td>하루 약 1,667건</td></tr><tr><td>÷ 20</td><td><strong>하루 83 페이지뷰</strong>로 한도가 끝난다</td></tr></tbody></table>
+<table><thead><tr><th>가정</th><th>계산</th></tr></thead><tbody><tr><td>페이지뷰당 이미지 20장</td><td>요청 20건</td></tr><tr><td>월 50,000건 ÷ 30일</td><td>하루 약 1,667건</td></tr><tr><td>÷ 20</td><td>하루 83 페이지뷰로 한도가 끝난다</td></tr></tbody></table>
 <p>이미지 수천 장을 넣어도 20 GB는 남아도는데, 요청 수가 먼저 바닥난다.</p>
-<p>그래서 뉴스 이미지는 자체 스토리지에 복사하지 않고 <strong>원본 <code>og:image</code> URL을 그대로 임베드</strong>한다. 로드에 실패하면(<code>onError</code>) 서비스 로고로 대체한다. 이 결정을 내린 경위와 저작권 쪽 근거는 <a href="/post/stockanalyst-infra-oci">인프라 글</a>에 적었는데, 무료 티어 계산을 해보고 나니 같은 결론이 다른 이유로 한 번 더 맞았다.</p>
+<p>그래서 뉴스 이미지는 자체 스토리지에 복사하지 않고 원본 <code>og:image</code> URL을 그대로 임베드한다. 로드에 실패하면(<code>onError</code>) 서비스 로고로 대체한다. 이 결정을 내린 경위와 저작권 쪽 근거는 <a href="/post/stockanalyst-infra-oci">인프라 글</a>에 적었는데, 무료 티어 계산을 해보고 나니 같은 결론이 다른 이유로 한 번 더 맞았다.</p>
 <p>결과적으로 Object Storage는 야간 <code>mysqldump</code> 백업 용도로만 쓰게 됐다. 덤프는 하루 한 번이라 요청 수에 영향이 없다.</p>
 <h2>6. Always Free 컴퓨트는 놀고 있으면 회수된다</h2>
-<p><strong>7일간 CPU·네트워크·메모리 사용률이 낮으면 오라클이 인스턴스를 회수한다.</strong> 개인 프로젝트는 상시 트래픽이 없으니 정통으로 맞는 조건이다.</p>
+<p>7일간 CPU·네트워크·메모리 사용률이 낮으면 오라클이 인스턴스를 회수한다. 개인 프로젝트는 상시 트래픽이 없으니 정통으로 맞는 조건이다.</p>
 <p>DB를 인스턴스에 직접 올리기로 한 이상 이건 곧 데이터 위험이다. 3절에서 관리형 MySQL을 진지하게 고민한 유일한 이유이기도 했다. 대응은 세 겹으로 잡았다.</p>
 
 
@@ -329,7 +329,7 @@ FROM information_schema.tables GROUP BY table_schema;
 <table><thead><tr><th>#</th><th>대응</th><th>무엇을 막나</th></tr></thead><tbody><tr><td>1</td><td>헬스체크 cron</td><td>주기적으로 CPU를 깨워 유휴 판정을 피한다</td></tr><tr><td>2</td><td>야간 <code>mysqldump</code> → Object Storage</td><td>인스턴스를 잃어도 새로 띄워 복구</td></tr><tr><td>3</td><td>블록볼륨 백업 5개를 DB 볼륨에 배정</td><td>볼륨 단위 롤백</td></tr></tbody></table>
 <p>핵심은 2번이다. 덤프가 있으면 인스턴스 회수는 "복구 작업"이지 "데이터 손실"이 아니다. 1번은 회수를 늦추는 것뿐이고 보장은 아니다.</p>
 <h2>7. ARM이라 빌드 위치가 중요하다</h2>
-<p>A1은 aarch64다. <strong>윈도우에서 빌드한 이미지는 안 뜬다.</strong> A1 위에서 직접 빌드하거나 <code>docker buildx build --platform linux/arm64</code>를 써야 한다.</p>
+<p>A1은 aarch64다. 윈도우에서 빌드한 이미지는 안 뜬다. A1 위에서 직접 빌드하거나 <code>docker buildx build --platform linux/arm64</code>를 써야 한다.</p>
 <p>호환성은 미리 확인해 뒀다.</p>
 
 
@@ -360,10 +360,10 @@ FROM information_schema.tables GROUP BY table_schema;
 
 
 
-<table><thead><tr><th></th><th>arm64 지원</th></tr></thead><tbody><tr><td>JDK 17 (Temurin/Corretto)</td><td>지원</td></tr><tr><td><code>mysql:8.0</code>, <code>redis:7-alpine</code> 공식 이미지</td><td>지원</td></tr><tr><td>Vite — <code>@rolldown/binding-linux-arm64-gnu</code></td><td>지원</td></tr><tr><td>Tailwind v4 — <code>@tailwindcss/oxide-linux-arm64-gnu</code></td><td>지원</td></tr><tr><td>배치 — pandas, numpy, pymysql, FinanceDataReader</td><td>지원</td></tr></tbody></table>
-<p>여기서 한 가지 함정이 있다. <strong>호스트의 <code>node_modules</code>를 이미지에 복사하면 안 된다.</strong> 윈도우에서 설치된 rolldown·tailwind 네이티브 바인딩이 리눅스에서 안 맞는다. <code>.dockerignore</code>로 제외하고 이미지 안에서 <code>npm ci</code>를 돌려야 한다. <a href="/post/stockanalyst-frontend-rebuild">프론트를 Vite로 옮길 때</a> 이미 한 번 밟은 함정인데, 아키텍처가 바뀌니 같은 자리에서 또 걸릴 뻔했다.</p>
+<table><thead><tr><th></th><th>arm64 지원</th></tr></thead><tbody><tr><td>JDK 17 (Temurin/Corretto)</td><td>지원</td></tr><tr><td><code>mysql:8.0</code>, <code>redis:7-alpine</code> 공식 이미지</td><td>지원</td></tr><tr><td>Vite - <code>@rolldown/binding-linux-arm64-gnu</code></td><td>지원</td></tr><tr><td>Tailwind v4 - <code>@tailwindcss/oxide-linux-arm64-gnu</code></td><td>지원</td></tr><tr><td>배치 - pandas, numpy, pymysql, FinanceDataReader</td><td>지원</td></tr></tbody></table>
+<p>여기서 한 가지 함정이 있다. 호스트의 <code>node_modules</code>를 이미지에 복사하면 안 된다. 윈도우에서 설치된 rolldown·tailwind 네이티브 바인딩이 리눅스에서 안 맞는다. <code>.dockerignore</code>로 제외하고 이미지 안에서 <code>npm ci</code>를 돌려야 한다. <a href="/post/stockanalyst-frontend-rebuild">프론트를 Vite로 옮길 때</a> 이미 한 번 밟은 함정인데, 아키텍처가 바뀌니 같은 자리에서 또 걸릴 뻔했다.</p>
 <h2>8. 메모리 제한을 안 걸어두면 JVM이 호스트를 노린다</h2>
-<p><code>docker-compose.yml</code>을 다시 보니 <strong><code>mem_limit</code>가 하나도 없었다.</strong> 그런데 Dockerfile에는 이렇게 들어 있다.</p>
+<p><code>docker-compose.yml</code>을 다시 보니 <code>mem_limit</code>가 하나도 없었다. 그런데 Dockerfile에는 이렇게 들어 있다.</p>
 <pre><code class="language-dockerfile">-XX:MaxRAMPercentage=70
 </code></pre>
 <p>컨테이너에 제한이 없으면 JVM이 인식하는 "가용 메모리"가 호스트 전체가 된다. 12 GB의 70%면 8.4 GB를 힙으로 잡으려 든다. MySQL과 Redis가 같이 도는 12 GB 머신에서 이러면 OOM이다. 로컬에서는 램이 넉넉해서 드러나지 않던 문제다.</p>
@@ -379,8 +379,8 @@ FROM information_schema.tables GROUP BY table_schema;
 <rect x="538.3" y="30" width="13.8" height="30" rx="4" fill="var(--color-border-strong)" opacity="0.55"></rect>
 <rect x="554.2" y="30" width="203.8" height="30" rx="4" fill="var(--color-border)" opacity="0.55"></rect>
 <text x="657.1" y="50" font-size="12" fill="var(--color-text)" text-anchor="middle">여유 3.25G</text>
-<text x="0" y="84" font-size="12" fill="var(--color-text-dim)">backend 4 GB — JVM 힙 약 2.5 GB</text>
-<text x="0" y="102" font-size="12" fill="var(--color-text-dim)">mysql 3 GB — innodb_buffer_pool_size=2G, DB 1.7 GB가 통째로 램에</text>
+<text x="0" y="84" font-size="12" fill="var(--color-text-dim)">backend 4 GB - JVM 힙 약 2.5 GB</text>
+<text x="0" y="102" font-size="12" fill="var(--color-text-dim)">mysql 3 GB - innodb_buffer_pool_size=2G, DB 1.7 GB가 통째로 램에</text>
 <text x="0" y="120" font-size="12" fill="var(--color-text-dim)">배치 1 GB · redis 512 MB(maxmemory 256mb) · nginx 256 MB</text>
 <text x="0" y="138" font-size="12" fill="var(--color-text-dim)">합계 약 8.75 GB / 12 GB</text>
 </svg>
@@ -424,19 +424,19 @@ FROM information_schema.tables GROUP BY table_schema;
 
 
 
-<table><thead><tr><th>서비스</th><th>mem_limit</th><th>비고</th></tr></thead><tbody><tr><td>backend</td><td>4 GB</td><td>JVM 힙 약 2.5 GB</td></tr><tr><td>mysql</td><td>3 GB</td><td><code>innodb_buffer_pool_size=2G</code> — DB 1.7 GB가 통째로 램에</td></tr><tr><td>배치 (cron)</td><td>1 GB</td><td></td></tr><tr><td>redis</td><td>512 MB</td><td><code>maxmemory 256mb</code></td></tr><tr><td>frontend (nginx)</td><td>256 MB</td><td></td></tr><tr><td><strong>합계</strong></td><td><strong>약 8.75 GB / 12 GB</strong></td><td>여유 3.25 GB</td></tr></tbody></table>
+<table><thead><tr><th>서비스</th><th>mem_limit</th><th>비고</th></tr></thead><tbody><tr><td>backend</td><td>4 GB</td><td>JVM 힙 약 2.5 GB</td></tr><tr><td>mysql</td><td>3 GB</td><td><code>innodb_buffer_pool_size=2G</code> - DB 1.7 GB가 통째로 램에</td></tr><tr><td>배치 (cron)</td><td>1 GB</td><td></td></tr><tr><td>redis</td><td>512 MB</td><td><code>maxmemory 256mb</code></td></tr><tr><td>frontend (nginx)</td><td>256 MB</td><td></td></tr><tr><td>합계</td><td>약 8.75 GB / 12 GB</td><td>여유 3.25 GB</td></tr></tbody></table>
 <p>CPU·메모리는 결국 여유가 많다. 처음 걱정했던 것과 정반대였다.</p>
 <h2>9. 배포 전에 코드에서 고쳐야 했던 것</h2>
 <h3><code>ddl-auto</code></h3>
-<p>로컬 개발용으로 <code>update</code>를 쓰고 있었다. 운영에 이대로 올리면 엔티티를 수정할 때마다 스키마가 말없이 바뀐다. <code>create</code>였다면 <strong>재시작마다 전 테이블이 DROP</strong>되니 더 심각하다.</p>
+<p>로컬 개발용으로 <code>update</code>를 쓰고 있었다. 운영에 이대로 올리면 엔티티를 수정할 때마다 스키마가 말없이 바뀐다. <code>create</code>였다면 재시작마다 전 테이블이 DROP되니 더 심각하다.</p>
 <p><code>validate</code>로 바꾸고 스키마 변경은 Flyway로 관리하는 게 맞다. <code>validate</code>는 엔티티와 실제 스키마가 어긋나면 기동을 막아주기 때문에, 배포 후 스키마 드리프트를 조기에 잡아준다.</p>
 <h3>시크릿</h3>
-<p>외부 API 키와 DB 비밀번호가 설정 파일에 평문으로 있었고, 그게 그대로 jar에 들어가 도커 이미지에 구워지고 있었다. <strong>이미지를 공개 레지스트리에 올리는 순간 키가 공개된다.</strong> 파일 분리 자체는 <a href="/post/stockanalyst-security-config">보안과 설정 글</a>에서 이미 한 작업인데, 배포에서는 한 겹이 더 필요하다.</p>
-<p>환경변수나 <strong>OCI Vault</strong>(Always Free로 시크릿 150개)로 빼는 게 맞다. 그리고 커밋 이력에 올라간 적이 있는 키는 빼는 것만으로 부족하고 로테이션해야 한다.</p>
-<p>한 가지 더 배운 것 — 설정 파일의 값은 같은 이름의 환경변수로 항상 덮이지 않는다. <code>spring.datasource.password</code>가 파일에 리터럴로 있으면 임의로 정한 <code>DB_PASSWORD</code>로는 안 덮이고, 스프링 표준 키인 <code>SPRING_DATASOURCE_PASSWORD</code>로 줘야 우선순위가 먹는다.</p>
+<p>외부 API 키와 DB 비밀번호가 설정 파일에 평문으로 있었고, 그게 그대로 jar에 들어가 도커 이미지에 구워지고 있었다. 이미지를 공개 레지스트리에 올리는 순간 키가 공개된다. 파일 분리 자체는 <a href="/post/stockanalyst-security-config">보안과 설정 글</a>에서 이미 한 작업인데, 배포에서는 한 겹이 더 필요하다.</p>
+<p>환경변수나 OCI Vault(Always Free로 시크릿 150개)로 빼는 게 맞다. 그리고 커밋 이력에 올라간 적이 있는 키는 빼는 것만으로 부족하고 로테이션해야 한다.</p>
+<p>한 가지 더 배운 것 - 설정 파일의 값은 같은 이름의 환경변수로 항상 덮이지 않는다. <code>spring.datasource.password</code>가 파일에 리터럴로 있으면 임의로 정한 <code>DB_PASSWORD</code>로는 안 덮이고, 스프링 표준 키인 <code>SPRING_DATASOURCE_PASSWORD</code>로 줘야 우선순위가 먹는다.</p>
 <h2>10. 최종 구성</h2>
 <svg viewBox="0 0 760 208" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="A1 인스턴스 한 대에 nginx, Spring Boot, MySQL, Redis, 파이썬 배치가 올라가고 Object Storage는 백업만 받는다">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">최종 구성 — Ampere A1 한 대 (2 OCPU / 12 GB, Oracle Linux 9 aarch64)</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">최종 구성 - Ampere A1 한 대 (2 OCPU / 12 GB, Oracle Linux 9 aarch64)</text>
 <rect x="0" y="24" width="530" height="160" rx="10" fill="var(--color-text)" opacity="0.04"></rect>
 <rect x="14" y="38" width="250" height="50" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
 <text x="139.0" y="59" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">nginx</text>
@@ -457,26 +457,26 @@ FROM information_schema.tables GROUP BY table_schema;
 <rect x="564" y="100" width="196" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
 <text x="662" y="121" font-size="13" fill="var(--color-text)" text-anchor="middle">Object Storage</text>
 <text x="662" y="138" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">mysqldump 백업만</text>
-<text x="0" y="202" font-size="12" fill="var(--color-text-dim)">로드밸런서는 쓰지 않는다 — Always Free LB는 10 Mbps 제한이라 DNS를 공인 IP에 직접 붙이는 편이 빠르다</text>
+<text x="0" y="202" font-size="12" fill="var(--color-text-dim)">로드밸런서는 쓰지 않는다 - Always Free LB는 10 Mbps 제한이라 DNS를 공인 IP에 직접 붙이는 편이 빠르다</text>
 </svg>
 <h2>체크리스트</h2>
 <p>배포를 준비한다면 이 순서로 확인하면 된다. 위에서 아래로 갈수록 되돌리기 쉬워진다.</p>
 <ul class="contains-task-list">
-<li class="task-list-item"><input type="checkbox" disabled> <strong>홈 리전 확인</strong> — 춘천이면 A1을 못 쓴다. 여기서 막히면 나머지가 무의미</li>
-<li class="task-list-item"><input type="checkbox" disabled> A1 인스턴스 생성 — "Out of host capacity"가 자주 뜬다. 될 때까지 재시도</li>
+<li class="task-list-item"><input type="checkbox" disabled> 홈 리전 확인 - 춘천이면 A1을 못 쓴다. 여기서 막히면 나머지가 무의미</li>
+<li class="task-list-item"><input type="checkbox" disabled> A1 인스턴스 생성 - "Out of host capacity"가 자주 뜬다. 될 때까지 재시도</li>
 <li class="task-list-item"><input type="checkbox" disabled> <code>ddl-auto</code>를 <code>validate</code>로, 스키마는 Flyway로</li>
 <li class="task-list-item"><input type="checkbox" disabled> 시크릿을 환경변수/OCI Vault로 분리, 노출된 키 로테이션</li>
 <li class="task-list-item"><input type="checkbox" disabled> <code>docker-compose.yml</code>에 <code>mem_limit</code> 추가</li>
-<li class="task-list-item"><input type="checkbox" disabled> <code>.dockerignore</code>에 <code>node_modules</code> — ARM에서 네이티브 바인딩이 깨진다</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>.dockerignore</code>에 <code>node_modules</code> - ARM에서 네이티브 바인딩이 깨진다</li>
 <li class="task-list-item"><input type="checkbox" disabled> A1 위에서 빌드하거나 <code>buildx --platform linux/arm64</code></li>
 <li class="task-list-item"><input type="checkbox" disabled> <code>mysqldump</code> → A1 이관</li>
 <li class="task-list-item"><input type="checkbox" disabled> nginx + certbot TLS (LB는 10 Mbps 제한이라 생략)</li>
 <li class="task-list-item"><input type="checkbox" disabled> 야간 백업 cron + 유휴 회수 방지 헬스체크</li>
 </ul>
 <h2>마치며</h2>
-<p>준비하면서 제일 크게 배운 건 <strong>짐작한 병목과 실제 병목이 달랐다</strong>는 점이다.</p>
+<p>준비하면서 제일 크게 배운 건 짐작한 병목과 실제 병목이 달랐다는 점이다.</p>
 <svg viewBox="0 0 760 262" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="CPU 메모리와 DB 용량은 한도에 한참 못 미치는데 Object Storage 요청 수만 한도를 가득 채운다">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">각 한도를 얼마나 쓰는가 — 걱정한 축과 실제로 조이는 축</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">각 한도를 얼마나 쓰는가 - 걱정한 축과 실제로 조이는 축</text>
 <text x="0" y="46" font-size="13" fill="var(--color-text)" font-weight="600">CPU · 메모리</text>
 <text x="760" y="46" font-size="11" fill="var(--color-text-dim)" text-anchor="end">12 GB 중 8.75 GB 배분</text>
 <rect x="0" y="54" width="760" height="20" rx="5" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
@@ -499,13 +499,13 @@ FROM information_schema.tables GROUP BY table_schema;
 <ul>
 <li>걱정했던 CPU·메모리 → 12 GB 중 8.75 GB로 여유</li>
 <li>걱정했던 DB 용량 → 50 GB 한도의 3.4%</li>
-<li>실제 병목 → Object Storage <strong>요청 수</strong>, 그리고 홈 리전이라는 되돌릴 수 없는 제약</li>
+<li>실제 병목 → Object Storage 요청 수, 그리고 홈 리전이라는 되돌릴 수 없는 제약</li>
 </ul>
-<p>무료 티어는 "얼마나 주느냐"보다 **"어떤 축에서 조이느냐"**를 보는 게 맞다. 용량은 넉넉한데 요청 수로 조이고, CPU는 여유로운데 유휴 회수로 조이고, 리전은 아예 되돌릴 수가 없다.</p>
+<p>무료 티어는 "얼마나 주느냐"보다 "어떤 축에서 조이느냐"를 보는 게 맞다. 용량은 넉넉한데 요청 수로 조이고, CPU는 여유로운데 유휴 회수로 조이고, 리전은 아예 되돌릴 수가 없다.</p>
 <p>그리고 아키텍처 결정은 재보고 하자. DB 용량을 짐작으로 판단했다면 근거가 틀린 채로 결론만 우연히 맞는 상태가 됐을 것이다.</p>
 <blockquote>
 <p>이 글의 무료 티어 수치는 2026년 9월 기준이다. 오라클은 공지 없이 문서만 고친 전례가 있으니, 실제 진행 전에 오라클 공식 문서의 Always Free Resources 페이지에서 직접 확인하는 걸 권한다.</p>
 </blockquote>
-</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-risk-analysis">StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAnalyst 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-turning-point-model">StockAnalyst 변곡점 예측 - Keras 앙상블, 임계값 이진 탐색, 종목당 1분을 밀리초로</a><p>StockAnalyst 변곡점 예측 모델 기록. 40일 기술지표 창과 Keras 3개 앙상블, ZigZag 정답, 고점·저점을 따로 정하는 임계값 이진 탐색과 4단계 노이즈 필터, 그리고 종목당 1분 걸리던 예측을 64종목 묶음으로 바꿔 호출을 15,000번에서 240번으로 줄인 과정. (2026-09에 이 배치 구조는 삭제하고 온디맨드로 전환했다 — 후속 글 참고)</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-4-deploy">StockAnalyst 개발기 (4) - 클라우드 견적을 내다 집에 서버를 올린 기록</a><p>주식 분석 서비스를 실제로 배포한 기록. OCI 무료 티어가 계속 용량 부족으로 막혀 유료까지 전부 견적을 냈고, 결국 데이터가 이미 있는 집 PC 로 갔다. mem_limit 을 근거를 세워 다시 계산하고, Cloudflare Tunnel 로 포트를 열지 않고 공개하고, TLS 종단 때문에 OAuth 가 깨지던 문제와 MySQL 이 두 개가 되는 사고를 잡았다.</p><span class="pr-meta">2026.09.05</span></li><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-risk-analysis">StockAnalyst 위험분석 - 델타-노말 VaR, 250일 보유기간 버그, 몬테카를로, 시나리오와 시장 국면</a><p>StockAnalyst 위험분석 기록. EWMA 공분산 델타-노말 VaR, Cornish-Fisher 보정, Kupiec 백테스트, 보유기간 250일에서 VaR가 원금을 넘던 버그와 GBM 손실 모델, 베타·듀레이션 시나리오, SPY-금리 상관으로 시장 국면 판정까지.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
   </body>
 </html>

@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-04-07" />
 <meta property="article:section" content="Spring" />
@@ -94,19 +94,19 @@
 <p>Spring 공부 로드맵 시리즈 1편. <a href="/post/spring-00-java">0편</a>에서 인터페이스와 생성자만으로 의존성을 직접 뒤집어봤다. 이번엔 그 일을 대신해 주는 컨테이너 이야기다.</p>
 </blockquote>
 <h2>이 단계가 본체다</h2>
-<p>Spring의 정체는 사실 <strong>객체를 대신 만들어 관리해주는 컨테이너</strong>다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.</p>
+<p>Spring의 정체는 사실 객체를 대신 만들어 관리해주는 컨테이너다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.</p>
 <h2>1. IoC와 컨테이너</h2>
 <ul>
-<li><strong>제어의 역전(IoC)</strong>: 객체 생성과 조립의 권한을 내 코드가 아니라 컨테이너가 갖는다</li>
-<li><code>BeanFactory</code>와 <code>ApplicationContext</code>의 관계 — 실제로 쓰는 건 후자</li>
+<li>제어의 역전(IoC): 객체 생성과 조립의 권한을 내 코드가 아니라 컨테이너가 갖는다</li>
+<li><code>BeanFactory</code>와 <code>ApplicationContext</code>의 관계 - 실제로 쓰는 건 후자</li>
 <li>컨테이너가 하는 일: 빈 정의 읽기 → 인스턴스 생성 → 의존성 주입 → 초기화 콜백 → 사용 → 소멸</li>
-<li>빈(Bean)이란 무엇인가 — 그냥 컨테이너가 관리하는 객체</li>
+<li>빈(Bean)이란 무엇인가 - 그냥 컨테이너가 관리하는 객체</li>
 </ul>
 <h2>2. 빈 등록하는 세 가지 방법</h2>
 <ol>
-<li><strong>컴포넌트 스캔</strong>: <code>@Component</code>와 그 파생인 <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code></li>
-<li><strong>자바 설정</strong>: <code>@Configuration</code> 클래스 안의 <code>@Bean</code> 메서드 — 외부 라이브러리 객체를 등록할 때 필수</li>
-<li><strong>XML</strong>: 레거시 프로젝트를 읽을 때만 필요</li>
+<li>컴포넌트 스캔: <code>@Component</code>와 그 파생인 <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code></li>
+<li>자바 설정: <code>@Configuration</code> 클래스 안의 <code>@Bean</code> 메서드 - 외부 라이브러리 객체를 등록할 때 필수</li>
+<li>XML: 레거시 프로젝트를 읽을 때만 필요</li>
 </ol>
 <p><code>@ComponentScan</code>의 기본 범위가 어디인지(= <code>@SpringBootApplication</code>이 붙은 패키지 하위)를 반드시 알아둬야 한다. 빈을 못 찾는 문제의 절반이 여기서 나온다.</p>
 <p><code>@Configuration</code> 클래스가 프록시로 감싸져서 <code>@Bean</code> 메서드를 여러 번 호출해도 같은 객체가 나오는 것(<code>proxyBeanMethods</code>)도 확인해볼 만하다.</p>
@@ -146,14 +146,14 @@
 </ul>
 <h2>4. 스코프와 생명주기</h2>
 <ul>
-<li><strong>스코프</strong>: singleton(기본), prototype, request, session, application</li>
-<li>싱글턴 빈에 <strong>상태를 두면 안 되는 이유</strong> — 모든 요청이 같은 인스턴스를 공유한다</li>
+<li>스코프: singleton(기본), prototype, request, session, application</li>
+<li>싱글턴 빈에 상태를 두면 안 되는 이유 - 모든 요청이 같은 인스턴스를 공유한다</li>
 <li>싱글턴이 프로토타입을 주입받을 때 생기는 문제와 해법 (<code>ObjectProvider</code>, <code>@Lookup</code>)</li>
 <li>생명주기 콜백: <code>@PostConstruct</code> / <code>@PreDestroy</code>, <code>InitializingBean</code> / <code>DisposableBean</code></li>
 <li><code>@Lazy</code>가 필요한 경우</li>
 </ul>
 <h2>5. 순환 참조</h2>
-<p>A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 실패한다. 이건 Spring의 결함이 아니라 <strong>설계가 잘못됐다는 신호</strong>다.</p>
+<p>A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 실패한다. 이건 Spring의 결함이 아니라 설계가 잘못됐다는 신호다.</p>
 <ul>
 <li>왜 생기는지 (양방향 의존)</li>
 <li>푸는 법: 공통 로직을 제3의 빈으로 분리, 이벤트(<code>ApplicationEventPublisher</code>)로 뒤집기, 정말 급하면 <code>@Lazy</code></li>
@@ -161,9 +161,9 @@
 </ul>
 <h2>6. 그 밖에</h2>
 <ul>
-<li><code>ApplicationEventPublisher</code>와 <code>@EventListener</code> — 모듈 간 결합을 낮추는 도구</li>
+<li><code>ApplicationEventPublisher</code>와 <code>@EventListener</code> - 모듈 간 결합을 낮추는 도구</li>
 <li><code>Environment</code>와 프로파일별 빈 등록 (<code>@Profile</code>)</li>
-<li><code>@Conditional</code> 계열 — Boot 자동 설정의 기반이 된다</li>
+<li><code>@Conditional</code> 계열 - Boot 자동 설정의 기반이 된다</li>
 </ul>
 <h2>체크리스트</h2>
 <ul class="contains-task-list">

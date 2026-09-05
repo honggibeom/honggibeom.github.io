@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2025-09-14" />
 <meta property="article:section" content="Oracle" />
@@ -92,7 +92,7 @@
 <p class="pr-meta">2025.09.14 · <a href="/tags/oracle">#oracle</a> <a href="/tags/sql">#sql</a> <a href="/tags/%EB%B6%84%EC%84%9D%ED%95%A8%EC%88%98">#분석함수</a> <a href="/tags/%EC%9C%88%EB%8F%84%EC%9A%B0%ED%95%A8%EC%88%98">#윈도우함수</a> <a href="/tags/connectby">#connectby</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
 <p><a href="/post/oracle-04-subquery">4편</a>까지가 서브쿼리를 겹겹이 쌓아 원하는 결과를 만드는 법이었다면, 이번 편은 그 겹을 걷어내는 도구다. 분석 함수(윈도우 함수)를 알기 전과 후는 SQL 실력이 다르다. 그전에는 인라인 뷰와 조인을 몇 겹씩 쌓아야 했던 것들이 한 줄로 끝난다.</p>
 <h2>집계 함수와 무엇이 다른가</h2>
-<p><code>GROUP BY</code>로 집계하면 <strong>행이 줄어든다.</strong> 분석 함수는 <strong>행을 그대로 두고</strong> 옆에 계산 결과를 붙인다.</p>
+<p><code>GROUP BY</code>로 집계하면 행이 줄어든다. 분석 함수는 행을 그대로 두고 옆에 계산 결과를 붙인다.</p>
 <pre><code class="language-sql">-- 집계: 부서당 1행
 SELECT department_id, AVG(salary) FROM employees GROUP BY department_id;
 
@@ -107,11 +107,11 @@ FROM   employees;
 <pre><code>함수() OVER ( [PARTITION BY 컬럼...] [ORDER BY 컬럼...] [윈도우 절] )
 </code></pre>
 <ul>
-<li><strong><code>PARTITION BY</code></strong> — 계산을 나눌 그룹. 생략하면 전체가 한 그룹.</li>
-<li><strong><code>ORDER BY</code></strong> — 그룹 안에서의 순서. 순위·누적 계산에 필요하다.</li>
-<li><strong>윈도우 절</strong> — 현재 행을 기준으로 계산에 포함할 범위.</li>
+<li><code>PARTITION BY</code> - 계산을 나눌 그룹. 생략하면 전체가 한 그룹.</li>
+<li><code>ORDER BY</code> - 그룹 안에서의 순서. 순위·누적 계산에 필요하다.</li>
+<li>윈도우 절 - 현재 행을 기준으로 계산에 포함할 범위.</li>
 </ul>
-<p><code>SELECT</code> 절과 <code>ORDER BY</code> 절에만 쓸 수 있다. <strong><code>WHERE</code>에는 쓸 수 없다.</strong> 실행 순서상 <code>WHERE</code>가 먼저이기 때문이다. 순위로 거르려면 인라인 뷰로 한 겹 감싼다.</p>
+<p><code>SELECT</code> 절과 <code>ORDER BY</code> 절에만 쓸 수 있다. <code>WHERE</code>에는 쓸 수 없다. 실행 순서상 <code>WHERE</code>가 먼저이기 때문이다. 순위로 거르려면 인라인 뷰로 한 겹 감싼다.</p>
 <pre><code class="language-sql">SELECT * FROM (
   SELECT emp_name, salary,
          RANK() OVER (ORDER BY salary DESC) AS rnk
@@ -168,7 +168,7 @@ WHERE rnk &#x3C;= 3;
        NTILE(4)     OVER (ORDER BY salary DESC)                            AS 사분위
 FROM   employees;
 </code></pre>
-<p><code>ROW_NUMBER()</code>는 <strong>동점이어도 아무 기준으로나 순서를 정한다.</strong> 실행할 때마다 결과가 달라질 수 있으므로, 페이징처럼 결과가 안정적이어야 하는 곳에서는 <code>ORDER BY</code>에 유일 컬럼(예: PK)을 마지막에 추가한다.</p>
+<p><code>ROW_NUMBER()</code>는 동점이어도 아무 기준으로나 순서를 정한다. 실행할 때마다 결과가 달라질 수 있으므로, 페이징처럼 결과가 안정적이어야 하는 곳에서는 <code>ORDER BY</code>에 유일 컬럼(예: PK)을 마지막에 추가한다.</p>
 <pre><code class="language-sql">ROW_NUMBER() OVER (ORDER BY salary DESC, employee_id)
 </code></pre>
 <h3>그룹별 상위 N건 - 가장 많이 쓰는 패턴</h3>
@@ -200,7 +200,7 @@ FROM   employees;
 </code></pre>
 <p><code>OVER ()</code>처럼 비워두면 전체 행이 한 윈도우가 된다. "각 행이 전체에서 차지하는 비중"을 구할 때 이 형태를 쓴다.</p>
 <h3>ORDER BY를 붙이면 누적이 된다</h3>
-<p>여기가 중요한 지점이다. <code>OVER</code> 안에 <code>ORDER BY</code>가 들어가면 **기본 윈도우가 "처음부터 현재 행까지"**로 바뀐다.</p>
+<p>여기가 중요한 지점이다. <code>OVER</code> 안에 <code>ORDER BY</code>가 들어가면 기본 윈도우가 "처음부터 현재 행까지"로 바뀐다.</p>
 <pre><code class="language-sql">SELECT order_date, amount,
        SUM(amount) OVER (ORDER BY order_date, order_id) AS 누적매출
 FROM   orders
@@ -212,8 +212,8 @@ ORDER  BY order_date, order_id;
 <pre><code>{ROWS | RANGE} BETWEEN 시작 AND 끝
 </code></pre>
 <ul>
-<li><code>ROWS</code> — <strong>물리적 행 개수</strong> 기준</li>
-<li><code>RANGE</code> — <strong>값</strong> 기준 (동일 값 행을 하나로 묶는다)</li>
+<li><code>ROWS</code> - 물리적 행 개수 기준</li>
+<li><code>RANGE</code> - 값 기준 (동일 값 행을 하나로 묶는다)</li>
 </ul>
 <p>경계에 쓸 수 있는 키워드.</p>
 
@@ -292,7 +292,7 @@ FROM   m ORDER BY mon;
                                             AND UNBOUNDED FOLLOWING) AS 최저연봉자
 FROM   employees;
 </code></pre>
-<p><strong><code>LAST_VALUE</code>는 윈도우 절을 반드시 써야 한다.</strong> 기본 윈도우가 "현재 행까지"(<code>RANGE</code>)라서, 그냥 쓰면 자기 자신 — 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 — 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.</p>
+<p><code>LAST_VALUE</code>는 윈도우 절을 반드시 써야 한다. 기본 윈도우가 "현재 행까지"(<code>RANGE</code>)라서, 그냥 쓰면 자기 자신 - 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 - 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.</p>
 <p><code>IGNORE NULLS</code> 옵션도 있다. 결측치를 직전 값으로 채우는 데 유용하다.</p>
 <pre><code class="language-sql">LAST_VALUE(price IGNORE NULLS) OVER (ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 </code></pre>
@@ -321,7 +321,7 @@ START  WITH manager_id IS NULL          -- 루트
 CONNECT BY PRIOR employee_id = manager_id  -- 부모 → 자식 연결
 ORDER  SIBLINGS BY emp_name;
 </code></pre>
-<p>핵심은 <code>PRIOR</code>의 위치다. <strong><code>PRIOR</code>가 붙은 쪽이 "이전(부모) 행"</strong> 이다.</p>
+<p>핵심은 <code>PRIOR</code>의 위치다. <code>PRIOR</code>가 붙은 쪽이 "이전(부모) 행" 이다.</p>
 <pre><code class="language-sql">CONNECT BY PRIOR employee_id = manager_id   -- 하향식: 위에서 아래로
 CONNECT BY employee_id = PRIOR manager_id   -- 상향식: 아래에서 위로
 </code></pre>
@@ -399,8 +399,8 @@ PIVOT (
 ORDER BY department_id;
 </code></pre>
 <ul>
-<li>인라인 뷰에서 <strong>필요한 컬럼만 남겨야 한다.</strong> <code>PIVOT</code>은 명시되지 않은 나머지 컬럼 전부를 암묵적 <code>GROUP BY</code> 키로 쓰기 때문에, <code>SELECT *</code>로 넘기면 결과가 산산조각 난다.</li>
-<li><code>FOR ... IN</code>의 값 목록은 <strong>정적</strong>이다. 동적 컬럼이 필요하면 PL/SQL로 SQL 문자열을 만들어야 한다.</li>
+<li>인라인 뷰에서 필요한 컬럼만 남겨야 한다. <code>PIVOT</code>은 명시되지 않은 나머지 컬럼 전부를 암묵적 <code>GROUP BY</code> 키로 쓰기 때문에, <code>SELECT *</code>로 넘기면 결과가 산산조각 난다.</li>
+<li><code>FOR ... IN</code>의 값 목록은 정적이다. 동적 컬럼이 필요하면 PL/SQL로 SQL 문자열을 만들어야 한다.</li>
 </ul>
 <p><code>PIVOT</code> 문법 이전에는 <code>CASE</code> + 집계로 처리했고, 지금도 이 방식이 더 유연해서 자주 쓰인다.</p>
 <pre><code class="language-sql">SELECT department_id,
@@ -410,7 +410,7 @@ ORDER BY department_id;
 FROM   employees
 GROUP  BY department_id;
 </code></pre>
-<p><code>UNPIVOT</code>은 반대 방향이다. 가로로 퍼진 컬럼(1월, 2월, …)을 세로로 펴서 정규화할 때 쓴다.</p>
+<p><code>UNPIVOT</code>은 반대 방향이다. 가로로 퍼진 컬럼(1월, 2월, ...)을 세로로 펴서 정규화할 때 쓴다.</p>
 <pre><code class="language-sql">SELECT * FROM monthly_sales
 UNPIVOT (amount FOR mon IN (jan AS '01', feb AS '02', mar AS '03'));
 </code></pre>
@@ -418,7 +418,7 @@ UNPIVOT (amount FOR mon IN (jan AS '01', feb AS '02', mar AS '03'));
 <h2>정리</h2>
 <ul>
 <li>분석 함수는 행을 줄이지 않고 계산 결과를 붙인다</li>
-<li><code>OVER</code>는 <code>SELECT</code>와 <code>ORDER BY</code>에만 쓸 수 있다 — 조건으로 쓰려면 인라인 뷰로 감싼다</li>
+<li><code>OVER</code>는 <code>SELECT</code>와 <code>ORDER BY</code>에만 쓸 수 있다 - 조건으로 쓰려면 인라인 뷰로 감싼다</li>
 <li>그룹별 상위 N건 = <code>ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)</code> + 바깥 <code>WHERE</code></li>
 <li><code>OVER</code>에 <code>ORDER BY</code>를 넣으면 누적이 된다. 행 단위 누적은 <code>ROWS</code>를 명시</li>
 <li><code>LAST_VALUE</code>는 윈도우 절 없이 쓰면 자기 자신이 나온다</li>

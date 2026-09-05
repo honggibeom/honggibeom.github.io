@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-04-20" />
 <meta property="article:section" content="Spring" />
@@ -93,35 +93,35 @@
 <p>Spring 공부 로드맵 시리즈 2편. <a href="/post/spring-01-core-di">1편</a>에서 컨테이너가 빈을 만들어 넣어준다는 걸 봤다. 이번엔 그 빈이 사실 내가 짠 객체가 아닐 수도 있다는 이야기다.</p>
 </blockquote>
 <h2>왜 따로 한 편을 쓰나</h2>
-<p>AOP는 "로깅 편하게 하는 기능" 정도로 배우고 넘어가기 쉽다. 그런데 Spring에서 자주 겪는 미스터리 — <code>@Transactional</code>이 안 먹는다, <code>@Cacheable</code>이 무시된다, 스택 트레이스에 낯선 클래스명이 나온다 — 는 전부 여기서 설명된다.</p>
+<p>AOP는 "로깅 편하게 하는 기능" 정도로 배우고 넘어가기 쉽다. 그런데 Spring에서 자주 겪는 미스터리 - <code>@Transactional</code>이 안 먹는다, <code>@Cacheable</code>이 무시된다, 스택 트레이스에 낯선 클래스명이 나온다 - 는 전부 여기서 설명된다.</p>
 <h2>1. 횡단 관심사</h2>
 <ul>
-<li>로깅, 트랜잭션, 보안, 캐시, 성능 측정처럼 <strong>여러 계층에 흩어지는 공통 관심사</strong></li>
+<li>로깅, 트랜잭션, 보안, 캐시, 성능 측정처럼 여러 계층에 흩어지는 공통 관심사</li>
 <li>이걸 비즈니스 코드에서 떼어내는 게 AOP의 목적</li>
 <li>용어 정리: Aspect(관점), JoinPoint(끼어들 수 있는 지점), Pointcut(어디에), Advice(무엇을), Weaving(엮기)</li>
 </ul>
 <h2>2. Advice 종류</h2>
 <ul>
 <li><code>@Before</code>, <code>@AfterReturning</code>, <code>@AfterThrowing</code>, <code>@After</code></li>
-<li><code>@Around</code> — 가장 강력하다. <code>ProceedingJoinPoint.proceed()</code>로 원본 호출을 감싼다</li>
+<li><code>@Around</code> - 가장 강력하다. <code>ProceedingJoinPoint.proceed()</code>로 원본 호출을 감싼다</li>
 <li>실행 순서와 <code>@Order</code></li>
 </ul>
 <h2>3. 포인트컷 표현식</h2>
 <ul>
-<li><code>execution(...)</code> 표현식 읽는 법 — 접근제어자, 반환타입, 패키지, 클래스, 메서드, 파라미터</li>
+<li><code>execution(...)</code> 표현식 읽는 법 - 접근제어자, 반환타입, 패키지, 클래스, 메서드, 파라미터</li>
 <li><code>@annotation(...)</code>으로 특정 애노테이션이 붙은 메서드만 잡기</li>
 <li><code>within(...)</code>, <code>bean(...)</code></li>
 <li>커스텀 애노테이션을 만들고 그것만 잡는 방식이 실무에서 가장 깔끔하다</li>
 </ul>
 <h2>4. 프록시 - 여기가 핵심</h2>
-<p>Spring AOP는 <strong>런타임 프록시 기반</strong>이다. AspectJ처럼 바이트코드를 짜넣는 게 아니라, 컨테이너가 원본 빈 대신 <strong>감싼 객체</strong>를 등록한다.</p>
+<p>Spring AOP는 런타임 프록시 기반이다. AspectJ처럼 바이트코드를 짜넣는 게 아니라, 컨테이너가 원본 빈 대신 감싼 객체를 등록한다.</p>
 <ul>
-<li><strong>JDK 동적 프록시</strong>: 인터페이스가 있을 때, 인터페이스 기반으로 생성</li>
-<li><strong>CGLIB 프록시</strong>: 클래스를 상속해서 생성 (Spring Boot의 기본값)</li>
+<li>JDK 동적 프록시: 인터페이스가 있을 때, 인터페이스 기반으로 생성</li>
+<li>CGLIB 프록시: 클래스를 상속해서 생성 (Spring Boot의 기본값)</li>
 <li>CGLIB의 제약: <code>final</code> 클래스/메서드, <code>private</code>·<code>static</code> 메서드에는 못 건다 (기본 생성자가 필요하던 제약은 Spring 4.0의 Objenesis 도입으로 사라졌다)</li>
 </ul>
 <p>이 구조에서 나오는 대표적 함정 두 가지:</p>
-<p><strong>self-invocation (자기 호출)</strong></p>
+<p>self-invocation (자기 호출)</p>
 <pre><code class="language-java">@Service
 public class OrderService {
     public void outer() {
@@ -133,8 +133,8 @@ public class OrderService {
     }
 }
 </code></pre>
-<p><code>outer()</code>를 호출하면 <code>inner()</code>의 트랜잭션은 <strong>걸리지 않는다.</strong> 프록시를 거치지 않고 <code>this.inner()</code>가 호출되기 때문이다. 해법은 클래스를 분리하거나, 자기 자신을 주입받거나, <code>AopContext</code>를 쓰는 것.</p>
-<p><strong>private / final 메서드</strong></p>
+<p><code>outer()</code>를 호출하면 <code>inner()</code>의 트랜잭션은 걸리지 않는다. 프록시를 거치지 않고 <code>this.inner()</code>가 호출되기 때문이다. 해법은 클래스를 분리하거나, 자기 자신을 주입받거나, <code>AopContext</code>를 쓰는 것.</p>
+<p>private / final 메서드</p>
 <p>프록시가 오버라이드할 수 없으므로 AOP가 적용되지 않는다.</p>
 <h2>5. 직접 만들어보기</h2>
 <ul>

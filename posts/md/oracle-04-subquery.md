@@ -7,7 +7,7 @@ tags: [oracle, sql, 서브쿼리, merge, 학습노트]
 summary: 단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 자리별로 정리하고, NOT IN과 NULL의 함정, 집합 연산자, WITH 절, MERGE까지 다룬다.
 ---
 
-[3편](/post/oracle-03-group-join)에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, **어디에 놓이는가**와 **몇 행을 돌려주는가** 두 축으로 보면 정리된다.
+[3편](/post/oracle-03-group-join)에서 여러 행을 세로로 묶고 가로로 붙이는 법까지 봤다. 이번 편은 쿼리 자체를 조합하는 이야기다. 서브쿼리는 "쿼리 안의 쿼리"다. 분류가 여러 갈래로 나뉘어 헷갈리는데, 어디에 놓이는가와 몇 행을 돌려주는가 두 축으로 보면 정리된다.
 
 ## 놓이는 자리에 따른 분류
 
@@ -17,7 +17,7 @@ summary: 단일행·다중행·인라인 뷰·스칼라·상관 서브쿼리를 
 | `FROM` | 인라인 뷰 (Inline View) | 테이블처럼 쓴다 |
 | `SELECT` | 스칼라 서브쿼리 (Scalar) | 값 하나를 컬럼처럼 쓴다 |
 
-여기에 바깥 쿼리의 컬럼을 참조하면 **상관 서브쿼리(Correlated)** 라고 부른다.
+여기에 바깥 쿼리의 컬럼을 참조하면 상관 서브쿼리(Correlated) 라고 부른다.
 
 ## WHERE 절 서브쿼리
 
@@ -32,7 +32,7 @@ FROM   employees
 WHERE  salary > (SELECT AVG(salary) FROM employees);
 ```
 
-서브쿼리가 두 행 이상을 돌려주면 `ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다`가 난다. 개발할 때는 한 행이 나오다가 운영 데이터에서 두 행이 나오면서 터지는 게 전형적인 패턴이다. **한 행임이 보장되지 않으면 다중행 연산자를 쓴다.**
+서브쿼리가 두 행 이상을 돌려주면 `ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다`가 난다. 개발할 때는 한 행이 나오다가 운영 데이터에서 두 행이 나오면서 터지는 게 전형적인 패턴이다. 한 행임이 보장되지 않으면 다중행 연산자를 쓴다.
 
 ### 다중행 서브쿼리
 
@@ -70,7 +70,7 @@ SELECT department_name FROM departments
 WHERE  department_id NOT IN (SELECT department_id FROM employees);
 ```
 
-`employees.department_id`에 NULL이 **하나라도** 있으면 이 쿼리는 **한 건도 반환하지 않는다.** `NOT IN`은 `<> A AND <> B AND <> NULL`로 풀리고, 마지막 항이 UNKNOWN이라 전체가 절대 참이 되지 못한다.
+`employees.department_id`에 NULL이 하나라도 있으면 이 쿼리는 한 건도 반환하지 않는다. `NOT IN`은 `<> A AND <> B AND <> NULL`로 풀리고, 마지막 항이 UNKNOWN이라 전체가 절대 참이 되지 못한다.
 
 해결책 세 가지.
 
@@ -88,7 +88,7 @@ FROM   departments d LEFT JOIN employees e ON d.department_id = e.department_id
 WHERE  e.employee_id IS NULL;
 ```
 
-`NOT EXISTS`는 NULL에 영향을 받지 않는다. **`NOT IN`을 보면 반사적으로 NULL 가능성을 확인하는 습관**을 들이는 게 좋다.
+`NOT EXISTS`는 NULL에 영향을 받지 않는다. `NOT IN`을 보면 반사적으로 NULL 가능성을 확인하는 습관을 들이는 게 좋다.
 
 ### EXISTS
 
@@ -100,7 +100,7 @@ SELECT e.emp_name FROM employees e
 WHERE  EXISTS (SELECT 1 FROM orders o WHERE o.employee_id = e.employee_id);
 ```
 
-`EXISTS`는 조건을 만족하는 첫 행을 찾으면 즉시 멈춘다. 그래서 **자식 테이블이 크고 부모가 작을 때** 유리하다. 반대 상황이면 `IN`이 나을 수 있다. 요즘 옵티마이저는 상당 부분 알아서 변환해주지만, 원리는 알아두는 게 좋다.
+`EXISTS`는 조건을 만족하는 첫 행을 찾으면 즉시 멈춘다. 그래서 자식 테이블이 크고 부모가 작을 때 유리하다. 반대 상황이면 `IN`이 나을 수 있다. 요즘 옵티마이저는 상당 부분 알아서 변환해주지만, 원리는 알아두는 게 좋다.
 
 ### 다중 컬럼 서브쿼리
 
@@ -158,7 +158,7 @@ FROM   employees e;
 
 특징 세 가지.
 
-- 결과가 없으면 오류가 아니라 **NULL**이다. 외부 조인처럼 동작한다.
+- 결과가 없으면 오류가 아니라 NULL이다. 외부 조인처럼 동작한다.
 - 두 행 이상이면 `ORA-01427`이다.
 - 오라클은 스칼라 서브쿼리 결과를 캐시한다(입력값 → 결과). 그래서 값의 종류가 적으면 매우 빠르고, 값이 다양하면 행마다 실행돼 느려진다.
 
@@ -204,7 +204,7 @@ UNION ALL
 SELECT employee_id, emp_name FROM employees WHERE department_id = 30;
 ```
 
-**중복이 없다는 걸 아는 상황이면 반드시 `UNION ALL`을 쓴다.** `UNION`은 중복 제거를 위해 전체를 정렬하거나 해시한다. 습관적으로 `UNION`을 쓰는 것만 고쳐도 체감 성능이 달라지는 경우가 많다.
+중복이 없다는 걸 아는 상황이면 반드시 `UNION ALL`을 쓴다. `UNION`은 중복 제거를 위해 전체를 정렬하거나 해시한다. 습관적으로 `UNION`을 쓰는 것만 고쳐도 체감 성능이 달라지는 경우가 많다.
 
 `MINUS`는 표준의 `EXCEPT`에 해당하는 오라클 방언이다. 21c부터는 `EXCEPT`도 지원한다.
 
@@ -218,7 +218,7 @@ SELECT department_id FROM employees;
 주의할 점.
 
 - `ORDER BY`는 마지막 쿼리에만 한 번 쓴다.
-- 컬럼명은 **첫 번째 쿼리** 기준이다.
+- 컬럼명은 첫 번째 쿼리 기준이다.
 - 타입이 다르면 `ORA-01790`. 자리를 맞추려고 넣는 더미는 `NULL` 대신 `TO_CHAR(NULL)`처럼 캐스팅해두는 게 안전하다.
 
 ## WITH 절 (CTE)
@@ -277,7 +277,7 @@ WHEN NOT MATCHED THEN
 
 포인트.
 
-- `ON` 절의 컬럼은 `UPDATE SET`에서 **변경할 수 없다.**
+- `ON` 절의 컬럼은 `UPDATE SET`에서 변경할 수 없다.
 - `WHEN MATCHED THEN UPDATE ... DELETE WHERE ...`로 조건부 삭제도 붙일 수 있다.
 - `WHEN MATCHED`와 `WHEN NOT MATCHED` 중 하나만 써도 된다.
 - `USING`에 서브쿼리를 놓으면 대량 데이터를 한 번에 반영할 수 있다. 배치에서 이 형태를 가장 많이 쓴다.
@@ -296,8 +296,8 @@ WHEN NOT MATCHED THEN INSERT VALUES (s.department_id, s.cnt, s.tot);
 ## 정리
 
 - 서브쿼리는 위치(`WHERE`/`FROM`/`SELECT`)와 반환 행 수로 나눠 본다
-- 단일행 연산자에 다중행이 오면 `ORA-01427` — 확신 없으면 `IN`을 쓴다
-- **`NOT IN` + NULL = 공집합.** `NOT EXISTS`나 안티 조인으로 바꾼다
+- 단일행 연산자에 다중행이 오면 `ORA-01427` - 확신 없으면 `IN`을 쓴다
+- `NOT IN` + NULL = 공집합. `NOT EXISTS`나 안티 조인으로 바꾼다
 - 스칼라 서브쿼리는 결과 없으면 NULL, 캐시가 잘 들으면 빠르다
 - 중복이 없다면 `UNION`이 아니라 `UNION ALL`
 - 복잡한 쿼리는 `WITH`로 이름을 붙여 위에서 아래로 읽히게 만든다

@@ -11,13 +11,13 @@ summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규
 
 ## 애노테이션 하나의 무게
 
-`@Transactional`은 붙이기는 쉬운데 **정확히 어디서 시작해 어디서 끝나는지**를 모르면 데이터 정합성이 조용히 깨진다. 게다가 이건 AOP 프록시로 동작하므로, 2편에서 본 프록시 이야기가 그대로 다시 나온다.
+`@Transactional`은 붙이기는 쉬운데 정확히 어디서 시작해 어디서 끝나는지를 모르면 데이터 정합성이 조용히 깨진다. 게다가 이건 AOP 프록시로 동작하므로, 2편에서 본 프록시 이야기가 그대로 다시 나온다.
 
 ## 1. 기본 개념
 
 - ACID와 트랜잭션의 경계
 - 선언적 트랜잭션(`@Transactional`) vs 프로그래밍 방식(`TransactionTemplate`)
-- 트랜잭션은 보통 **서비스 계층**에 건다 — 왜 컨트롤러나 리포지토리가 아닌지
+- 트랜잭션은 보통 서비스 계층에 건다 - 왜 컨트롤러나 리포지토리가 아닌지
 - `PlatformTransactionManager`, JPA에서는 `JpaTransactionManager`
 
 ## 2. 전파 속성 (propagation)
@@ -34,7 +34,7 @@ summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규
 | NEVER | 있으면 예외 |
 | NESTED | 세이브포인트 기반 중첩 |
 
-- 로그 기록처럼 **본 작업이 롤백돼도 남겨야 하는 것**에 REQUIRES_NEW를 쓴다
+- 로그 기록처럼 본 작업이 롤백돼도 남겨야 하는 것에 REQUIRES_NEW를 쓴다
 - 내부 트랜잭션에서 예외가 나면 외부까지 rollback-only로 마킹되는 현상 (`UnexpectedRollbackException`)
 
 ## 3. 격리 수준 (isolation)
@@ -46,14 +46,14 @@ summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규
 
 ## 4. 롤백 규칙 - 자주 틀리는 부분
 
-- 기본적으로 **unchecked(RuntimeException)와 Error만 롤백**된다
+- 기본적으로 unchecked(RuntimeException)와 Error만 롤백된다
 - checked 예외는 기본적으로 롤백되지 않는다 → `rollbackFor` 지정 필요
 - 예외를 `try-catch`로 삼켜버리면 롤백은 일어나지 않는다
 - `readOnly = true`의 의미와 이점(플러시 생략, 성능)
 
 ## 5. 트랜잭션이 안 걸리는 경우
 
-- **self-invocation**: 같은 클래스 내부 호출은 프록시를 거치지 않는다
+- self-invocation: 같은 클래스 내부 호출은 프록시를 거치지 않는다
 - `private` / `final` 메서드에 붙인 경우
 - 빈이 아닌 객체에서 호출한 경우
 - 트랜잭션 매니저가 여러 개인데 지정하지 않은 경우
@@ -61,7 +61,7 @@ summary: "Spring @Transactional 정리. 전파 속성, 격리 수준, 롤백 규
 
 ## 6. 실무 감각
 
-- 트랜잭션 범위는 **짧게**. 외부 API 호출을 트랜잭션 안에 넣지 않기
+- 트랜잭션 범위는 짧게. 외부 API 호출을 트랜잭션 안에 넣지 않기
 - 커넥션 풀 고갈과 긴 트랜잭션의 관계
 - 이벤트 기반 후처리: `@TransactionalEventListener(phase = AFTER_COMMIT)`
 - 배치성 작업에서의 청크 단위 커밋

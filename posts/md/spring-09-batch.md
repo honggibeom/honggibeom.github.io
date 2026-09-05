@@ -11,7 +11,7 @@ summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 
 
 ## 왜 배치를 따로 배우나
 
-"매일 새벽 3시에 전 종목 시세를 수집해서 지표를 계산한다" 같은 작업은 웹 요청과 성격이 완전히 다르다. 건수가 많고, 오래 걸리고, 중간에 실패할 수 있고, **실패한 지점부터 다시 돌릴 수 있어야** 한다. 단순 반복문으로 짜면 메모리로 죽거나, 중간에 끊겼을 때 처음부터 다시 돌려야 한다.
+"매일 새벽 3시에 전 종목 시세를 수집해서 지표를 계산한다" 같은 작업은 웹 요청과 성격이 완전히 다르다. 건수가 많고, 오래 걸리고, 중간에 실패할 수 있고, 실패한 지점부터 다시 돌릴 수 있어야 한다. 단순 반복문으로 짜면 메모리로 죽거나, 중간에 끊겼을 때 처음부터 다시 돌려야 한다.
 
 ## 1. 먼저 - 스케줄링
 
@@ -20,24 +20,24 @@ summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 
 - `@EnableScheduling`과 `@Scheduled`
   - `fixedRate` / `fixedDelay` / `cron`
   - cron 표현식 읽고 쓰기
-- 기본 스케줄러가 **단일 스레드**라는 점 — 작업이 밀리는 이유
+- 기본 스케줄러가 단일 스레드라는 점 - 작업이 밀리는 이유
 - `TaskScheduler` 풀 설정
-- **분산 환경의 중복 실행 문제**: 서버 2대면 같은 스케줄이 두 번 돈다
+- 분산 환경의 중복 실행 문제: 서버 2대면 같은 스케줄이 두 번 돈다
   - DB 락 / Redis 락 / ShedLock 같은 해법
 - 실패 시 재시도와 알림
 
 ## 2. Spring Batch의 구조
 
-- Job — Step — Chunk의 계층
-- **청크 지향 처리**: ItemReader → ItemProcessor → ItemWriter를 N건 단위로 읽고 처리하고 쓰고 커밋
+- Job - Step - Chunk의 계층
+- 청크 지향 처리: ItemReader → ItemProcessor → ItemWriter를 N건 단위로 읽고 처리하고 쓰고 커밋
 - Tasklet 방식 (단순 단발 작업)
 - `JobLauncher`, `JobRepository`(메타데이터 테이블), `JobInstance` / `JobExecution` / `StepExecution`
-- JobParameters로 실행을 구분한다 — 같은 파라미터로는 다시 실행되지 않는 이유
+- JobParameters로 실행을 구분한다 - 같은 파라미터로는 다시 실행되지 않는 이유
 
 ## 3. Reader / Processor / Writer
 
 - Reader: `JdbcCursorItemReader`, `JdbcPagingItemReader`, `JpaPagingItemReader`, `FlatFileItemReader`(CSV)
-- **커서 vs 페이징** — 대량 데이터에서의 메모리와 커넥션 트레이드오프
+- 커서 vs 페이징 - 대량 데이터에서의 메모리와 커넥션 트레이드오프
 - Processor: 필터링(null 반환 시 skip), 변환
 - Writer: `JdbcBatchItemWriter`, `JpaItemWriter`, 파일 출력
 - 청크 사이즈 결정 감각
@@ -48,7 +48,7 @@ summary: Spring Batch와 스케줄링 정리. 수십만 건 처리에 for문은 
 
 - Skip / Retry 정책 (`faultTolerant()`, `skipLimit`, `retryLimit`)
 - 재시작(restart)과 `allowStartIfComplete`
-- **멱등성**: 같은 배치를 두 번 돌려도 결과가 같아야 한다
+- 멱등성: 같은 배치를 두 번 돌려도 결과가 같아야 한다
 - 리스너: `JobExecutionListener`, `StepExecutionListener`, `ItemReadListener`
 - 실패 알림(슬랙/메일)과 로그 설계
 

@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2025-10-15" />
 <meta property="article:section" content="Oracle" />
@@ -89,7 +89,7 @@
 <p class="pr-meta"><a href="/categories/oracle">Oracle</a></p>
 <h1>오라클 PL/SQL 정리 - 커서, 예외 처리, 프로시저, 패키지, 트리거, BULK (오라클 학습 노트 7)</h1>
 <p class="pr-meta">2025.10.15 · <a href="/tags/oracle">#oracle</a> <a href="/tags/plsql">#plsql</a> <a href="/tags/%ED%94%84%EB%A1%9C%EC%8B%9C%EC%A0%80">#프로시저</a> <a href="/tags/%ED%8A%B8%EB%A6%AC%EA%B1%B0">#트리거</a> <a href="/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8">#학습노트</a></p>
-<p><a href="/post/oracle-06-transaction">6편</a>까지가 SQL 한 문장으로 할 수 있는 일이었다면, 이번 편은 그 문장들을 묶어 절차로 만드는 이야기다. PL/SQL은 SQL에 절차적 문법을 얹은 언어로, 반복과 분기, 예외 처리가 필요한 로직을 <strong>DB 안에서</strong> 돌린다. 6편에서 본 커밋과 락도 여기서는 프로시저·트리거 안쪽 문제로 다시 나온다. 애플리케이션과 DB 사이를 여러 번 오가지 않아도 되므로 대량 데이터 처리에서 성능 차이가 크게 나고, 예제 스키마는 계속 <a href="/post/oracle-01-basics">1편</a> 것을 쓴다.</p>
+<p><a href="/post/oracle-06-transaction">6편</a>까지가 SQL 한 문장으로 할 수 있는 일이었다면, 이번 편은 그 문장들을 묶어 절차로 만드는 이야기다. PL/SQL은 SQL에 절차적 문법을 얹은 언어로, 반복과 분기, 예외 처리가 필요한 로직을 DB 안에서 돌린다. 6편에서 본 커밋과 락도 여기서는 프로시저·트리거 안쪽 문제로 다시 나온다. 애플리케이션과 DB 사이를 여러 번 오가지 않아도 되므로 대량 데이터 처리에서 성능 차이가 크게 나고, 예제 스키마는 계속 <a href="/post/oracle-01-basics">1편</a> 것을 쓴다.</p>
 <h2>블록 구조</h2>
 <p>PL/SQL의 모든 코드는 블록이다.</p>
 <pre><code class="language-sql">DECLARE
@@ -132,7 +132,7 @@ END;
 <p><code>%TYPE</code>과 <code>%ROWTYPE</code>은 습관으로 만들어두는 게 좋다. 테이블 컬럼 길이가 바뀌어도 코드를 안 고쳐도 된다.</p>
 <p>대입은 <code>:=</code>, 비교는 <code>=</code>다.</p>
 <h3>SELECT INTO</h3>
-<p>PL/SQL에서 값 하나를 읽어오는 기본 형태다. <strong>반드시 정확히 한 행</strong>이어야 한다.</p>
+<p>PL/SQL에서 값 하나를 읽어오는 기본 형태다. 반드시 정확히 한 행이어야 한다.</p>
 <ul>
 <li>0행 → <code>NO_DATA_FOUND</code></li>
 <li>2행 이상 → <code>TOO_MANY_ROWS</code></li>
@@ -180,7 +180,7 @@ FOR i IN REVERSE 1..10 LOOP ... END LOOP;
 
 CONTINUE WHEN MOD(i, 2) = 0;   -- 11g부터
 </code></pre>
-<p><code>FOR</code> 루프의 인덱스 변수는 <strong>선언하지 않는다.</strong> 루프 안에서만 존재하고 읽기 전용이다.</p>
+<p><code>FOR</code> 루프의 인덱스 변수는 선언하지 않는다. 루프 안에서만 존재하고 읽기 전용이다.</p>
 <h2>커서</h2>
 <p>여러 행을 한 행씩 처리한다.</p>
 <h3>암시적 커서</h3>
@@ -221,7 +221,7 @@ END;
 
 
 <table><thead><tr><th>속성</th><th>의미</th></tr></thead><tbody><tr><td><code>SQL%ROWCOUNT</code></td><td>영향받은 행 수</td></tr><tr><td><code>SQL%FOUND</code></td><td>1건 이상이면 TRUE</td></tr><tr><td><code>SQL%NOTFOUND</code></td><td>0건이면 TRUE</td></tr><tr><td><code>SQL%ISOPEN</code></td><td>암시적 커서는 항상 FALSE</td></tr></tbody></table>
-<p><strong><code>UPDATE</code>가 0건이어도 예외가 나지 않는다.</strong> <code>SELECT INTO</code>와 다른 점이다. 대상이 없는 걸 감지하려면 <code>SQL%ROWCOUNT</code>를 확인해야 한다.</p>
+<p><code>UPDATE</code>가 0건이어도 예외가 나지 않는다. <code>SELECT INTO</code>와 다른 점이다. 대상이 없는 걸 감지하려면 <code>SQL%ROWCOUNT</code>를 확인해야 한다.</p>
 <h3>명시적 커서</h3>
 <pre><code class="language-sql">DECLARE
   CURSOR c_emp IS
@@ -238,7 +238,7 @@ BEGIN
 END;
 /
 </code></pre>
-<p><code>EXIT WHEN c_emp%NOTFOUND;</code>를 <code>FETCH</code> <strong>바로 다음</strong>에 두는 게 중요하다. 순서를 바꾸면 마지막 행이 두 번 처리된다.</p>
+<p><code>EXIT WHEN c_emp%NOTFOUND;</code>를 <code>FETCH</code> 바로 다음에 두는 게 중요하다. 순서를 바꾸면 마지막 행이 두 번 처리된다.</p>
 <h3>커서 FOR 루프 (권장)</h3>
 <p><code>OPEN</code>/<code>FETCH</code>/<code>CLOSE</code>를 알아서 해준다. 대부분의 경우 이걸 쓴다.</p>
 <pre><code class="language-sql">BEGIN
@@ -317,7 +317,7 @@ EXCEPTION
     RAISE;   -- 다시 던진다
 END;
 </code></pre>
-<p><strong><code>WHEN OTHERS THEN NULL;</code>은 최악의 코드다.</strong> 모든 오류를 삼켜서 문제를 숨긴다. <code>OTHERS</code>를 잡았다면 최소한 로그를 남기고 <code>RAISE</code>로 다시 던진다.</p>
+<p><code>WHEN OTHERS THEN NULL;</code>은 최악의 코드다. 모든 오류를 삼켜서 문제를 숨긴다. <code>OTHERS</code>를 잡았다면 최소한 로그를 남기고 <code>RAISE</code>로 다시 던진다.</p>
 <p><code>DBMS_UTILITY.FORMAT_ERROR_BACKTRACE</code>는 오류가 발생한 라인 번호를 알려준다. 디버깅에 필수다.</p>
 <h3>사용자 정의 예외</h3>
 <pre><code class="language-sql">DECLARE
@@ -332,7 +332,7 @@ EXCEPTION
     RAISE_APPLICATION_ERROR(-20001, '급여는 음수일 수 없습니다: ' || v_salary);
 END;
 </code></pre>
-<p><code>RAISE_APPLICATION_ERROR</code>의 번호는 <strong>-20000 ~ -20999</strong> 범위만 쓸 수 있다. 애플리케이션이 받는 메시지가 여기서 결정되므로, 무엇이 잘못됐는지 값까지 넣어주면 운영에서 큰 도움이 된다.</p>
+<p><code>RAISE_APPLICATION_ERROR</code>의 번호는 -20000 ~ -20999 범위만 쓸 수 있다. 애플리케이션이 받는 메시지가 여기서 결정되므로, 무엇이 잘못됐는지 값까지 넣어주면 운영에서 큰 도움이 된다.</p>
 <p><code>PRAGMA EXCEPTION_INIT</code>으로 오라클 오류 번호에 이름을 붙일 수도 있다.</p>
 <pre><code class="language-sql">DECLARE
   e_child_found EXCEPTION;
@@ -365,9 +365,9 @@ END raise_salary;
 </code></pre>
 <p>파라미터 모드는 세 가지다.</p>
 <ul>
-<li><code>IN</code> (기본) — 읽기 전용</li>
-<li><code>OUT</code> — 결과를 돌려줌. 들어올 때는 NULL</li>
-<li><code>IN OUT</code> — 받아서 바꿔 돌려줌</li>
+<li><code>IN</code> (기본) - 읽기 전용</li>
+<li><code>OUT</code> - 결과를 돌려줌. 들어올 때는 NULL</li>
+<li><code>IN OUT</code> - 받아서 바꿔 돌려줌</li>
 </ul>
 <p>호출은 위치 지정과 이름 지정 둘 다 된다. 파라미터가 많으면 이름 지정(<code>=></code>)이 안전하다.</p>
 <pre><code class="language-sql">DECLARE
@@ -399,7 +399,7 @@ END;
 SELECT emp_name, get_annual_salary(employee_id) FROM employees;
 </code></pre>
 <p>SQL에서 호출하려면 DML을 하지 않아야 한다(자율 트랜잭션 제외).</p>
-<p><strong>주의</strong>: <code>SELECT</code> 안에서 함수를 부르면 행마다 실행된다. 함수 안에 또 쿼리가 있으면 10만 행 조회에 10만 번 쿼리가 나간다. 조인으로 풀 수 있으면 조인이 낫다. <code>DETERMINISTIC</code>을 붙이면 같은 입력에 대한 결과를 캐시하도록 힌트를 줄 수 있다.</p>
+<p>주의: <code>SELECT</code> 안에서 함수를 부르면 행마다 실행된다. 함수 안에 또 쿼리가 있으면 10만 행 조회에 10만 번 쿼리가 나간다. 조인으로 풀 수 있으면 조인이 낫다. <code>DETERMINISTIC</code>을 붙이면 같은 입력에 대한 결과를 캐시하도록 힌트를 줄 수 있다.</p>
 <h3>컴파일 오류 확인</h3>
 <pre><code class="language-sql">SHOW ERRORS;
 SELECT * FROM user_errors WHERE name = 'RAISE_SALARY';
@@ -450,10 +450,10 @@ EXEC emp_pkg.hire('신입사원', 'DEV', 4000000, 20);
 </code></pre>
 <p>패키지를 쓰는 이유.</p>
 <ul>
-<li><strong>캡슐화</strong> — 명세에 없는 것은 밖에서 못 쓴다</li>
-<li><strong>의존성 격리</strong> — 본문만 고치면 이 패키지를 참조하는 다른 객체가 무효화되지 않는다</li>
-<li><strong>오버로딩</strong> — 같은 이름에 다른 시그니처를 여러 개 둘 수 있다</li>
-<li><strong>세션 상태</strong> — 패키지 변수는 세션 동안 값을 유지한다</li>
+<li>캡슐화 - 명세에 없는 것은 밖에서 못 쓴다</li>
+<li>의존성 격리 - 본문만 고치면 이 패키지를 참조하는 다른 객체가 무효화되지 않는다</li>
+<li>오버로딩 - 같은 이름에 다른 시그니처를 여러 개 둘 수 있다</li>
+<li>세션 상태 - 패키지 변수는 세션 동안 값을 유지한다</li>
 </ul>
 <p>프로시저를 여러 개 만들 일이 생기면 처음부터 패키지로 묶는 편이 낫다.</p>
 <h2>트리거</h2>
@@ -476,8 +476,8 @@ END;
 /
 </code></pre>
 <ul>
-<li><code>:OLD</code> — 변경 전 값 (<code>INSERT</code>에서는 NULL)</li>
-<li><code>:NEW</code> — 변경 후 값 (<code>DELETE</code>에서는 NULL)</li>
+<li><code>:OLD</code> - 변경 전 값 (<code>INSERT</code>에서는 NULL)</li>
+<li><code>:NEW</code> - 변경 후 값 (<code>DELETE</code>에서는 NULL)</li>
 <li><code>FOR EACH ROW</code>를 빼면 문장당 한 번만 실행된다(문장 트리거)</li>
 <li><code>BEFORE</code>에서만 <code>:NEW</code> 값을 바꿀 수 있다</li>
 </ul>
@@ -490,9 +490,9 @@ END;
 /
 </code></pre>
 <h3>변경 테이블 오류</h3>
-<p>행 트리거 안에서 <strong>자기 테이블을 조회하면</strong> <code>ORA-04091: table is mutating</code>이 난다. 트리거가 도는 도중이라 테이블 상태가 불확정이기 때문이다.</p>
+<p>행 트리거 안에서 자기 테이블을 조회하면 <code>ORA-04091: table is mutating</code>이 난다. 트리거가 도는 도중이라 테이블 상태가 불확정이기 때문이다.</p>
 <p>해결은 복합 트리거(11g)를 쓰거나, 애초에 그 로직을 트리거가 아니라 프로시저에 두는 것이다.</p>
-<p><strong>트리거는 아껴 쓰는 게 좋다.</strong> 코드를 읽어도 어디서 값이 바뀌는지 보이지 않아서 디버깅이 어렵다. 감사 로그처럼 부수 효과가 명확한 용도로 제한하는 편이 낫다.</p>
+<p>트리거는 아껴 쓰는 게 좋다. 코드를 읽어도 어디서 값이 바뀌는지 보이지 않아서 디버깅이 어렵다. 감사 로그처럼 부수 효과가 명확한 용도로 제한하는 편이 낫다.</p>
 <h2>컬렉션</h2>
 <h3>연관 배열 (해시맵)</h3>
 <pre><code class="language-sql">DECLARE
@@ -524,7 +524,7 @@ END;
 <p>주요 메서드: <code>COUNT</code>, <code>FIRST</code>, <code>LAST</code>, <code>NEXT(i)</code>, <code>PRIOR(i)</code>, <code>EXISTS(i)</code>, <code>EXTEND</code>, <code>TRIM</code>, <code>DELETE</code>.</p>
 <h2>BULK COLLECT와 FORALL</h2>
 <p>PL/SQL에서 성능이 갈리는 지점이다.</p>
-<p>PL/SQL 엔진과 SQL 엔진은 서로 다르고, 둘 사이를 오갈 때마다 <strong>컨텍스트 스위치</strong> 비용이 든다. 루프 안에서 한 행씩 <code>INSERT</code>하면 10만 번 왕복한다. 이걸 한 번으로 줄이는 게 벌크 연산이다.</p>
+<p>PL/SQL 엔진과 SQL 엔진은 서로 다르고, 둘 사이를 오갈 때마다 컨텍스트 스위치 비용이 든다. 루프 안에서 한 행씩 <code>INSERT</code>하면 10만 번 왕복한다. 이걸 한 번으로 줄이는 게 벌크 연산이다.</p>
 <pre><code class="language-sql">DECLARE
   TYPE t_emp IS TABLE OF employees%ROWTYPE;
   v_emps t_emp;
@@ -572,7 +572,7 @@ EXCEPTION
     END LOOP;
 END;
 </code></pre>
-<p>다만 가장 좋은 건 <strong>애초에 한 문장으로 처리하는 것</strong>이다. <code>INSERT ... SELECT</code>나 <code>MERGE</code>로 되는 일을 PL/SQL 루프로 푸는 건 거의 항상 손해다. 순서가 있다.</p>
+<p>다만 가장 좋은 건 애초에 한 문장으로 처리하는 것이다. <code>INSERT ... SELECT</code>나 <code>MERGE</code>로 되는 일을 PL/SQL 루프로 푸는 건 거의 항상 손해다. 순서가 있다.</p>
 <ol>
 <li>한 문장 SQL로 되는가?</li>
 <li>안 되면 벌크 연산으로</li>
@@ -592,7 +592,7 @@ BEGIN
 END;
 /
 </code></pre>
-<p><strong>값은 반드시 바인드 변수(<code>USING</code>)로 넘긴다.</strong> 문자열을 이어붙이면 SQL 인젝션이 열리고, 하드 파싱이 매번 일어나 공유 풀이 오염된다.</p>
+<p>값은 반드시 바인드 변수(<code>USING</code>)로 넘긴다. 문자열을 이어붙이면 SQL 인젝션이 열리고, 하드 파싱이 매번 일어나 공유 풀이 오염된다.</p>
 <pre><code class="language-sql">-- 위험
 v_sql := 'SELECT * FROM employees WHERE emp_name = ''' || p_name || '''';
 
@@ -601,7 +601,7 @@ v_sql := 'SELECT * FROM employees WHERE emp_name = :b1';
 </code></pre>
 <p>테이블명·컬럼명은 바인드 변수로 넘길 수 없으므로 이어붙일 수밖에 없는데, 이때는 <code>DBMS_ASSERT.SIMPLE_SQL_NAME</code> 같은 함수로 검증하거나 화이트리스트로 제한한다.</p>
 <h2>자율 트랜잭션</h2>
-<p>바깥 트랜잭션과 독립적으로 커밋한다. <strong>오류 로그</strong>를 남길 때 쓴다. 본 트랜잭션이 롤백되어도 로그는 남아야 하기 때문이다.</p>
+<p>바깥 트랜잭션과 독립적으로 커밋한다. 오류 로그를 남길 때 쓴다. 본 트랜잭션이 롤백되어도 로그는 남아야 하기 때문이다.</p>
 <pre><code class="language-sql">CREATE OR REPLACE PROCEDURE log_error (p_msg VARCHAR2) IS
   PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
@@ -615,7 +615,7 @@ END;
 <ul>
 <li>모든 코드는 <code>DECLARE / BEGIN / EXCEPTION / END</code> 블록</li>
 <li><code>%TYPE</code>, <code>%ROWTYPE</code>으로 타입을 테이블에 묶어둔다</li>
-<li><code>SELECT INTO</code>는 정확히 한 행 — 아니면 예외</li>
+<li><code>SELECT INTO</code>는 정확히 한 행 - 아니면 예외</li>
 <li><code>UPDATE</code>가 0건이어도 예외는 없다. <code>SQL%ROWCOUNT</code>로 확인</li>
 <li>커서는 대부분 커서 FOR 루프로 충분하다</li>
 <li><code>WHEN OTHERS THEN NULL</code>은 쓰지 않는다. 로그 남기고 <code>RAISE</code></li>

@@ -9,15 +9,15 @@
     />
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
-    <meta name="description" content="oauth2 태그가 달린 글 2편" />
-    <meta name="keywords" content="oauth2, stockanalyst, spring-security, spring-boot, 보안, 설정관리, jwt, 인증, 인가, 로드맵, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="description" content="oauth2 태그가 달린 글 3편" />
+    <meta name="keywords" content="oauth2, stockanalyst, 배포, docker, cloudflare, mysql, spring-security, spring-boot, 보안, 설정관리, jwt, 인증, 인가, 로드맵, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Oracle, Python" />
     <meta name="author" content="홍기범 (Honggibeom)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://honggibeom.github.io/tags/oauth2" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Honggibeom's blog" />
     <meta property="og:title" content="#oauth2 | Honggibeom's blog" />
-    <meta property="og:description" content="oauth2 태그가 달린 글 2편" />
+    <meta property="og:description" content="oauth2 태그가 달린 글 3편" />
     <meta property="og:url" content="https://honggibeom.github.io/tags/oauth2" />
     <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   </head>
   <body>
@@ -76,6 +76,6 @@
   .pr ul.pr-list{list-style:none;padding:0}
   .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
   .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
-</style><main class="pr"><h1>#oauth2</h1><p class="pr-meta">2편</p><ul class="pr-list"><li><a href="/post/stockanalyst-security-config">StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계</a><p>StockAnalyst 보안과 설정 기록. 평문으로 있던 API 키·DB 비밀번호를 application-secret.yml로 분리하고 optional 없이 import해 없으면 기동이 실패하게, 소셜 로그인 전용에서 관리자를 이메일 등록 + 로그인 시 승격으로, permitAll이던 배치 엔드포인트에 X-Batch-Key, 자원별 권한 체계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li></ul></main></div>
+</style><main class="pr"><h1>#oauth2</h1><p class="pr-meta">3편</p><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-4-deploy">StockAnalyst 개발기 (4) - 클라우드 견적을 내다 집에 서버를 올린 기록</a><p>주식 분석 서비스를 실제로 배포한 기록. OCI 무료 티어가 계속 용량 부족으로 막혀 유료까지 전부 견적을 냈고, 결국 데이터가 이미 있는 집 PC 로 갔다. mem_limit 을 근거를 세워 다시 계산하고, Cloudflare Tunnel 로 포트를 열지 않고 공개하고, TLS 종단 때문에 OAuth 가 깨지던 문제와 MySQL 이 두 개가 되는 사고를 잡았다.</p><span class="pr-meta">2026.09.05</span></li><li><a href="/post/stockanalyst-security-config">StockAnalyst 보안과 설정 - 시크릿 분리, 관리자 승격, 배치 API 키, 권한 체계</a><p>StockAnalyst 보안과 설정 기록. 평문으로 있던 API 키·DB 비밀번호를 application-secret.yml로 분리하고 optional 없이 import해 없으면 기동이 실패하게, 소셜 로그인 전용에서 관리자를 이메일 등록 + 로그인 시 승격으로, permitAll이던 배치 엔드포인트에 X-Batch-Key, 자원별 권한 체계.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/spring-07-security">Spring Security 정리 - 필터체인 구조, 인증과 인가, JWT, OAuth2 소셜 로그인 (Spring 로드맵 7)</a><p>Spring Security 정리. 설정을 외우는 방식으로는 반드시 막힌다. 필터체인 구조를 먼저 잡고, 인증과 인가를 나눈 뒤 JWT와 OAuth2 소셜 로그인으로 확장하는 순서로 정리했다.</p><span class="pr-meta">2026.07.03</span></li></ul></main></div>
   </body>
 </html>

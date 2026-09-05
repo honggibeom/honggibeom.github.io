@@ -9,16 +9,16 @@ summary: StockAnalyst 프론트 재구축 기록. CRA를 인플레이스로 Vite
 
 > StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 개발기 1편은 [뉴스 감성 모델](/post/stockanalyst-sentiment-model)과 [종목 추출](/post/stockanalyst-ticker-extraction)이었고, 2편은 그것을 뺀 나머지를 주제별로 나눴다. 전체 목차는 [개발기 (2) 목차](/post/stockanalyst-dev-log-2-overview)에 있다.
 
-**한눈에 보기**
+한눈에 보기
 
-- CRA → Vite 인플레이스 전환. 빌드 1.97초, 초기 로딩 gzip **471KB → 182KB**, apexcharts는 지연 로드
+- CRA → Vite 인플레이스 전환. 빌드 1.97초, 초기 로딩 gzip 471KB → 182KB, apexcharts는 지연 로드
 - styled-components 395개·동적 스타일 490곳을 Tailwind v4로. 런타임 클래스 조립 금지, 연속값은 인라인, 차트 색은 `@theme`과 동일
 - preflight의 전역 `border-box`가 다른 페이지의 `content-box` 렌더링을 드러냈다. 잠재 버그의 정상화
 - 로고는 컵앤핸들 위에 이름. 글자·선 간격은 렌더 픽셀에서 실측
 
 ## CRA → Vite
 
-`react-scripts` 5 기반 CRA를 새 프로젝트 없이 **인플레이스**로 Vite 8로 옮겼다.
+`react-scripts` 5 기반 CRA를 새 프로젝트 없이 인플레이스로 Vite 8로 옮겼다.
 
 | 항목 | 처리 |
 |---|---|
@@ -65,14 +65,14 @@ v4는 CSS 우선 설정이라 `tailwind.config.js`가 없고 토큰은 `index.cs
 
 ### 전환 뒤 유일한 차이 - box-sizing
 
-전환 후 Playwright로 라우트별 스크린샷을 비교했는데 한 가지 차이가 있었다. 전환 전에는 `box-sizing: border-box`가 메인 페이지의 `createGlobalStyle`에만 있어서 **다른 페이지들은 `content-box`로 렌더링되고 있었다.** Tailwind preflight가 전역으로 `border-box`를 적용하면서 일부 페이지 컨테이너 폭이 padding만큼 좁아졌는데, 이건 잠재 버그의 정상화다. CSS 산출물은 gzip 8.4KB다.
+전환 후 Playwright로 라우트별 스크린샷을 비교했는데 한 가지 차이가 있었다. 전환 전에는 `box-sizing: border-box`가 메인 페이지의 `createGlobalStyle`에만 있어서 다른 페이지들은 `content-box`로 렌더링되고 있었다. Tailwind preflight가 전역으로 `border-box`를 적용하면서 일부 페이지 컨테이너 폭이 padding만큼 좁아졌는데, 이건 잠재 버그의 정상화다. CSS 산출물은 gzip 8.4KB다.
 
 ## 로고
 
 컵앤핸들 그래프 안에 이름이 들어간 워드마크로 정했다.
 
 <svg viewBox="0 0 640 220" width="100%" style="max-width:640px;display:block;margin:22px auto" role="img" aria-label="상승 직선, 전고점, U자 컵, 얕은 손잡이, 돌파 화살표로 이루어진 컵앤핸들 로고 골격">
-<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">로고의 골격 — 컵앤핸들 패턴</text>
+<text x="0" y="14" font-size="13" fill="var(--color-text-muted)">로고의 골격 - 컵앤핸들 패턴</text>
 <path d="M40 190 L170 90" fill="none" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round"/>
 <path d="M170 90 C 200 200, 330 200, 380 92" fill="none" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round"/>
 <path d="M380 92 C 395 118, 420 118, 440 96" fill="none" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round"/>
@@ -89,7 +89,7 @@ v4는 CSS 우선 설정이라 `tailwind.config.js`가 없고 토큰은 `index.cs
 </g>
 </svg>
 
-차트는 SVG에 `preserveAspectRatio="none"`으로 글자 블록에 맞춰 늘어나고, 선 두께만 `em` + `vector-effect: non-scaling-stroke`로 고정된다. 글자와 선의 겹침은 눈대중이 아니라 **렌더한 픽셀에서 최단거리를 측정해** 4.7px 이상을 확보했다. 파비콘은 16·32·48px에 마크만, 64·128px에 마크+풀네임을 넣은 다중 사이즈 ICO다.
+차트는 SVG에 `preserveAspectRatio="none"`으로 글자 블록에 맞춰 늘어나고, 선 두께만 `em` + `vector-effect: non-scaling-stroke`로 고정된다. 글자와 선의 겹침은 눈대중이 아니라 렌더한 픽셀에서 최단거리를 측정해 4.7px 이상을 확보했다. 파비콘은 16·32·48px에 마크만, 64·128px에 마크+풀네임을 넣은 다중 사이즈 ICO다.
 
 ## 삽질 하나
 

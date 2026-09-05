@@ -11,20 +11,20 @@ summary: Spring IoC 컨테이너와 의존성 주입 정리. 빈 등록과 주�
 
 ## 이 단계가 본체다
 
-Spring의 정체는 사실 **객체를 대신 만들어 관리해주는 컨테이너**다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.
+Spring의 정체는 사실 객체를 대신 만들어 관리해주는 컨테이너다. MVC도, Data JPA도, Security도 전부 이 컨테이너 위에 얹힌 모듈이다. 여기를 대충 넘기면 "빈이 왜 두 개지", "왜 null이지" 앞에서 손을 놓게 된다.
 
 ## 1. IoC와 컨테이너
 
-- **제어의 역전(IoC)**: 객체 생성과 조립의 권한을 내 코드가 아니라 컨테이너가 갖는다
-- `BeanFactory`와 `ApplicationContext`의 관계 — 실제로 쓰는 건 후자
+- 제어의 역전(IoC): 객체 생성과 조립의 권한을 내 코드가 아니라 컨테이너가 갖는다
+- `BeanFactory`와 `ApplicationContext`의 관계 - 실제로 쓰는 건 후자
 - 컨테이너가 하는 일: 빈 정의 읽기 → 인스턴스 생성 → 의존성 주입 → 초기화 콜백 → 사용 → 소멸
-- 빈(Bean)이란 무엇인가 — 그냥 컨테이너가 관리하는 객체
+- 빈(Bean)이란 무엇인가 - 그냥 컨테이너가 관리하는 객체
 
 ## 2. 빈 등록하는 세 가지 방법
 
-1. **컴포넌트 스캔**: `@Component`와 그 파생인 `@Service`, `@Repository`, `@Controller`
-2. **자바 설정**: `@Configuration` 클래스 안의 `@Bean` 메서드 — 외부 라이브러리 객체를 등록할 때 필수
-3. **XML**: 레거시 프로젝트를 읽을 때만 필요
+1. 컴포넌트 스캔: `@Component`와 그 파생인 `@Service`, `@Repository`, `@Controller`
+2. 자바 설정: `@Configuration` 클래스 안의 `@Bean` 메서드 - 외부 라이브러리 객체를 등록할 때 필수
+3. XML: 레거시 프로젝트를 읽을 때만 필요
 
 `@ComponentScan`의 기본 범위가 어디인지(= `@SpringBootApplication`이 붙은 패키지 하위)를 반드시 알아둬야 한다. 빈을 못 찾는 문제의 절반이 여기서 나온다.
 
@@ -47,15 +47,15 @@ Spring의 정체는 사실 **객체를 대신 만들어 관리해주는 컨테�
 
 ## 4. 스코프와 생명주기
 
-- **스코프**: singleton(기본), prototype, request, session, application
-- 싱글턴 빈에 **상태를 두면 안 되는 이유** — 모든 요청이 같은 인스턴스를 공유한다
+- 스코프: singleton(기본), prototype, request, session, application
+- 싱글턴 빈에 상태를 두면 안 되는 이유 - 모든 요청이 같은 인스턴스를 공유한다
 - 싱글턴이 프로토타입을 주입받을 때 생기는 문제와 해법 (`ObjectProvider`, `@Lookup`)
 - 생명주기 콜백: `@PostConstruct` / `@PreDestroy`, `InitializingBean` / `DisposableBean`
 - `@Lazy`가 필요한 경우
 
 ## 5. 순환 참조
 
-A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 실패한다. 이건 Spring의 결함이 아니라 **설계가 잘못됐다는 신호**다.
+A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 실패한다. 이건 Spring의 결함이 아니라 설계가 잘못됐다는 신호다.
 
 - 왜 생기는지 (양방향 의존)
 - 푸는 법: 공통 로직을 제3의 빈으로 분리, 이벤트(`ApplicationEventPublisher`)로 뒤집기, 정말 급하면 `@Lazy`
@@ -63,9 +63,9 @@ A가 B를, B가 A를 주입받으면 생성자 주입에서는 기동 자체가 
 
 ## 6. 그 밖에
 
-- `ApplicationEventPublisher`와 `@EventListener` — 모듈 간 결합을 낮추는 도구
+- `ApplicationEventPublisher`와 `@EventListener` - 모듈 간 결합을 낮추는 도구
 - `Environment`와 프로파일별 빈 등록 (`@Profile`)
-- `@Conditional` 계열 — Boot 자동 설정의 기반이 된다
+- `@Conditional` 계열 - Boot 자동 설정의 기반이 된다
 
 ## 체크리스트
 

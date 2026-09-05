@@ -9,12 +9,12 @@ summary: StockAnalyst 인프라 기록. AWS SDK 종료로 OCI Object Storage 전
 
 > StockAnalyst는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 개발기 1편은 [뉴스 감성 모델](/post/stockanalyst-sentiment-model)과 [종목 추출](/post/stockanalyst-ticker-extraction)이었고, 2편은 그것을 뺀 나머지를 주제별로 나눴다. 전체 목차는 [개발기 (2) 목차](/post/stockanalyst-dev-log-2-overview)에 있다.
 
-**한눈에 보기**
+한눈에 보기
 
 - AWS SDK 1.x 종료 → OCI 네이티브 SDK. 설정이 비면 빈을 안 만들고 경고만, 앱은 뜬다
-- 뉴스 이미지는 스토리지 미러링 대신 **원본 og:image 임베드**. 저작권과 무료 티어 한도 양쪽에서 맞는 결정
+- 뉴스 이미지는 스토리지 미러링 대신 원본 og:image 임베드. 저작권과 무료 티어 한도 양쪽에서 맞는 결정
 - compose 함정 4개: localhost API 주소, 리터럴 DB 비밀번호, Windows node_modules, vite outDir
-- A1은 2 OCPU/12GB로 줄었지만 충분. 병목은 **Object Storage 월 50,000건 = 하루 83 페이지뷰**
+- A1은 2 OCPU/12GB로 줄었지만 충분. 병목은 Object Storage 월 50,000건 = 하루 83 페이지뷰
 
 ## Object Storage - S3에서 OCI로
 
@@ -22,12 +22,12 @@ AWS SDK 1.x가 2025년 12월 지원 종료라 OCI Object Storage 네이티브 SD
 
 | | AWS 시절 | OCI 전환 후 |
 |---|---|---|
-| 엔드포인트 경로 | — | 그대로 유지. 프론트 영향 없음 |
-| 설정이 비어 있을 때 | 더미 자격증명으로 빈이 생성돼 **업로드 시점에야 실패** | 클라이언트 빈을 만들지 않고 경고만 남김. 앱은 정상 기동 |
+| 엔드포인트 경로 | - | 그대로 유지. 프론트 영향 없음 |
+| 설정이 비어 있을 때 | 더미 자격증명으로 빈이 생성돼 업로드 시점에야 실패 | 클라이언트 빈을 만들지 않고 경고만 남김. 앱은 정상 기동 |
 
 ### 뉴스 이미지는 원본 URL을 그대로 임베드
 
-처음엔 뉴스 이미지를 스토리지에 미러링하려 했다가 **원본 og:image URL을 그대로 임베드**하기로 결정했다. 언론사 사진을 자체 스토리지에 복제·재배포하는 건 원본 임베드와 저작권상 성격이 다르다. 핫링크 차단이나 원본 삭제는 프론트 `onError` 폴백으로 처리한다. 이 결정은 뒤에 나올 무료 티어 제약과도 맞아떨어졌다.
+처음엔 뉴스 이미지를 스토리지에 미러링하려 했다가 원본 og:image URL을 그대로 임베드하기로 결정했다. 언론사 사진을 자체 스토리지에 복제·재배포하는 건 원본 임베드와 저작권상 성격이 다르다. 핫링크 차단이나 원본 삭제는 프론트 `onError` 폴백으로 처리한다. 이 결정은 뒤에 나올 무료 티어 제약과도 맞아떨어졌다.
 
 <svg viewBox="0 0 760 124" width="100%" style="max-width:760px;display:block;margin:22px auto" role="img" aria-label="뉴스 이미지는 백엔드가 기사 페이지 head만 읽어 og:image URL을 뽑고, 브라우저는 원본 URL을 그대로 임베드한다">
 <g font-size="13" fill="var(--color-text)" text-anchor="middle">
@@ -92,14 +92,14 @@ AWS SDK 1.x가 2025년 12월 지원 종료라 OCI Object Storage 네이티브 SD
 | 프론트 빌드가 리눅스에서 깨짐 | 호스트의 `node_modules`(Windows 네이티브 바인딩)를 복사 | `.dockerignore` + 이미지 안에서 `npm ci` |
 | 빌드 산출물을 못 찾음 | vite `outDir`이 `build` | 경로 맞춤 |
 
-예측은 당시 TensorFlow 때문에 배치 이미지에서 제외하고 호스트에서 돌렸다. 지금은 배치 예측 자체가 없고 백엔드가 ONNX로 계산한다 — [변곡점 예측 v2](/post/stockanalyst-turning-point-v2).
+예측은 당시 TensorFlow 때문에 배치 이미지에서 제외하고 호스트에서 돌렸다. 지금은 배치 예측 자체가 없고 백엔드가 ONNX로 계산한다 - [변곡점 예측 v2](/post/stockanalyst-turning-point-v2).
 
 ## OCI Always Free로 갈 수 있나
 
-검토 결과는 **"가능하다, 단 인용된 스펙이 옛날 값이다"**. Ampere A1이 2026년 6월에 4 OCPU/24GB에서 2 OCPU/12GB로 반토막 났고, 오라클은 공지 없이 문서만 고쳤다. 그래도 이 서비스에는 12GB로 충분하다.
+검토 결과는 "가능하다, 단 인용된 스펙이 옛날 값이다". Ampere A1이 2026년 6월에 4 OCPU/24GB에서 2 OCPU/12GB로 반토막 났고, 오라클은 공지 없이 문서만 고쳤다. 그래도 이 서비스에는 12GB로 충분하다.
 
-정작 걸린 건 컴퓨팅이 아니라 **Object Storage API 요청 50,000건/월**이었다. 뉴스 한 페이지에 이미지가 20장이면 하루 83 페이지뷰로 한도가 끝난다. 위에서 내린 원본 임베드 결정이 여기서 다시 한번 맞았다 — 이미지를 스토리지에서 서빙했으면 무료 티어로는 하루 83명이 한계였다.
+정작 걸린 건 컴퓨팅이 아니라 Object Storage API 요청 50,000건/월이었다. 뉴스 한 페이지에 이미지가 20장이면 하루 83 페이지뷰로 한도가 끝난다. 위에서 내린 원본 임베드 결정이 여기서 다시 한번 맞았다 - 이미지를 스토리지에서 서빙했으면 무료 티어로는 하루 83명이 한계였다.
 
-여기까지가 "갈 수 있나"의 답이고, **실제로 올리기로 하고 내린 판단들**(홈 리전 제약, 관리형 MySQL과의 비교, 유휴 인스턴스 회수, aarch64 빌드, 컨테이너 메모리 배분)은 [OCI 무료 티어 배포 준비](/post/stockanalyst-oci-deploy)에 따로 정리했다.
+여기까지가 "갈 수 있나"의 답이고, 실제로 올리기로 하고 내린 판단들(홈 리전 제약, 관리형 MySQL과의 비교, 유휴 인스턴스 회수, aarch64 빌드, 컨테이너 메모리 배분)은 [OCI 무료 티어 배포 준비](/post/stockanalyst-oci-deploy)에 따로 정리했다.
 
 그리고 검토 중에 발견한 것 하나: `ddl-auto: create`가 그대로 있었다. 운영에 올리면 재시작마다 데이터가 전멸한다. [배포 전 목록](/post/stockanalyst-dev-log-2-overview) 맨 위에 올렸다.

@@ -27,7 +27,7 @@ summary: react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. �
 
 1. `vite`, `@vitejs/plugin-react` 설치하고 `react-scripts` 제거
 2. `public/index.html`을 프로젝트 루트로 옮기고 Vite 규칙에 맞게 수정
-3. `vite.config.js` 작성 — 여기서 `.js` 안의 JSX 처리가 핵심
+3. `vite.config.js` 작성 - 여기서 `.js` 안의 JSX 처리가 핵심
 4. `process.env.*`를 `import.meta.env.*`로 교체
 5. 환경변수 접두사를 `REACT_APP_`에서 `VITE_`로 변경
 6. CRA 잔재 파일 정리 (`reportWebVitals.js`, `setupTests.js`)
@@ -60,8 +60,8 @@ summary: react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. �
 
 - `react-scripts`
 - `@testing-library/*` 네 개 (실제로 테스트를 쓰고 있지 않았다)
-- `web-vitals` — `reportWebVitals.js`를 지우면서 같이
-- `buffer`, `dotenv`, `js-pytorch` — `src` 전체를 grep 해보니 한 번도 import 되지 않고 있었다
+- `web-vitals` - `reportWebVitals.js`를 지우면서 같이
+- `buffer`, `dotenv`, `js-pytorch` - `src` 전체를 grep 해보니 한 번도 import 되지 않고 있었다
 
 `"type": "module"`을 추가하는 걸 잊지 말자. Vite 설정 파일을 ESM으로 쓰려면 필요하다.
 
@@ -71,7 +71,7 @@ summary: react-scripts로 굴러가던 개인 블로그를 Vite로 옮겼다. �
 
 CRA에서 `public/index.html`은 그냥 템플릿이었다. 번들러가 만든 스크립트 태그를 알아서 꽂아줬다.
 
-Vite에서는 다르다. `index.html`이 **프로젝트 루트에 있고, 그 자체가 진입점**이다. 그래서 두 가지를 바꿔야 했다.
+Vite에서는 다르다. `index.html`이 프로젝트 루트에 있고, 그 자체가 진입점이다. 그래서 두 가지를 바꿔야 했다.
 
 ```html
 <script type="module" src="/src/index.js"></script>
@@ -101,7 +101,7 @@ Vite에서는 다르다. `index.html`이 **프로젝트 루트에 있고, 그 �
 
 여기서 제일 오래 붙잡았다.
 
-이 프로젝트는 JSX를 전부 `.jsx`가 아닌 `.js` 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite 7까지는 변환에 esbuild를 쓰고, **esbuild는 기본적으로 `.js` 파일에 JSX가 들어있을 거라고 가정하지 않는다.** (Vite 8은 Oxc로 바뀌었지만 확장자로 판단한다는 전제는 같다.)
+이 프로젝트는 JSX를 전부 `.jsx`가 아닌 `.js` 확장자로 쓰고 있었다. CRA는 babel로 전부 처리하니까 아무 문제가 없다. 그런데 Vite 7까지는 변환에 esbuild를 쓰고, esbuild는 기본적으로 `.js` 파일에 JSX가 들어있을 거라고 가정하지 않는다. (Vite 8은 Oxc로 바뀌었지만 확장자로 판단한다는 전제는 같다.)
 
 그래서 첫 빌드에서 이런 에러를 만난다.
 
@@ -141,9 +141,9 @@ export default defineConfig({
 
 세 군데를 다 건드려야 한다는 게 포인트다.
 
-- `plugins`의 `include` — 플러그인이 `.js`도 React 파일로 취급하게
-- `esbuild.loader` — 빌드 시 `src` 아래 `.js`를 JSX로 파싱하게
-- `optimizeDeps.esbuildOptions.loader` — dev 서버의 의존성 사전 번들링 단계에서도 동일하게
+- `plugins`의 `include` - 플러그인이 `.js`도 React 파일로 취급하게
+- `esbuild.loader` - 빌드 시 `src` 아래 `.js`를 JSX로 파싱하게
+- `optimizeDeps.esbuildOptions.loader` - dev 서버의 의존성 사전 번들링 단계에서도 동일하게
 
 하나라도 빠지면 "dev는 되는데 build가 깨지거나", 반대로 "build는 되는데 dev 서버가 안 뜨는" 상황이 생긴다.
 
@@ -167,7 +167,7 @@ const fileInfos = mdLink.map((key) => ({
 }));
 ```
 
-여기서 실수하기 쉬운 부분이 있다. `PUBLIC_URL`은 뒤에 슬래시가 **없고**, `BASE_URL`은 뒤에 슬래시가 **있다**. 루트 배포면 `PUBLIC_URL`은 빈 문자열, `BASE_URL`은 `"/"`다. 그대로 `+ "/posts/..."`를 붙이면 `//posts/...`가 되어버린다. 앞 슬래시를 빼야 한다.
+여기서 실수하기 쉬운 부분이 있다. `PUBLIC_URL`은 뒤에 슬래시가 없고, `BASE_URL`은 뒤에 슬래시가 있다. 루트 배포면 `PUBLIC_URL`은 빈 문자열, `BASE_URL`은 `"/"`다. 그대로 `+ "/posts/..."`를 붙이면 `//posts/...`가 되어버린다. 앞 슬래시를 빼야 한다.
 
 개발/프로덕션 분기도 바꿨다.
 
@@ -209,13 +209,13 @@ GitHub Pages는 SPA 라우팅을 지원하지 않는다. `/about`으로 직접 �
 
 ## 결과
 
-- dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. dev에서 앱 코드를 번들링하지 않고 요청이 들어온 파일만 변환하기 때문이다(`node_modules`는 예외로 미리 묶는다 — 위 `optimizeDeps` 설정이 그 단계다).
+- dev 서버 기동이 수십 초에서 1초 미만으로 줄었다. dev에서 앱 코드를 번들링하지 않고 요청이 들어온 파일만 변환하기 때문이다(`node_modules`는 예외로 미리 묶는다 - 위 `optimizeDeps` 설정이 그 단계다).
 - HMR이 즉각적이다. 수정한 모듈만 교체하기 때문에 프로젝트 크기가 커져도 거의 일정하다.
 - `npm install`에서 쏟아지던 취약점 경고가 거의 사라졌다. 의존성 트리 자체가 훨씬 얕아졌다.
 
 ## 되돌아보며
 
-작업 전에 "설정 파일 몇 개 바꾸면 되겠지"라고 생각했는데, 실제로 시간을 잡아먹은 건 **CRA가 조용히 해주던 일들**이었다. `%PUBLIC_URL%` 치환, `.js` 안의 JSX 처리, `process.env` 주입. 전부 명시적으로 설정해야 하는 것들로 바뀌었다.
+작업 전에 "설정 파일 몇 개 바꾸면 되겠지"라고 생각했는데, 실제로 시간을 잡아먹은 건 CRA가 조용히 해주던 일들이었다. `%PUBLIC_URL%` 치환, `.js` 안의 JSX 처리, `process.env` 주입. 전부 명시적으로 설정해야 하는 것들로 바뀌었다.
 
 거꾸로 말하면 이제 빌드 파이프라인에서 무슨 일이 일어나는지 눈에 보인다. `eject` 없이 설정을 고칠 수 있다는 것도 크다.
 

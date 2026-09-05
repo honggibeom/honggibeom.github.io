@@ -11,7 +11,7 @@ summary: OVER 절의 구조부터 순위·누적·이전행 참조·이동평균
 
 ## 집계 함수와 무엇이 다른가
 
-`GROUP BY`로 집계하면 **행이 줄어든다.** 분석 함수는 **행을 그대로 두고** 옆에 계산 결과를 붙인다.
+`GROUP BY`로 집계하면 행이 줄어든다. 분석 함수는 행을 그대로 두고 옆에 계산 결과를 붙인다.
 
 ```sql
 -- 집계: 부서당 1행
@@ -32,11 +32,11 @@ FROM   employees;
 함수() OVER ( [PARTITION BY 컬럼...] [ORDER BY 컬럼...] [윈도우 절] )
 ```
 
-- **`PARTITION BY`** — 계산을 나눌 그룹. 생략하면 전체가 한 그룹.
-- **`ORDER BY`** — 그룹 안에서의 순서. 순위·누적 계산에 필요하다.
-- **윈도우 절** — 현재 행을 기준으로 계산에 포함할 범위.
+- `PARTITION BY` - 계산을 나눌 그룹. 생략하면 전체가 한 그룹.
+- `ORDER BY` - 그룹 안에서의 순서. 순위·누적 계산에 필요하다.
+- 윈도우 절 - 현재 행을 기준으로 계산에 포함할 범위.
 
-`SELECT` 절과 `ORDER BY` 절에만 쓸 수 있다. **`WHERE`에는 쓸 수 없다.** 실행 순서상 `WHERE`가 먼저이기 때문이다. 순위로 거르려면 인라인 뷰로 한 겹 감싼다.
+`SELECT` 절과 `ORDER BY` 절에만 쓸 수 있다. `WHERE`에는 쓸 수 없다. 실행 순서상 `WHERE`가 먼저이기 때문이다. 순위로 거르려면 인라인 뷰로 한 겹 감싼다.
 
 ```sql
 SELECT * FROM (
@@ -67,7 +67,7 @@ SELECT emp_name, department_id, salary,
 FROM   employees;
 ```
 
-`ROW_NUMBER()`는 **동점이어도 아무 기준으로나 순서를 정한다.** 실행할 때마다 결과가 달라질 수 있으므로, 페이징처럼 결과가 안정적이어야 하는 곳에서는 `ORDER BY`에 유일 컬럼(예: PK)을 마지막에 추가한다.
+`ROW_NUMBER()`는 동점이어도 아무 기준으로나 순서를 정한다. 실행할 때마다 결과가 달라질 수 있으므로, 페이징처럼 결과가 안정적이어야 하는 곳에서는 `ORDER BY`에 유일 컬럼(예: PK)을 마지막에 추가한다.
 
 ```sql
 ROW_NUMBER() OVER (ORDER BY salary DESC, employee_id)
@@ -115,7 +115,7 @@ FROM   employees;
 
 ### ORDER BY를 붙이면 누적이 된다
 
-여기가 중요한 지점이다. `OVER` 안에 `ORDER BY`가 들어가면 **기본 윈도우가 "처음부터 현재 행까지"**로 바뀐다.
+여기가 중요한 지점이다. `OVER` 안에 `ORDER BY`가 들어가면 기본 윈도우가 "처음부터 현재 행까지"로 바뀐다.
 
 ```sql
 SELECT order_date, amount,
@@ -134,8 +134,8 @@ ORDER  BY order_date, order_id;
 {ROWS | RANGE} BETWEEN 시작 AND 끝
 ```
 
-- `ROWS` — **물리적 행 개수** 기준
-- `RANGE` — **값** 기준 (동일 값 행을 하나로 묶는다)
+- `ROWS` - 물리적 행 개수 기준
+- `RANGE` - 값 기준 (동일 값 행을 하나로 묶는다)
 
 경계에 쓸 수 있는 키워드.
 
@@ -209,7 +209,7 @@ SELECT emp_name, department_id, salary,
 FROM   employees;
 ```
 
-**`LAST_VALUE`는 윈도우 절을 반드시 써야 한다.** 기본 윈도우가 "현재 행까지"(`RANGE`)라서, 그냥 쓰면 자기 자신 — 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 — 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.
+`LAST_VALUE`는 윈도우 절을 반드시 써야 한다. 기본 윈도우가 "현재 행까지"(`RANGE`)라서, 그냥 쓰면 자기 자신 - 정렬 키에 동점이 있으면 그 동점 그룹의 마지막 행 - 이 나온다. 처음 만나면 반드시 한 번 당하는 함정이다.
 
 `IGNORE NULLS` 옵션도 있다. 결측치를 직전 값으로 채우는 데 유용하다.
 
@@ -254,7 +254,7 @@ CONNECT BY PRIOR employee_id = manager_id  -- 부모 → 자식 연결
 ORDER  SIBLINGS BY emp_name;
 ```
 
-핵심은 `PRIOR`의 위치다. **`PRIOR`가 붙은 쪽이 "이전(부모) 행"** 이다.
+핵심은 `PRIOR`의 위치다. `PRIOR`가 붙은 쪽이 "이전(부모) 행" 이다.
 
 ```sql
 CONNECT BY PRIOR employee_id = manager_id   -- 하향식: 위에서 아래로
@@ -325,8 +325,8 @@ PIVOT (
 ORDER BY department_id;
 ```
 
-- 인라인 뷰에서 **필요한 컬럼만 남겨야 한다.** `PIVOT`은 명시되지 않은 나머지 컬럼 전부를 암묵적 `GROUP BY` 키로 쓰기 때문에, `SELECT *`로 넘기면 결과가 산산조각 난다.
-- `FOR ... IN`의 값 목록은 **정적**이다. 동적 컬럼이 필요하면 PL/SQL로 SQL 문자열을 만들어야 한다.
+- 인라인 뷰에서 필요한 컬럼만 남겨야 한다. `PIVOT`은 명시되지 않은 나머지 컬럼 전부를 암묵적 `GROUP BY` 키로 쓰기 때문에, `SELECT *`로 넘기면 결과가 산산조각 난다.
+- `FOR ... IN`의 값 목록은 정적이다. 동적 컬럼이 필요하면 PL/SQL로 SQL 문자열을 만들어야 한다.
 
 `PIVOT` 문법 이전에는 `CASE` + 집계로 처리했고, 지금도 이 방식이 더 유연해서 자주 쓰인다.
 
@@ -339,7 +339,7 @@ FROM   employees
 GROUP  BY department_id;
 ```
 
-`UNPIVOT`은 반대 방향이다. 가로로 퍼진 컬럼(1월, 2월, …)을 세로로 펴서 정규화할 때 쓴다.
+`UNPIVOT`은 반대 방향이다. 가로로 퍼진 컬럼(1월, 2월, ...)을 세로로 펴서 정규화할 때 쓴다.
 
 ```sql
 SELECT * FROM monthly_sales
@@ -351,7 +351,7 @@ UNPIVOT (amount FOR mon IN (jan AS '01', feb AS '02', mar AS '03'));
 ## 정리
 
 - 분석 함수는 행을 줄이지 않고 계산 결과를 붙인다
-- `OVER`는 `SELECT`와 `ORDER BY`에만 쓸 수 있다 — 조건으로 쓰려면 인라인 뷰로 감싼다
+- `OVER`는 `SELECT`와 `ORDER BY`에만 쓸 수 있다 - 조건으로 쓰려면 인라인 뷰로 감싼다
 - 그룹별 상위 N건 = `ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)` + 바깥 `WHERE`
 - `OVER`에 `ORDER BY`를 넣으면 누적이 된다. 행 단위 누적은 `ROWS`를 명시
 - `LAST_VALUE`는 윈도우 절 없이 쓰면 자기 자신이 나온다

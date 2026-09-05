@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BTEn_J7x.js"></script>
+    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   <meta property="article:published_time" content="2026-03-08" />
 <meta property="article:section" content="Spring" />
@@ -90,9 +90,9 @@
 <h1>Spring 학습 로드맵 - 자바부터 JPA, Security, 운영까지 어떤 순서로 볼 것인가 (시리즈 목차)</h1>
 <p class="pr-meta">2026.03.08 · <a href="/tags/spring">#spring</a> <a href="/tags/spring-boot">#spring-boot</a> <a href="/tags/java">#java</a> <a href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C">#백엔드</a> <a href="/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5">#로드맵</a></p>
 <h2>왜 지도부터 그리는가</h2>
-<p>Spring은 배울 게 많다기보다 <strong>경계가 흐려서</strong> 어렵다. "Spring을 공부한다"는 말 안에 자바 언어, 프레임워크 코어, 웹 계층, ORM, 트랜잭션, 보안, 배치, 배포가 전부 섞여 들어간다. 그래서 튜토리얼을 따라 CRUD 하나를 만들고 나면, 정작 "내가 뭘 아는지"를 스스로도 설명하지 못하는 상태가 된다.</p>
-<p>그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 <strong>알아야 할 항목과 체크리스트</strong>를 정리한다. 이 글은 그 시리즈의 목차다.</p>
-<p>원칙은 하나다. 순서를 건너뛰어도 되지만 <strong>0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다.</strong> <code>@Transactional</code>이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.</p>
+<p>Spring은 배울 게 많다기보다 경계가 흐려서 어렵다. "Spring을 공부한다"는 말 안에 자바 언어, 프레임워크 코어, 웹 계층, ORM, 트랜잭션, 보안, 배치, 배포가 전부 섞여 들어간다. 그래서 튜토리얼을 따라 CRUD 하나를 만들고 나면, 정작 "내가 뭘 아는지"를 스스로도 설명하지 못하는 상태가 된다.</p>
+<p>그래서 지도를 먼저 그리기로 했다. 전체 범위를 주제별로 쪼개고, 주제마다 별도의 글에서 알아야 할 항목과 체크리스트를 정리한다. 이 글은 그 시리즈의 목차다.</p>
+<p>원칙은 하나다. 순서를 건너뛰어도 되지만 0단계(자바)와 1단계(Core)를 건너뛰면 반드시 되돌아오게 된다. <code>@Transactional</code>이 왜 안 먹는지, 순환 참조가 왜 나는지 같은 문제는 전부 그 두 단계에서 갈린다.</p>
 <hr>
 <h2>전체 지도</h2>
 <p>먼저 전체를 열한 칸으로 쪼갠다. 각 칸은 "이 단계가 답해주는 질문 하나"로 정리했다.</p>
@@ -179,22 +179,22 @@
 <h2>시리즈 목차</h2>
 <p>각 주제는 개별 글로 따로 정리한다.</p>
 <ol start="0">
-<li><strong><a href="/post/spring-00-java">[준비] 자바와 객체지향</a></strong> — 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle</li>
-<li><strong><a href="/post/spring-01-core-di">Spring Core: IoC 컨테이너와 의존성 주입</a></strong> — 빈 등록·주입·스코프·생명주기, 순환 참조</li>
-<li><strong><a href="/post/spring-02-aop">AOP와 프록시</a></strong> — 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정</li>
-<li><strong><a href="/post/spring-03-mvc">Spring MVC</a></strong> — DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계</li>
-<li><strong><a href="/post/spring-04-boot">Spring Boot</a></strong> — 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣</li>
-<li><strong><a href="/post/spring-05-jpa">Spring Data JPA</a></strong> — 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL</li>
-<li><strong><a href="/post/spring-06-transaction">트랜잭션</a></strong> — 전파 속성, 격리 수준, 롤백 규칙, <code>@Transactional</code>이 안 먹는 경우</li>
-<li><strong><a href="/post/spring-07-security">Spring Security</a></strong> — 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인</li>
-<li><strong><a href="/post/spring-08-test">테스트</a></strong> — 단위/슬라이스/통합 테스트, Mockito, Testcontainers</li>
-<li><strong><a href="/post/spring-09-batch">Spring Batch와 스케줄링</a></strong> — Job/Step/Chunk, 재시작과 멱등성, <code>@Scheduled</code>, 락</li>
-<li><strong><a href="/post/spring-10-ops">운영과 성능</a></strong> — Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포</li>
+<li><a href="/post/spring-00-java">[준비] 자바와 객체지향</a> - 인터페이스 의존, 예외 체계, 제네릭, 람다/Stream, 프록시 패턴, Gradle</li>
+<li><a href="/post/spring-01-core-di">Spring Core: IoC 컨테이너와 의존성 주입</a> - 빈 등록·주입·스코프·생명주기, 순환 참조</li>
+<li><a href="/post/spring-02-aop">AOP와 프록시</a> - 횡단 관심사, 포인트컷, JDK/CGLIB 프록시, self-invocation 함정</li>
+<li><a href="/post/spring-03-mvc">Spring MVC</a> - DispatcherServlet 흐름, 바인딩, 검증, 전역 예외 처리, REST API 설계</li>
+<li><a href="/post/spring-04-boot">Spring Boot</a> - 자동 설정의 원리, 설정 파일과 프로파일, 스타터, 내장 톰캣</li>
+<li><a href="/post/spring-05-jpa">Spring Data JPA</a> - 영속성 컨텍스트, 연관관계, N+1, 페치 조인, QueryDSL</li>
+<li><a href="/post/spring-06-transaction">트랜잭션</a> - 전파 속성, 격리 수준, 롤백 규칙, <code>@Transactional</code>이 안 먹는 경우</li>
+<li><a href="/post/spring-07-security">Spring Security</a> - 필터체인, 인증/인가, JWT, OAuth2 소셜 로그인</li>
+<li><a href="/post/spring-08-test">테스트</a> - 단위/슬라이스/통합 테스트, Mockito, Testcontainers</li>
+<li><a href="/post/spring-09-batch">Spring Batch와 스케줄링</a> - Job/Step/Chunk, 재시작과 멱등성, <code>@Scheduled</code>, 락</li>
+<li><a href="/post/spring-10-ops">운영과 성능</a> - Actuator, 로깅, 캐시, 비동기, 커넥션 풀, 배포</li>
 </ol>
 <hr>
 <h2>공부하는 방법에 대해</h2>
-<p>한 가지만 덧붙이면, 이 목록을 <strong>읽어서</strong> 끝내려고 하면 아무것도 남지 않는다. 각 단계마다 붙여둔 체크리스트는 "설명할 수 있는가"와 "직접 해봤는가"를 묻는 형태로 썼다. 문장을 눈으로 확인하는 게 아니라, 빈 에디터를 열고 그걸 재현할 수 있는지로 판단하는 게 맞다.</p>
-<p>특히 다음 세 가지는 반드시 <strong>직접 깨뜨려보는</strong> 걸 권한다.</p>
+<p>한 가지만 덧붙이면, 이 목록을 읽어서 끝내려고 하면 아무것도 남지 않는다. 각 단계마다 붙여둔 체크리스트는 "설명할 수 있는가"와 "직접 해봤는가"를 묻는 형태로 썼다. 문장을 눈으로 확인하는 게 아니라, 빈 에디터를 열고 그걸 재현할 수 있는지로 판단하는 게 맞다.</p>
+<p>특히 다음 세 가지는 반드시 직접 깨뜨려보는 걸 권한다.</p>
 <ul>
 <li>순환 참조를 일부러 만들어서 에러 메시지 읽어보기</li>
 <li>같은 클래스 안에서 <code>@Transactional</code> 메서드를 호출해 트랜잭션이 안 걸리는 걸 확인하기</li>

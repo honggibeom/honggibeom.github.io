@@ -11,7 +11,7 @@ summary: Spring MVC 요청 흐름 정리. DispatcherServlet에서 컨트롤러, 
 
 ## 흐름부터 외운다
 
-웹 계층은 기능을 하나씩 외우는 것보다 **경로를 그릴 수 있는지**가 훨씬 중요하다. 경로를 알면 "이 처리를 어디에 넣어야 하나"라는 질문에 매번 답이 나온다.
+웹 계층은 기능을 하나씩 외우는 것보다 경로를 그릴 수 있는지가 훨씬 중요하다. 경로를 알면 "이 처리를 어디에 넣어야 하나"라는 질문에 매번 답이 나온다.
 
 ```
 클라이언트
@@ -35,27 +35,27 @@ summary: Spring MVC 요청 흐름 정리. DispatcherServlet에서 컨트롤러, 
 - 서블릿 컨테이너(Tomcat)가 하는 일, 스레드 모델(요청당 스레드)
 - 프론트 컨트롤러 패턴과 `DispatcherServlet`
 - HandlerMapping / HandlerAdapter의 역할 분담
-- **Filter vs Interceptor**: 필터는 서블릿 스펙, 스프링 빈을 못 쓰는 경우가 있고 예외 처리 흐름 밖에 있다. 인터셉터는 스프링 영역이라 빈 주입과 핸들러 정보 접근이 자유롭다
+- Filter vs Interceptor: 필터는 서블릿 스펙, 스프링 빈을 못 쓰는 경우가 있고 예외 처리 흐름 밖에 있다. 인터셉터는 스프링 영역이라 빈 주입과 핸들러 정보 접근이 자유롭다
 
 ## 2. 컨트롤러 작성
 
 - `@Controller` (뷰 반환) vs `@RestController` (본문 반환)
 - 매핑: `@GetMapping`, `@PostMapping`, `@PutMapping`, `@PatchMapping`, `@DeleteMapping`
 - 파라미터 바인딩
-  - `@RequestParam` — 쿼리 스트링
-  - `@PathVariable` — 경로 변수
-  - `@RequestBody` — JSON 본문
-  - `@ModelAttribute` — 폼 데이터, 객체 바인딩
+  - `@RequestParam` - 쿼리 스트링
+  - `@PathVariable` - 경로 변수
+  - `@RequestBody` - JSON 본문
+  - `@ModelAttribute` - 폼 데이터, 객체 바인딩
   - `@RequestHeader`, `@CookieValue`
 - `ResponseEntity`로 상태 코드·헤더 제어
 - 파일 업로드 (`MultipartFile`)
 
 ## 3. JSON 직렬화
 
-- Jackson의 동작 — 게터 기준 직렬화, 기본 생성자와 역직렬화
+- Jackson의 동작 - 게터 기준 직렬화, 기본 생성자와 역직렬화
 - `@JsonProperty`, `@JsonIgnore`, `@JsonInclude`
 - 날짜/시간 포맷 (`@JsonFormat`, `JavaTimeModule`)
-- **엔티티를 그대로 응답에 쓰면 안 되는 이유** — 지연 로딩 프록시 직렬화 오류, 스펙 결합
+- 엔티티를 그대로 응답에 쓰면 안 되는 이유 - 지연 로딩 프록시 직렬화 오류, 스펙 결합
 - DTO 분리와 매핑
 
 ## 4. 검증과 예외 처리
