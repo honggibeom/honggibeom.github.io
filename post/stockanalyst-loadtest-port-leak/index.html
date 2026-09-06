@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="50VU 씩 올리다 200VU 에서 502 가 터졌다. Tomcat 스레드를 늘리려다 멈추고 로그를 뒤졌더니 백엔드는 멀쩡했고, nginx 가 요청마다 새 연결을 열고 닫아 임시 포트를 다 써 버린 것이었다. 실패율 43% 에서 0% 까지, 잘못 짚을 뻔한 순간들과 함께 그 과정을 순서대로 적었다." />
+    <meta name="keywords" content="stockanalyst, k6, 부하테스트, nginx, keepalive, TIME_WAIT, 502, 트러블슈팅, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="StockAnalyst 부하테스트로 잡은 연결 누수 - 502의 범인은 백엔드가 아니었다 | Honggibeom's blog" />
+    <meta property="og:description" content="50VU 씩 올리다 200VU 에서 502 가 터졌다. Tomcat 스레드를 늘리려다 멈추고 로그를 뒤졌더니 백엔드는 멀쩡했고, nginx 가 요청마다 새 연결을 열고 닫아 임시 포트를 다 써 버린 것이었다. 실패율 43% 에서 0% 까지, 잘못 짚을 뻔한 순간들과 함께 그 과정을 순서대로 적었다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>StockAnalyst 부하테스트로 잡은 연결 누수 - 502의 범인은 백엔드가 아니었다 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-HehBMNfT.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-09-07" />
+<meta property="article:section" content="StockAnalyst" />
+<meta property="article:tag" content="stockanalyst" />
+<meta property="article:tag" content="k6" />
+<meta property="article:tag" content="부하테스트" />
+<meta property="article:tag" content="nginx" />
+<meta property="article:tag" content="keepalive" />
+<meta property="article:tag" content="TIME_WAIT" />
+<meta property="article:tag" content="502" />
+<meta property="article:tag" content="트러블슈팅" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"StockAnalyst 부하테스트로 잡은 연결 누수 - 502의 범인은 백엔드가 아니었다","description":"50VU 씩 올리다 200VU 에서 502 가 터졌다. Tomcat 스레드를 늘리려다 멈추고 로그를 뒤졌더니 백엔드는 멀쩡했고, nginx 가 요청마다 새 연결을 열고 닫아 임시 포트를 다 써 버린 것이었다. 실패율 43% 에서 0% 까지, 잘못 짚을 뻔한 순간들과 함께 그 과정을 순서대로 적었다.","datePublished":"2026-09-07","dateModified":"2026-09-07","keywords":"stockanalyst, k6, 부하테스트, nginx, keepalive, TIME_WAIT, 502, 트러블슈팅","image":"https://honggibeom.github.io/posts/assets/stockanalyst-loadtest-port-leak/cover.svg","url":"https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"StockAnalyst","item":"https://honggibeom.github.io/categories/stockanalyst"},{"@type":"ListItem","position":3,"name":"StockAnalyst 부하테스트로 잡은 연결 누수 - 502의 범인은 백엔드가 아니었다","item":"https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/stockanalyst">StockAnalyst</a></p>
+<h1>StockAnalyst 부하테스트로 잡은 연결 누수 - 502의 범인은 백엔드가 아니었다</h1>
+<p class="pr-meta">2026.09.07 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/k6">#k6</a> <a href="/tags/%EB%B6%80%ED%95%98%ED%85%8C%EC%8A%A4%ED%8A%B8">#부하테스트</a> <a href="/tags/nginx">#nginx</a> <a href="/tags/keepalive">#keepalive</a> <a href="/tags/TIME_WAIT">#TIME_WAIT</a> <a href="/tags/502">#502</a> <a href="/tags/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85">#트러블슈팅</a></p>
+<blockquote>
+<p>StockAnalyst 는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 전체 구조는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있다. <a href="/post/stockanalyst-inference-concurrency">앞 글</a>에서 ONNX 추론과 스레드풀을 묶은 뒤 "그래서 몇 명까지 받을 수 있나"를 재려고 k6 를 돌렸는데, 그 과정에서 세마포어와는 아무 상관없는 문제가 하나 튀어나왔다. 이 글은 그 문제를 찾아가는 과정의 기록이다. 결론만 보면 nginx 설정 세 줄인데, 거기까지 가는 동안 세 번은 엉뚱한 곳을 짚을 뻔했다.</p>
+</blockquote>
+<p>한눈에 보기</p>
+<ul>
+<li>40VU 까지는 실패 0, p95 32ms 였는데 400VU 로 올리자 실패율 43%. 그중 절반은 테스트 도중 만료된 토큰 때문이었다. 요약에 상태코드를 안 찍어서 처음엔 몰랐다</li>
+<li>상태코드를 찍고 다시 보니 전부 502. 50VU 씩 올려 보니 150 까지 실패 0, 200 부터 실패 시작. 같은 순간 <code>docker stats</code> 에서 정적 파일과 프록시만 하는 nginx 가 CPU 370%</li>
+<li>nginx 로그에 <code>[error]</code> 는 없었다. <code>[crit] connect() ... failed (99: Address not available)</code>, 백엔드로 새 연결을 열 임시 포트가 바닥난 것이다. <code>proxy_pass</code> 는 기본으로 요청마다 연결을 새로 열고 닫는다</li>
+<li><code>upstream ... keepalive 64</code> + <code>proxy_http_version 1.1</code> + <code>Connection ""</code> 세 줄로 168,534 요청 실패 0. 벽은 300VU 의 CPU 포화로 밀렸다</li>
+<li>메모리 누수가 아니라 연결 누수였다. 요청이 끝나도 소켓은 60초 동안 TIME_WAIT 로 남고, 그게 초당 500개씩 쌓이면 28,000개 포트가 1분 만에 찬다</li>
+</ul>
+<h2>1. 출발점, 40VU 는 너무 쉬웠다</h2>
+<p>세마포어를 넣은 뒤 k6 로 홈, 종목 상세, 공매도 세 화면을 섞어 10, 20, 40VU 순서로 4분을 돌렸다. 11,507 요청에 실패 0, p95 32ms. 목표로 잡았던 홈 1.5초, 상세 2.5초와 자릿수가 두 개 차이났다. "40명은 문제없다"는 알았는데 상한이 어디인지는 모르는 상태였다.</p>
+<p>그래서 단계를 하나 더 만들었다. 100, 200, 400VU 로 5분. 이름은 <code>stress</code>.</p>
+<h2>2. 첫 번째 결과, 실패율 43%인데 무엇이 실패했나</h2>
+<pre><code>=== 요약 ===
+요청 173461건 · 실패율 43.29%
+홈       p95 297ms · max 2671ms
+종목상세 p95 296ms · max 2112ms   (캔들 p95 518ms · max 2112ms)
+공매도   p95 236ms · max 1747ms
+실패한 요청:
+  x candles 2xx  실패 2884 / 성공 6421
+  x macro 2xx  실패 3364 / 성공 5941
+  ...
+  x signals 2xx  실패 9305 / 성공 0
+  x accuracy 2xx  실패 9305 / 성공 0
+  x short-market 2xx  실패 3066 / 성공 0
+  x short-us 2xx  실패 3066 / 성공 0
+</code></pre>
+<p>여기서 첫 번째로 잘못 짚을 뻔했다. 43% 는 "서버가 400VU 를 못 버틴다"로 읽히기 딱 좋은 숫자다. 그런데 목록을 다시 보면 이상한 게 있다. 네 개 요청(<code>signals</code>, <code>accuracy</code>, <code>short-market</code>, <code>short-us</code>)은 성공이 0 이고, 나머지는 전부 30~38% 로 고르게 실패했다. 서버가 과부하라면 성공 0 인 요청이 따로 있을 이유가 없다.</p>
+<p>그 네 개의 공통점은 로그인이 필요한 API 라는 것이었다. 액세스 토큰은 30분짜리인데, 테스트를 준비하며 복사해 둔 토큰이 실행 시점에 이미 만료되어 있었다. 발급 22:31, 만료 23:01, 실행 23:03. 네 요청은 시작부터 끝까지 전부 401 이었다.</p>
+<p>이걸 바로 알아채지 못한 이유는 요약에 상태코드가 없었기 때문이다. "실패 9305 / 성공 0" 만으로는 401 인지 502 인지 알 수 없다. 스크립트에 상태코드별 카운터를 넣었고(이 얘기는 <a href="/post/stockanalyst-k6-script-tips">다음 글</a>에서 다룬다), 토큰의 <code>exp</code> 를 시작 전에 읽어 남은 시간이 테스트 길이보다 짧으면 실행을 막게 했다.</p>
+<p>401 을 빼고 다시 계산하면 실제 실패율은 26% 정도. 여전히 높지만 이제 "무엇이" 실패했는지 볼 차례였다.</p>
+<h2>3. 두 번째 결과, 전부 502</h2>
+<p>새 토큰으로 다시 돌렸다.</p>
+<pre><code>요청 161811건 · 실패율 29.47%
+실패 상태코드:
+  status 502   x 47685  (nginx→백엔드 연결 실패)
+</code></pre>
+<p>401 은 사라졌고 남은 실패는 한 종류, 502 였다. 이게 두 번째 갈림길이다. 502 는 nginx 가 백엔드에 붙지 못했다는 뜻이고, 504 는 붙었는데 응답이 늦었다는 뜻이다. 504 가 하나도 없다는 건 백엔드가 느려서 생긴 문제가 아니라는 뜻이다. 실제로 성공한 요청만 보면 p95 300ms 로 멀쩡했다.</p>
+<p>이때 <code>docker stats</code> 를 같이 보고 있었다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>컨테이너</th><th>CPU</th><th>메모리</th></tr></thead><tbody><tr><td>backend (Spring)</td><td>461%</td><td>2.5GB / 4GB</td></tr><tr><td>frontend (nginx)</td><td>370%</td><td>43MB / 256MB</td></tr><tr><td>mysql</td><td>200%</td><td>2.6GB / 4GB</td></tr><tr><td>redis</td><td>3%</td><td>6MB</td></tr></tbody></table>
+<p>백엔드 461% 는 이해가 된다. 초당 500 요청을 받으면서 JSON 을 만들고 gzip 을 하니까. MySQL 200% 도 그렇다. 그런데 nginx 370% 는 설명이 안 됐다. nginx 가 하는 일은 정적 파일을 주고 <code>/api/</code> 를 백엔드로 넘기는 것뿐이다. 그 일에 코어 네 개가 필요할 리 없다.</p>
+<p>여기서 세 번째로 잘못 짚을 뻔했다. 502 를 보고 처음 떠올린 건 "Tomcat 이 연결을 거절하나?" 였다. Tomcat 기본값은 요청 스레드 200개, 대기열 100개. 400VU 가 6개씩 병렬로 던지면 2,400 연결이니 넘칠 만하다고 생각했다. <code>server.tomcat.accept-count</code> 를 올리려다 멈춘 건, 그러면 nginx 의 370% 가 설명되지 않기 때문이었다. 거절당하는 쪽이 아니라 거절하는 쪽이 바쁠 이유가 없다.</p>
+<h2>4. 어디서 꺾이는지, 50VU 씩</h2>
+<p>100, 200, 400 은 계단이 너무 커서 어디서 시작되는지 안 보였다. 50VU 씩 8단계로 400 까지 올리면서, 요청마다 그 순간의 활성 VU 를 태그해 단계별로 갈라 봤다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>활성 VU</th><th>요청</th><th>실패</th><th>p95</th></tr></thead><tbody><tr><td>50 이하</td><td>5,345</td><td>0%</td><td>45ms</td></tr><tr><td>100 이하</td><td>10,872</td><td>0%</td><td>40ms</td></tr><tr><td>150 이하</td><td>16,720</td><td>0%</td><td>57ms</td></tr><tr><td>200 이하</td><td>22,298</td><td>13.0%</td><td>112ms</td></tr><tr><td>250 이하</td><td>24,767</td><td>23.2%</td><td>680ms</td></tr><tr><td>300 이하</td><td>29,919</td><td>42.2%</td><td>608ms</td></tr><tr><td>400 이하</td><td>34,716</td><td>44.2%</td><td>1,315ms</td></tr></tbody></table>
+<p>150 까지는 아무 일도 없다가 200 에서 갑자기 13% 다. p95 는 57 에서 112ms 로 거의 안 움직였다. 천천히 나빠지는 게 아니라 어떤 한도에 닿는 순간 툭 끊기는 모양이다. 150VU 에서 200VU 로 넘어가는 구간의 처리량은 초당 470~520 요청이었다. 이 숫자를 기억해 두자.</p>
+<h2>5. 로그에 <code>[error]</code> 가 없다</h2>
+<p>nginx 컨테이너 로그를 열었다. 처음 필터는 당연히 <code>[error]</code> 였다.</p>
+<pre><code>docker compose logs frontend --since 40m | findstr /c:"[error]"
+</code></pre>
+<p>아무것도 없었다. 502 가 47,000번 났는데 에러 로그가 한 줄도 없다. 대신 <code>[warn]</code> 이 수천 줄이었다.</p>
+<pre><code>[warn] an upstream response is buffered to a temporary file /var/cache/nginx/proxy_temp/1/00/0000000001
+       while reading upstream, request: "GET /api/v1/stockcandledaily/all?page=0&#x26;size=10000&#x26;stock_code=AAPL"
+</code></pre>
+<p>이건 502 와 무관한 별개의 발견이다. 캔들 1만 행 응답(gzip 후 수백 KB)이 nginx 기본 프록시 버퍼(8 x 4KB)보다 커서 매번 디스크 임시파일을 거치고 있었다. 부하를 걸지 않았으면 몰랐을 것이고, <code>proxy_buffers 16 128k</code> 로 고쳤다. 하지만 502 의 원인은 아니었다.</p>
+<p><code>[error]</code> 가 없다면 nginx 는 이 오류를 다른 레벨로 찍는다는 뜻이다. <code>[crit]</code> 과 <code>[alert]</code> 를 찾았다.</p>
+<pre><code>[crit] 40#40: *14080 connect() to 172.18.0.4:80 failed (99: Address not available)
+       while connecting to upstream, client: 172.18.0.1, server: _,
+       request: "GET /api/v1/news/by-ticker?ticker=051910&#x26;limit=8 HTTP/1.1",
+       upstream: "http://172.18.0.4:80/api/v1/news/by-ticker?ticker=051910&#x26;limit=8"
+</code></pre>
+<p><code>connect() failed (99)</code>. errno 99 는 <code>EADDRNOTAVAIL</code>, 새 소켓을 열 로컬 주소(포트)가 없다는 뜻이다. 연결이 거절된 게(<code>111: Connection refused</code>) 아니라, 거절당하기 전에 nginx 쪽에서 연결을 시도조차 못 한 것이다. nginx 는 이 오류를 <code>[crit]</code> 으로 찍는다. <code>[error]</code> 만 찾았으면 계속 못 봤을 것이다.</p>
+<h2>6. 왜 포트가 바닥나는가</h2>
+<p>이제 그림이 맞춰진다.</p>
+<svg viewBox="0 0 760 300" width="100%" style="max-width:760px;display:block;margin:24px auto" role="img" aria-label="nginx 가 요청마다 백엔드로 새 연결을 열고 닫으면 닫힌 소켓이 TIME_WAIT 로 60초 남는다. 초당 500 요청이면 60초 뒤 30,000개가 쌓여 임시 포트 28,000개를 넘는다">
+  <g font-size="12" fill="var(--color-text)">
+    <rect x="20" y="30" width="120" height="44" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+    <text x="80" y="57" text-anchor="middle">k6 (400VU)</text>
+    <rect x="240" y="30" width="120" height="44" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+    <text x="300" y="57" text-anchor="middle">nginx</text>
+    <rect x="600" y="30" width="120" height="44" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+    <text x="660" y="57" text-anchor="middle">backend:80</text>
+    <path d="M140 52 H236" stroke="var(--color-text-dim)" stroke-width="1.5" marker-end="url(#arr-pl)"></path>
+    <text x="188" y="44" text-anchor="middle" fill="var(--color-text-dim)" font-size="11">keepalive (재사용)</text>
+    <path d="M360 44 H596" stroke="#e5534b" stroke-width="1.5" marker-end="url(#arr-pl)"></path>
+    <path d="M360 60 H596" stroke="#e5534b" stroke-width="1.5" marker-end="url(#arr-pl)"></path>
+    <text x="478" y="36" text-anchor="middle" fill="#e5534b" font-size="11">요청마다 새 연결을 열고 닫음 (HTTP/1.0)</text>
+  </g>
+  <defs><marker id="arr-pl" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--color-text-dim)"></path></marker></defs>
+  <g font-size="11" fill="var(--color-text-dim)">
+    <text x="20" y="120">nginx 쪽 임시 포트 (32768~60999, 약 28,000개)</text>
+    <rect x="20" y="130" width="720" height="26" rx="4" fill="none" stroke="var(--color-border)"></rect>
+    <rect x="20" y="130" width="720" height="26" rx="4" fill="#e5534b" opacity="0.18"></rect>
+    <text x="380" y="147" text-anchor="middle" fill="var(--color-text)">TIME_WAIT 소켓, 닫힌 뒤 60초 동안 포트를 점유</text>
+    <text x="20" y="190">초당 500 요청 x 60초 = 30,000 > 28,000</text>
+    <text x="20" y="210">60초 안에 포트가 바닥나고, 그다음 connect() 는 EADDRNOTAVAIL(99)</text>
+    <text x="20" y="230">nginx 는 502 를 돌려주고, 백엔드는 그 요청을 본 적도 없다</text>
+    <text x="20" y="270" fill="var(--color-text)">150VU 까지 멀쩡하고 200VU 에서 툭 끊긴 이유: 임계값이 초당 467 요청(28,000 나누기 60초)이다</text>
+  </g>
+</svg>
+<p>nginx 의 <code>proxy_pass</code> 는 기본으로 업스트림에 HTTP/1.0 으로 붙고 keepalive 를 쓰지 않는다. API 요청 하나마다 <code>backend:80</code> 에 <code>connect()</code> 하고, 응답을 받으면 <code>close()</code> 한다. TCP 에서 먼저 닫는 쪽의 소켓은 바로 사라지지 않고 TIME_WAIT 상태로 60초를 머문다(늦게 도착하는 패킷을 처리하기 위한 규약이다). 그동안 그 포트는 다시 못 쓴다.</p>
+<p>임시 포트 범위는 리눅스 기본 32768<del>60999, 약 28,000개. 초당 N 요청이면 60초 뒤 60N 개가 TIME_WAIT 로 쌓인다. 60N 이 28,000 을 넘는 N 은 467. 4절에서 실패가 시작된 구간의 처리량이 초당 470</del>520 이었다. 계산이 맞는다.</p>
+<p>nginx 의 CPU 370% 도 여기서 나온다. 초당 500번 3-way handshake 를 하고 500번 4-way close 를 하는 비용이다. 커널이 그 일을 하고 있었고, <code>docker stats</code> 는 그걸 nginx 컨테이너 몫으로 보여준 것이다.</p>
+<p>이건 메모리 누수처럼 무언가가 계속 남아 있는 종류의 누수는 아니다. 60초가 지나면 알아서 회수된다. 하지만 회수되는 속도보다 쓰는 속도가 빠르면 누수와 똑같이 동작한다. 자원이 "돌아오지 않는" 게 아니라 "제때 돌아오지 않는" 것이고, 그 임계값이 초당 467 이라는 아주 구체적인 숫자로 나타났다.</p>
+<h2>7. 고치기, 세 줄</h2>
+<pre><code class="language-nginx">upstream backend_api {
+    server backend:80;
+    keepalive 64;
+    keepalive_requests 1000;
+    keepalive_timeout 60s;
+}
+location /api/ {
+    proxy_pass http://backend_api;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    ...
+}
+</code></pre>
+<p><code>upstream</code> 블록에 <code>keepalive</code> 를 주면 nginx 워커가 백엔드와의 연결을 닫지 않고 풀에 넣어 뒀다가 다음 요청에 재사용한다. 64 는 워커당 열어 두는 유휴 연결 수다. 그러려면 두 가지가 더 필요하다. HTTP/1.1 이어야 하고(<code>proxy_http_version 1.1</code>, keepalive 는 1.1 부터다), 클라이언트가 보낸 <code>Connection: close</code> 헤더를 백엔드로 그대로 넘기면 백엔드가 연결을 닫아 버리니 빈 값으로 덮어야 한다(<code>proxy_set_header Connection ""</code>). 세 개 중 하나라도 빠지면 keepalive 가 동작하지 않는다.</p>
+<p>백엔드 코드는 한 줄도 안 바뀌었다. Tomcat 설정도 그대로다.</p>
+<h2>8. 고친 뒤</h2>
+<p>같은 step 을 다시 돌렸다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>활성 VU</th><th>실패 (전 / 후)</th><th>p95 (전 / 후)</th></tr></thead><tbody><tr><td>150 이하</td><td>0% / 0%</td><td>57 / 43ms</td></tr><tr><td>200 이하</td><td>13% / 0%</td><td>112 / 62ms</td></tr><tr><td>250 이하</td><td>23% / 0%</td><td>680 / 271ms</td></tr><tr><td>300 이하</td><td>42% / 0%</td><td>608 / 1,360ms</td></tr><tr><td>350 이하</td><td>35% / 0%</td><td>885 / 2,875ms</td></tr><tr><td>400 이하</td><td>44% / 0%</td><td>1,315 / 1,163ms</td></tr></tbody></table>
+<p>168,534 요청, 실패 0. 502 는 완전히 사라졌다.</p>
+<svg viewBox="0 0 760 210" width="100%" style="max-width:760px;display:block;margin:24px auto" role="img" aria-label="활성 VU 별 실패율. 고치기 전에는 200VU 부터 13%에서 44% 까지 오르고, 고친 뒤에는 전 구간 0%">
+  <g font-size="11" fill="var(--color-text-dim)">
+    <line x1="60" y1="160" x2="740" y2="160" stroke="var(--color-border)"></line>
+    <line x1="60" y1="20" x2="60" y2="160" stroke="var(--color-border)"></line>
+    <text x="14" y="164">0%</text><text x="8" y="94">25%</text><text x="8" y="26">50%</text>
+    <text x="84" y="178">50</text><text x="164" y="178">100</text><text x="244" y="178">150</text><text x="324" y="178">200</text><text x="404" y="178">250</text><text x="484" y="178">300</text><text x="564" y="178">350</text><text x="644" y="178">400</text><text x="700" y="178">VU</text>
+  </g>
+  <g fill="#e5534b" opacity="0.7">
+    <rect x="316" y="123.6" width="22" height="36.4"></rect><rect x="396" y="95" width="22" height="65"></rect><rect x="476" y="41.8" width="22" height="118.2"></rect><rect x="556" y="62.3" width="22" height="97.7"></rect><rect x="636" y="36.2" width="22" height="123.8"></rect>
+  </g>
+  <g fill="var(--color-accent)">
+    <rect x="100" y="157" width="22" height="3" rx="1"></rect><rect x="180" y="157" width="22" height="3" rx="1"></rect><rect x="260" y="157" width="22" height="3" rx="1"></rect><rect x="340" y="157" width="22" height="3" rx="1"></rect><rect x="420" y="157" width="22" height="3" rx="1"></rect><rect x="500" y="157" width="22" height="3" rx="1"></rect><rect x="580" y="157" width="22" height="3" rx="1"></rect><rect x="660" y="157" width="22" height="3" rx="1"></rect>
+  </g>
+  <g font-size="11" fill="var(--color-text-dim)">
+    <text x="312" y="118">13%</text><text x="392" y="89">23%</text><text x="472" y="36">42%</text><text x="552" y="57">35%</text><text x="632" y="31">44%</text>
+    <rect x="470" y="196" width="12" height="8" fill="#e5534b" opacity="0.7"></rect><text x="486" y="204">고치기 전 (502)</text>
+    <rect x="600" y="196" width="12" height="8" fill="var(--color-accent)"></rect><text x="616" y="204">고친 뒤, 0%</text>
+  </g>
+</svg>
+<p>대신 벽의 모양이 바뀌었다. 250 부터 p95 가 오르고 300 에서 1초를 넘는다. 이번엔 거절이 아니라 대기다. 백엔드와 MySQL 이 같은 12코어를 다 써서 요청이 줄을 서는 것이고, 이건 코드가 아니라 코어의 문제다. 실사용자는 이 스크립트의 VU 보다 10배쯤 느긋하게 움직이니(화면 사이 1~5초 vs 수십 초) 200VU 는 동시 접속자 1,500명 안팎에 해당한다. 개인 프로젝트로는 한참 여유다.</p>
+<h2>9. 되돌아보면</h2>
+<p>세 번 엉뚱한 곳을 짚을 뻔했고, 매번 멈춰 세운 건 설명되지 않는 숫자 하나였다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>순간</th><th>짚을 뻔한 것</th><th>멈춰 세운 것</th></tr></thead><tbody><tr><td>실패율 43%</td><td>서버가 400VU 를 못 버틴다</td><td>성공 0 인 요청이 딱 4개. 과부하는 그렇게 안 생긴다</td></tr><tr><td>502 47,000건</td><td>Tomcat 스레드, 대기열 부족</td><td>거절당하는 쪽(nginx)이 CPU 370% 일 이유가 없다</td></tr><tr><td><code>[error]</code> 로그 0건</td><td>로그가 안 남는 종류의 문제</td><td>502 가 47,000번인데 로그가 없을 리 없다. 다른 레벨을 봐야 한다</td></tr></tbody></table>
+<p>거꾸로 말하면, 부하테스트에서 제일 먼저 갖춰야 하는 건 높은 VU 가 아니라 실패를 상태코드별로 세는 것, 그리고 부하 중에 <code>docker stats</code> 와 로그를 같이 보는 것이다. 그 둘이 없었으면 "Tomcat 스레드 400개로 올림" 이라는 커밋을 남기고, 502 는 그대로였을 것이다.</p>
+<p>그리고 부하를 걸어야만 보이는 것이 있다. 요청마다 연결을 새로 여는 건 초당 100 요청에서는 아무 증상이 없다. 임시 포트 28,000개를 60초 안에 쓰려면 초당 467 이 필요하고, 그 숫자는 사용자 한 명이 아무리 열심히 클릭해도 만들 수 없다. 캔들 응답이 매번 디스크를 거치던 것도 마찬가지다. 둘 다 서비스를 만든 뒤 처음으로 부하를 건 날 한꺼번에 나왔다.</p>
+<p>스크립트를 어떻게 짰는지, 상태코드별 카운터와 VU 단계별 표를 k6 요약에 어떻게 넣었는지는 <a href="/post/stockanalyst-k6-script-tips">다음 글</a>에 따로 적었다.</p>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-k6-script-tips">StockAnalyst k6 부하테스트 스크립트에서 배운 것 - 숫자보다 먼저 갖춰야 하는 것들</a><p>처음 짠 부하테스트 스크립트는 실패율 5%를 보여주면서 그게 URL 인코딩 문제인지 서버 문제인지 말해 주지 않았다. 세 번 고쳐 쓰면서 정리한 것. 화면 단위로 묶기, 실패를 상태코드로 세기, VU 단계별 표를 요약에 넣기, 시작 전에 입력을 검증하기, 외부 호출 경로를 끄기. k6 코드와 함께.</p><span class="pr-meta">2026.09.08</span></li><li><a href="/post/stockanalyst-inference-concurrency">StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기</a><p>뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나로 바꿨다. 그 뒤 k6 로 50VU 씩 400 까지 올려 보니 200VU 부터 502 가 났는데, 범인은 백엔드가 아니라 nginx 의 임시 포트 고갈이었다. keepalive 세 줄로 고친 뒤 400VU 까지 실패 0, 그래서 몇 명까지 받을 수 있는지까지.</p><span class="pr-meta">2026.09.06</span></li><li><a href="/post/stockanalyst-dev-log-4-deploy">StockAnalyst 개발기 (4) - 클라우드 견적을 내다 집에 서버를 올린 기록</a><p>주식 분석 서비스를 실제로 배포한 기록. OCI 무료 티어가 계속 용량 부족으로 막혀 유료까지 전부 견적을 냈고, 결국 데이터가 이미 있는 집 PC 로 갔다. mem_limit 을 근거를 세워 다시 계산하고, Cloudflare Tunnel 로 포트를 열지 않고 공개하고, TLS 종단 때문에 OAuth 가 깨지던 문제와 MySQL 이 두 개가 되는 사고를 잡았다.</p><span class="pr-meta">2026.09.05</span></li><li><a href="/post/stockanalyst-oci-deploy">StockAnalyst OCI 무료 티어 배포 준비 - 홈 리전, 요청 수 병목, ARM 빌드, 유휴 회수</a><p>주식 분석 서비스를 오라클 클라우드 Always Free에 올리기까지의 판단 기록. 2026년 6월에 반토막 난 A1 스펙, 홈 리전이 춘천이면 A1을 못 쓴다는 되돌릴 수 없는 제약, 관리형 MySQL 대신 직접 설치를 고른 세 가지 이유, 용량이 아니라 요청 수가 먼저 바닥나는 Object Storage, 유휴 인스턴스 회수, aarch64 빌드 함정, mem_limit 없는 컨테이너에서 JVM이 호스트를 노리는 문제.</p><span class="pr-meta">2026.09.04</span></li><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li></ul></section></main></div>
+  </body>
+</html>

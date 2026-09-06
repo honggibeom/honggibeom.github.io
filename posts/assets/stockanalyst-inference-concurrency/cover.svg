@@ -15,5 +15,5 @@
   <text x="600" y="336" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="62" font-weight="bold" fill="url(#accent)">StockAnalyst</text>
   <rect x="555" y="364" width="90" height="5" rx="2.5" fill="url(#accent)"/>
   <text x="600" y="424" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="30" fill="#e6edf3">요청마다 생기던 ONNX 추론과 스레드풀</text>
-  <text x="600" y="470" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">spring · onnx · 동시성 · 세마포어 · 스레드풀 · 최적화</text>
+  <text x="600" y="470" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" font-size="22" fill="#8b95a1">spring · onnx · 동시성 · 세마포어 · 스레드풀 · k6</text>
 </svg>

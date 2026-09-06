@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
     <meta name="description" content="스레드풀 태그가 달린 글 1편" />
-    <meta name="keywords" content="스레드풀, stockanalyst, spring, onnx, 동시성, 세마포어, 최적화, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="keywords" content="스레드풀, stockanalyst, spring, onnx, 동시성, 세마포어, k6, 부하테스트, 최적화, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
     <meta name="author" content="홍기범 (Honggibeom)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://honggibeom.github.io/tags/%EC%8A%A4%EB%A0%88%EB%93%9C%ED%92%80" />
@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-RuiSjIwy.js"></script>
+    <script type="module" crossorigin src="/assets/index-HehBMNfT.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   </head>
   <body>
@@ -76,6 +76,6 @@
   .pr ul.pr-list{list-style:none;padding:0}
   .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
   .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
-</style><main class="pr"><h1>#스레드풀</h1><p class="pr-meta">1편</p><ul class="pr-list"><li><a href="/post/stockanalyst-inference-concurrency">StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기</a><p>뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. 동시 요청이 겹치면 코어를 N배로 다투다 전부 느려지는 구조. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나에 요청당 세마포어로 바꾼 기록이다.</p><span class="pr-meta">2026.09.06</span></li></ul></main></div>
+</style><main class="pr"><h1>#스레드풀</h1><p class="pr-meta">1편</p><ul class="pr-list"><li><a href="/post/stockanalyst-inference-concurrency">StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기</a><p>뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나로 바꿨다. 그 뒤 k6 로 50VU 씩 400 까지 올려 보니 200VU 부터 502 가 났는데, 범인은 백엔드가 아니라 nginx 의 임시 포트 고갈이었다. keepalive 세 줄로 고친 뒤 400VU 까지 실패 0, 그래서 몇 명까지 받을 수 있는지까지.</p><span class="pr-meta">2026.09.06</span></li></ul></main></div>
   </body>
 </html>

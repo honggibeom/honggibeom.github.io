@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://honggibeom.github.io/</loc><lastmod>2026-09-06</lastmod><priority>1.0</priority></url>
+  <url><loc>https://honggibeom.github.io/</loc><lastmod>2026-09-08</lastmod><priority>1.0</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-k6-script-tips</loc><lastmod>2026-09-08</lastmod><priority>0.8</priority></url>
+  <url><loc>https://honggibeom.github.io/post/stockanalyst-loadtest-port-leak</loc><lastmod>2026-09-07</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/stockanalyst-inference-concurrency</loc><lastmod>2026-09-06</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/stockanalyst-dev-log-4-deploy</loc><lastmod>2026-09-05</lastmod><priority>0.8</priority></url>
   <url><loc>https://honggibeom.github.io/post/stockanalyst-oci-deploy</loc><lastmod>2026-09-04</lastmod><priority>0.8</priority></url>
@@ -56,9 +58,19 @@
   <url><loc>https://honggibeom.github.io/categories/docker</loc><lastmod>2026-02-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/categories/frontend</loc><lastmod>2026-08-31</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/categories/nearby</loc><lastmod>2025-07-07</lastmod><priority>0.6</priority></url>
-  <url><loc>https://honggibeom.github.io/categories/stockanalyst</loc><lastmod>2026-09-06</lastmod><priority>0.6</priority></url>
+  <url><loc>https://honggibeom.github.io/categories/stockanalyst</loc><lastmod>2026-09-08</lastmod><priority>0.6</priority></url>
   <url><loc>https://honggibeom.github.io/tags</loc><priority>0.4</priority></url>
-  <url><loc>https://honggibeom.github.io/tags/stockanalyst</loc><lastmod>2026-09-06</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/stockanalyst</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/k6</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/%EB%B6%80%ED%95%98%ED%85%8C%EC%8A%A4%ED%8A%B8</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/%EC%84%B1%EB%8A%A5</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/javascript</loc><lastmod>2026-09-08</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/nginx</loc><lastmod>2026-09-07</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/keepalive</loc><lastmod>2026-09-07</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/TIME_WAIT</loc><lastmod>2026-09-07</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/502</loc><lastmod>2026-09-07</lastmod><priority>0.3</priority></url>
+  <url><loc>https://honggibeom.github.io/tags/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85</loc><lastmod>2026-09-07</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/spring</loc><lastmod>2026-09-06</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/onnx</loc><lastmod>2026-09-06</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EB%8F%99%EC%8B%9C%EC%84%B1</loc><lastmod>2026-09-06</lastmod><priority>0.3</priority></url>
@@ -124,7 +136,6 @@
   <url><loc>https://honggibeom.github.io/tags/ssr</loc><lastmod>2026-08-29</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/rsc</loc><lastmod>2026-08-29</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/actuator</loc><lastmod>2026-08-17</lastmod><priority>0.3</priority></url>
-  <url><loc>https://honggibeom.github.io/tags/%EC%84%B1%EB%8A%A5</loc><lastmod>2026-08-17</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EC%BA%90%EC%8B%9C</loc><lastmod>2026-08-17</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EB%A1%9C%EB%93%9C%EB%A7%B5</loc><lastmod>2026-08-17</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/webpack</loc><lastmod>2026-08-15</lastmod><priority>0.3</priority></url>
@@ -160,7 +171,6 @@
   <url><loc>https://honggibeom.github.io/tags/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5</loc><lastmod>2026-03-26</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EB%A9%80%ED%8B%B0%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%A7%80</loc><lastmod>2026-02-24</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/ci-cd</loc><lastmod>2026-02-24</lastmod><priority>0.3</priority></url>
-  <url><loc>https://honggibeom.github.io/tags/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85</loc><lastmod>2026-02-24</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%ED%95%99%EC%8A%B5%EB%85%B8%ED%8A%B8</loc><lastmod>2026-02-24</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD</loc><lastmod>2026-02-06</lastmod><priority>0.3</priority></url>
   <url><loc>https://honggibeom.github.io/tags/network</loc><lastmod>2026-01-25</lastmod><priority>0.3</priority></url>
