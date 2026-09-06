@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. 동시 요청이 겹치면 코어를 N배로 다투다 전부 느려지는 구조. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나에 요청당 세마포어로 바꾼 기록이다." />
+    <meta name="keywords" content="stockanalyst, spring, onnx, 동시성, 세마포어, 스레드풀, 최적화, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle, Python" />
+    <meta name="author" content="홍기범 (Honggibeom)" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://honggibeom.github.io/post/stockanalyst-inference-concurrency" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Honggibeom's blog" />
+    <meta property="og:title" content="StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기 | Honggibeom's blog" />
+    <meta property="og:description" content="뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. 동시 요청이 겹치면 코어를 N배로 다투다 전부 느려지는 구조. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나에 요청당 세마포어로 바꾼 기록이다." />
+    <meta property="og:url" content="https://honggibeom.github.io/post/stockanalyst-inference-concurrency" />
+    <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 검색 엔진 소유 확인: 발급받은 content 값을 넣고 주석을 푼다
+    <meta name="google-site-verification" content="여기에_인증_토큰" />
+    <meta name="naver-site-verification" content="여기에_인증_토큰" />
+    -->
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("blog:theme");
+          var theme =
+            saved ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <title>StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기 | Honggibeom's blog</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
+    ></script>
+    <script type="module" crossorigin src="/assets/index-RuiSjIwy.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
+  <meta property="article:published_time" content="2026-09-06" />
+<meta property="article:section" content="StockAnalyst" />
+<meta property="article:tag" content="stockanalyst" />
+<meta property="article:tag" content="spring" />
+<meta property="article:tag" content="onnx" />
+<meta property="article:tag" content="동시성" />
+<meta property="article:tag" content="세마포어" />
+<meta property="article:tag" content="스레드풀" />
+<meta property="article:tag" content="최적화" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기","description":"뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. 동시 요청이 겹치면 코어를 N배로 다투다 전부 느려지는 구조. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나에 요청당 세마포어로 바꾼 기록이다.","datePublished":"2026-09-06","dateModified":"2026-09-06","keywords":"stockanalyst, spring, onnx, 동시성, 세마포어, 스레드풀, 최적화","image":"https://honggibeom.github.io/posts/assets/stockanalyst-inference-concurrency/cover.svg","url":"https://honggibeom.github.io/post/stockanalyst-inference-concurrency","author":{"@type":"Person","name":"Honggibeom","url":"https://honggibeom.github.io/about"},"publisher":{"@type":"Person","name":"Honggibeom"},"mainEntityOfPage":"https://honggibeom.github.io/post/stockanalyst-inference-concurrency"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Honggibeom's blog","item":"https://honggibeom.github.io/"},{"@type":"ListItem","position":2,"name":"StockAnalyst","item":"https://honggibeom.github.io/categories/stockanalyst"},{"@type":"ListItem","position":3,"name":"StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기","item":"https://honggibeom.github.io/post/stockanalyst-inference-concurrency"}]}</script>
+</head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+<style id="prerender-style">
+  .pr{max-width:820px;margin:0 auto;padding:40px 20px;line-height:1.75;font-size:16px}
+  .pr h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 8px}
+  .pr .pr-meta{color:var(--color-text-dim,#666e79);font-size:13px;margin-bottom:28px}
+  .pr a{color:var(--color-accent-strong,#0a6b56)}
+  .pr pre{overflow-x:auto;padding:16px;border:1px solid var(--color-border,#d8dee4);border-radius:10px}
+  .pr table{border-collapse:collapse;display:block;overflow-x:auto;font-size:14.5px}
+  .pr th,.pr td{padding:8px 12px;border:1px solid var(--color-border,#d8dee4)}
+  .pr img,.pr svg{max-width:100%}
+  .pr ul.pr-list{list-style:none;padding:0}
+  .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
+  .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
+</style><main class="pr"><article>
+<p class="pr-meta"><a href="/categories/stockanalyst">StockAnalyst</a></p>
+<h1>StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기</h1>
+<p class="pr-meta">2026.09.06 · <a href="/tags/stockanalyst">#stockanalyst</a> <a href="/tags/spring">#spring</a> <a href="/tags/onnx">#onnx</a> <a href="/tags/%EB%8F%99%EC%8B%9C%EC%84%B1">#동시성</a> <a href="/tags/%EC%84%B8%EB%A7%88%ED%8F%AC%EC%96%B4">#세마포어</a> <a href="/tags/%EC%8A%A4%EB%A0%88%EB%93%9C%ED%92%80">#스레드풀</a> <a href="/tags/%EC%B5%9C%EC%A0%81%ED%99%94">#최적화</a></p>
+<blockquote>
+<p>StockAnalyst 는 Spring Boot + React(Vite) + Python 파이프라인으로 만든 주식 정보 서비스다. 전체 구조는 <a href="/post/stockanalyst-dev-log-2-overview">개발기 (2) 목차</a>에 있다. 뉴스 감성은 <a href="/post/stockanalyst-sentiment-model">한국어 BERT 를 ONNX 로 돌리는 글</a>에서 만든 모델이고, 이 글은 그 추론이 운영에서 어떻게 요청 스레드를 잡아먹고 있었는지, 그리고 두 군데를 어떻게 묶었는지에 대한 짧은 기록이다. 세 저장소를 통째로 훑는 최적화 작업 중 백엔드 3단계에 해당한다.</p>
+</blockquote>
+<p>한눈에 보기</p>
+<ul>
+<li>ONNX 세션은 스레드 안전이지만, 추론 하나가 intra-op 스레드를 전부 쓴다. 동시 요청 N개면 코어를 N배로 다툰다 → <code>Semaphore(2)</code> 로 동시 추론을 제한하고, 3초 안에 자리를 못 잡으면 감성을 비운 채 응답한다</li>
+<li>뉴스 검색은 요청마다 <code>Executors.newFixedThreadPool(6)</code> 을 만들고 <code>shutdown()</code> 했다. 요청 N개면 스레드 6N개가 생겼다 사라진다 → 공용 12스레드 풀 하나 + 요청당 <code>Semaphore(6)</code> 으로 바꿨다</li>
+<li>두 수정 모두 "느려지더라도 죽지 않게"가 아니라 "겹쳐도 서로를 느리게 만들지 않게"가 목표다. 감성은 부가 정보라 건너뛰어도 화면이 깨지지 않는다는 점을 이용했다</li>
+<li>전후 벤치마크는 아직 없다. 구조상 자명한 문제를 고친 것이고, 수치는 부하 테스트를 붙이면 그때 채운다</li>
+</ul>
+<h2>1. 어디서 추론이 도는가</h2>
+<p>감성 모델은 파이프라인(파이썬)이 매일 기사에 붙이는 것과 별개로, Spring 안에서도 돈다. 사용자가 뉴스를 검색하면 네이버 검색 결과 10건을 받아 그 자리에서 감성을 매기고, 공매도 상위 종목 카드에는 DB 에 기사가 없는 종목을 네이버에서 즉석으로 한 건씩 채우는데 거기도 감성이 붙는다. 즉 추론은 요청 스레드 위에서 요청이 올 때마다 돈다.</p>
+<p>호출 경로를 그려 보면 이렇다.</p>
+<svg viewBox="0 0 760 210" width="100%" style="max-width:760px;display:block;margin:24px auto" role="img" aria-label="요청이 뉴스 검색과 공매도 카드 두 경로로 감성 분석기에 도달하는 흐름">
+  <g font-size="13" fill="var(--color-text)" text-anchor="middle">
+    <rect x="4" y="20" width="130" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+    <text x="69" y="42">GET /news/search</text><text x="69" y="59" fill="var(--color-text-dim)" font-size="11">요청 스레드</text>
+    <rect x="4" y="140" width="130" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+    <text x="69" y="162">GET /short-sale</text><text x="69" y="179" fill="var(--color-text-dim)" font-size="11">요청 스레드</text>
+    <rect x="200" y="20" width="150" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+    <text x="275" y="42">NewsSearchService</text><text x="275" y="59" fill="var(--color-text-dim)" font-size="11">네이버 10건 · og:image 풀</text>
+    <rect x="200" y="140" width="150" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+    <text x="275" y="162">ShortMarketService</text><text x="275" y="179" fill="var(--color-text-dim)" font-size="11">fillLive · 최대 12종목</text>
+    <rect x="430" y="80" width="150" height="50" rx="8" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+    <text x="505" y="102" font-weight="600">SentimentAnalyzer</text><text x="505" y="119" fill="var(--color-text-dim)" font-size="11">ONNX session.run</text>
+    <rect x="640" y="80" width="116" height="50" rx="8" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+    <text x="698" y="102">intra-op 스레드</text><text x="698" y="119" fill="var(--color-text-dim)" font-size="11">코어 수만큼</text>
+  </g>
+  <g stroke="var(--color-text-dim)" stroke-width="1.5" fill="none" marker-end="url(#arrow-ic)">
+    <path d="M134 45 H200"></path>
+    <path d="M134 165 H200"></path>
+    <path d="M350 45 C390 45 390 105 430 105"></path>
+    <path d="M350 165 C390 165 390 105 430 105"></path>
+    <path d="M580 105 H640"></path>
+  </g>
+  <defs><marker id="arrow-ic" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--color-text-dim)"></path></marker></defs>
+</svg>
+<p>공매도 쪽이 더 무겁다. 카드 하나를 열면 최대 12종목을 네이버에 검색하고, 검색마다 감성이 붙는다. 이 경로는 원래 읽기 트랜잭션 안에서 돌고 있어서 DB 커넥션까지 붙들고 있었는데, 그건 2단계에서 트랜잭션 밖으로 뺐고 이 글의 범위는 추론과 스레드 쪽이다.</p>
+<h2>2. 문제 1 - ONNX 추론에 동시성 상한이 없다</h2>
+<p><code>OrtSession</code> 은 스레드 안전이다. 여러 스레드가 동시에 <code>session.run()</code> 을 불러도 깨지지 않는다. 그래서 처음엔 잠금 없이 그냥 썼다. 문제는 안전한 것과 빠른 것이 다르다는 점이다.</p>
+<p>ONNX Runtime 은 추론 하나를 intra-op 스레드 풀로 쪼개서 돌린다. 기본값은 물리 코어 수이고, 우리 서버는 <code>ONNX_INTRA_OP_THREADS=6</code> 으로 두고 있었다. 요청 하나가 추론을 시작하면 6개 스레드가 코어를 다 쓴다. 여기까지는 의도한 것이다. 그런데 요청 두 개가 겹치면 12개 스레드가 같은 코어를 놓고 컨텍스트 스위칭을 하고, 셋이 겹치면 18개다. 한 요청씩 순서대로 처리했을 때보다 전부 다 느려진다. 병렬로 돌린다고 처리량이 늘지 않고, 지연만 늘어나는 전형적인 과다 구독이다.</p>
+<svg viewBox="0 0 760 246" width="100%" style="max-width:760px;display:block;margin:24px auto" role="img" aria-label="동시 요청이 늘수록 수정 전에는 활성 추론 스레드가 요청 수에 비례해 48개까지 늘지만 수정 후에는 12개에서 멈추고 나머지는 대기한다">
+  <text x="0" y="14" font-size="13" fill="var(--color-text-muted)">동시 요청에 따른 활성 추론 스레드 (intra-op 6 기준의 산수)</text>
+  <text x="0" y="47" font-size="12" fill="var(--color-text)">동시 요청 1</text>
+  <rect x="118" y="36" width="55.2" height="14" rx="3" fill="#e5534b" opacity="0.7"></rect>
+  <text x="181" y="47" font-size="11" fill="var(--color-text-muted)">전 6</text>
+  <rect x="118" y="54" width="55.2" height="14" rx="3" fill="var(--color-accent)" opacity="0.8"></rect>
+  <text x="181" y="65" font-size="11" fill="var(--color-text-muted)">후 6</text>
+  <text x="0" y="95" font-size="12" fill="var(--color-text)">동시 요청 2</text>
+  <rect x="118" y="84" width="110.5" height="14" rx="3" fill="#e5534b" opacity="0.7"></rect>
+  <text x="236" y="95" font-size="11" fill="var(--color-text-muted)">전 12</text>
+  <rect x="118" y="102" width="110.5" height="14" rx="3" fill="var(--color-accent)" opacity="0.8"></rect>
+  <text x="236" y="113" font-size="11" fill="var(--color-text-muted)">후 12</text>
+  <text x="0" y="143" font-size="12" fill="var(--color-text)">동시 요청 4</text>
+  <rect x="118" y="132" width="221.0" height="14" rx="3" fill="#e5534b" opacity="0.7"></rect>
+  <text x="347" y="143" font-size="11" fill="var(--color-text-muted)">전 24</text>
+  <rect x="118" y="150" width="110.5" height="14" rx="3" fill="var(--color-accent)" opacity="0.8"></rect>
+  <rect x="228.5" y="150" width="18.4" height="14" rx="3" fill="var(--color-border-strong)" opacity="0.45"></rect>
+  <text x="255" y="161" font-size="11" fill="var(--color-text-muted)">후 12 + 대기 2</text>
+  <text x="0" y="191" font-size="12" fill="var(--color-text)">동시 요청 8</text>
+  <rect x="118" y="180" width="442.0" height="14" rx="3" fill="#e5534b" opacity="0.7"></rect>
+  <text x="568" y="191" font-size="11" fill="var(--color-text-muted)">전 48</text>
+  <rect x="118" y="198" width="110.5" height="14" rx="3" fill="var(--color-accent)" opacity="0.8"></rect>
+  <rect x="228.5" y="198" width="55.2" height="14" rx="3" fill="var(--color-border-strong)" opacity="0.45"></rect>
+  <text x="292" y="209" font-size="11" fill="var(--color-text-muted)">후 12 + 대기 6</text>
+  <rect x="0" y="224" width="12" height="12" rx="3" fill="#e5534b" opacity="0.7"></rect>
+  <text x="18" y="234" font-size="12" fill="var(--color-text-dim)">수정 전 - 요청 수 곱하기 6</text>
+  <rect x="230" y="224" width="12" height="12" rx="3" fill="var(--color-accent)" opacity="0.8"></rect>
+  <text x="248" y="234" font-size="12" fill="var(--color-text-dim)">수정 후 - 세마포어 2개 자리, 초과분은 대기하다 3초 넘으면 감성 없이 응답</text>
+</svg>
+<p>숫자는 측정이 아니라 산수다. 요청 N개 곱하기 intra-op 6. 이 표가 말하는 건 8명이 동시에 공매도 화면을 열면 코어 6개 위에서 스레드 48개가 싸운다는 것이고, 그 순간 감성과 무관한 다른 API 까지 같이 느려진다는 것이다.</p>
+<h3>고친 방법 - 자리가 2개인 세마포어</h3>
+<p>추론 앞에 <code>Semaphore(2)</code> 를 뒀다. 동시에 두 요청까지만 실제로 추론을 돌리고, 나머지는 줄을 선다. 그리고 무한정 기다리게 하지 않는다. <code>tryAcquire(3초)</code> 로 시간을 정하고, 못 잡으면 감성을 <code>null</code> 로 채워서 그대로 응답한다.</p>
+<pre><code class="language-java">@Value("${news.sentiment.max-concurrent:2}")
+private int maxConcurrent;
+
+@Value("${news.sentiment.acquire-timeout-ms:3000}")
+private long acquireTimeoutMs;
+
+private Semaphore inferenceSlots;
+
+public List&#x3C;Result> analyze(List&#x3C;String> texts) {
+    List&#x3C;Result> out = new ArrayList&#x3C;>(texts.size());
+    if (!ready) return nulls(texts.size());
+
+    boolean acquired = slots().tryAcquire(acquireTimeoutMs, TimeUnit.MILLISECONDS);
+    if (!acquired) {
+        log.debug("감성 추론 대기 초과 ({}ms), {}건 건너뜀", acquireTimeoutMs, texts.size());
+        return nulls(texts.size());
+    }
+    try {
+        for (int i = 0; i &#x3C; texts.size(); i += batchSize) {
+            out.addAll(runBatch(texts.subList(i, Math.min(i + batchSize, texts.size()))));
+        }
+    } finally {
+        slots().release();
+    }
+    return out;
+}
+</code></pre>
+<p>세마포어를 필드 초기화가 아니라 지연 생성으로 둔 건 <code>@Value</code> 가 생성자 이후에 주입되기 때문이다. <code>new Semaphore(maxConcurrent, true)</code> 의 두 번째 인자는 공정 모드로, 먼저 줄 선 요청이 먼저 들어간다. 처리량만 보면 비공정이 약간 낫지만, 여기서는 3초 타임아웃과 조합되므로 어떤 요청이 계속 밀려 타임아웃 나는 일이 없어야 한다.</p>
+<h3>왜 "건너뛰기"가 허용되는가</h3>
+<p>이게 이 수정의 핵심 전제다. 감성은 기사 카드 옆의 작은 배지다. 없으면 배지가 안 뜰 뿐 기사 목록은 그대로 나온다. 프론트는 원래부터 <code>sentiment: null</code> 을 "판정 없음"으로 그리고 있었다(파이프라인이 아직 안 돈 기사가 그렇다). 그러니 부하가 몰린 3초 동안 감성을 포기하는 건 사용자가 알아채기 어려운 열화이고, 3초를 넘겨서 기다리게 하는 건 확실히 알아채는 지연이다. 부가 정보를 지연의 원인으로 두지 않는다는 원칙이다.</p>
+<p>반대로 이 전제가 안 서는 곳, 예를 들어 파이프라인 배치처럼 "결과가 반드시 있어야 하는" 경로였다면 타임아웃 대신 무한 대기나 큐잉이 맞다. 같은 세마포어라도 못 잡았을 때 뭘 하느냐가 용도에 따라 달라진다.</p>
+<h3>왜 2인가</h3>
+<p>intra-op 6 이 코어를 전부 쓰는 설정이므로 이론상 1이 맞다. 2로 둔 이유는 토크나이징과 텐서 생성이 추론 앞뒤에 있어서 그 구간엔 코어가 논다는 것, 그리고 요청 하나가 배치 16건 단위로 여러 번 <code>run()</code> 을 부르는 동안 다른 요청이 완전히 굶지는 않게 하려는 것이다. 어느 쪽이든 설정값(<code>news.sentiment.max-concurrent</code>)이라 서버 코어 수에 맞춰 바꾸면 된다. intra-op 를 줄이고 동시 추론을 늘리는 조합도 가능한데, BERT 한 건의 지연이 중요하면 지금처럼, 처리량이 중요하면 반대로 가는 게 일반적이다.</p>
+<h2>3. 문제 2 - 요청마다 스레드풀을 만든다</h2>
+<p>두 번째는 더 단순한 실수였다. 뉴스 검색 결과 10건에 og:image 를 붙이는데, 기사 페이지를 하나씩 열어 <code>&#x3C;head></code> 만 읽는 작업이라 병렬로 돌린다. 그 코드가 이랬다.</p>
+<pre><code class="language-java">ExecutorService pool = Executors.newFixedThreadPool(Math.min(imageConcurrency, rows.size()));
+try {
+    List&#x3C;CompletableFuture&#x3C;NewsSearchItem>> futures = rows.stream()
+            .map(row -> CompletableFuture.supplyAsync(() -> toItem(row), pool))
+            .toList();
+    ...
+} finally {
+    pool.shutdown();
+}
+</code></pre>
+<p>요청 하나에 풀 하나. 스레드 6개를 만들고, 10건을 처리하고, 버린다. 요청이 한 번에 하나씩만 오면 문제가 없다. 그런데 사용자 열 명이 동시에 검색하면 풀 10개, 스레드 60개가 생겼다 사라지고, 공매도 카드의 <code>fillLive</code> 는 한 번에 12종목을 검색하니 결과가 1건씩이라 풀당 스레드는 1개여도 풀 자체가 12개씩 만들어졌다 버려진다. 스레드 생성 자체도 싸지 않지만 더 큰 문제는 상한이 없다는 것이다. 이 서비스 전체에서 og:image 를 동시에 몇 개까지 가져올지 아무도 정하지 않은 상태였다.</p>
+<h3>고친 방법 - 공용 풀 하나, 요청당 세마포어</h3>
+<p>풀을 서비스 필드로 올려 하나만 만들고, 요청당 병렬도는 세마포어로 따로 묶었다.</p>
+<svg viewBox="0 0 760 244" width="100%" style="max-width:760px;display:block;margin:24px auto" role="img" aria-label="수정 전에는 요청마다 스레드풀을 새로 만들었고 수정 후에는 공용 고정 풀 하나를 요청당 세마포어로 나눠 쓴다">
+  <text x="0" y="14" font-size="13" fill="var(--color-text-muted)">og:image 가져오기, 풀을 어디에 두는가</text>
+  <rect x="0" y="26" width="366" height="196" rx="8" fill="#e5534b" opacity="0.07" stroke="#e5534b" stroke-opacity="0.5"></rect>
+  <text x="183" y="48" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">수정 전</text>
+  <rect x="22" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="71" y="86" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 1</text>
+  <path d="M71 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="22" y="120" width="98" height="46" rx="6" fill="#e5534b" fill-opacity="0.12" stroke="#e5534b" stroke-opacity="0.6"></rect>
+  <text x="71" y="140" font-size="11" fill="var(--color-text)" text-anchor="middle">새 풀 6스레드</text>
+  <text x="71" y="156" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">쓰고 버림</text>
+  <rect x="138" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="187" y="86" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 2</text>
+  <path d="M187 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="138" y="120" width="98" height="46" rx="6" fill="#e5534b" fill-opacity="0.12" stroke="#e5534b" stroke-opacity="0.6"></rect>
+  <text x="187" y="140" font-size="11" fill="var(--color-text)" text-anchor="middle">새 풀 6스레드</text>
+  <text x="187" y="156" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">쓰고 버림</text>
+  <rect x="254" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="303" y="86" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 3</text>
+  <path d="M303 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="254" y="120" width="98" height="46" rx="6" fill="#e5534b" fill-opacity="0.12" stroke="#e5534b" stroke-opacity="0.6"></rect>
+  <text x="303" y="140" font-size="11" fill="var(--color-text)" text-anchor="middle">새 풀 6스레드</text>
+  <text x="303" y="156" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">쓰고 버림</text>
+  <text x="183" y="192" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">요청 N개면 스레드 6N개가 생겼다 사라진다</text>
+  <text x="183" y="210" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">서비스 전체 상한이 없다</text>
+  <rect x="394" y="26" width="366" height="196" rx="8" fill="var(--color-accent)" opacity="0.07" stroke="var(--color-accent)" stroke-opacity="0.5"></rect>
+  <text x="577" y="48" font-size="13" fill="var(--color-text)" text-anchor="middle" font-weight="600">수정 후</text>
+  <rect x="416" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="465" y="80" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 1</text>
+  <text x="465" y="95" font-size="10" fill="var(--color-text-dim)" text-anchor="middle">세마포어 6</text>
+  <path d="M465 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="532" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="581" y="80" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 2</text>
+  <text x="581" y="95" font-size="10" fill="var(--color-text-dim)" text-anchor="middle">세마포어 6</text>
+  <path d="M581 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="648" y="62" width="98" height="40" rx="6" fill="var(--color-bg-subtle)" stroke="var(--color-border)"></rect>
+  <text x="697" y="80" font-size="12" fill="var(--color-text)" text-anchor="middle">요청 3</text>
+  <text x="697" y="95" font-size="10" fill="var(--color-text-dim)" text-anchor="middle">세마포어 6</text>
+  <path d="M697 102 v14m-4-6l4 6 4-6" stroke="var(--color-text-dim)" stroke-width="1.3" fill="none"></path>
+  <rect x="416" y="120" width="330" height="46" rx="6" fill="var(--color-accent-soft)" stroke="var(--color-accent)"></rect>
+  <text x="581" y="140" font-size="12" fill="var(--color-text)" text-anchor="middle" font-weight="600">공용 고정 풀 12스레드</text>
+  <text x="581" y="157" font-size="11" fill="var(--color-text-dim)" text-anchor="middle">데몬 스레드, 서비스와 수명이 같다</text>
+  <text x="577" y="192" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">전체 상한 12, 요청당 상한 6</text>
+  <text x="577" y="210" font-size="12" fill="var(--color-text-dim)" text-anchor="middle">두 요청이 6개씩 나눠 쓰고 셋째부터 대기</text>
+</svg>
+<pre><code class="language-java">@Value("${news.image.pool-size:12}")
+private int imagePoolSize;
+
+private volatile ExecutorService imagePool;
+
+private ExecutorService imagePool() {
+    if (imagePool == null) {
+        synchronized (this) {
+            if (imagePool == null) {
+                imagePool = Executors.newFixedThreadPool(imagePoolSize, r -> {
+                    Thread t = new Thread(r, "news-image");
+                    t.setDaemon(true);
+                    return t;
+                });
+            }
+        }
+    }
+    return imagePool;
+}
+
+@PreDestroy
+void shutdownImagePool() {
+    if (imagePool != null) imagePool.shutdownNow();
+}
+
+private List&#x3C;NewsSearchItem> enrichWithImages(List&#x3C;JsonNode> rows) {
+    Semaphore perRequest = new Semaphore(Math.min(imageConcurrency, rows.size()));
+    List&#x3C;CompletableFuture&#x3C;NewsSearchItem>> futures = rows.stream()
+            .map(row -> CompletableFuture.supplyAsync(() -> {
+                perRequest.acquireUninterruptibly();
+                try {
+                    return toItem(row);
+                } finally {
+                    perRequest.release();
+                }
+            }, imagePool()))
+            .toList();
+    ...
+}
+</code></pre>
+<p>두 숫자가 서로 다른 일을 한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>설정</th><th>값</th><th>뜻</th></tr></thead><tbody><tr><td><code>news.image.pool-size</code></td><td>12</td><td>서버 전체에서 og:image 를 동시에 가져오는 스레드 상한</td></tr><tr><td><code>news.image.concurrency</code></td><td>6</td><td>요청 하나가 그중 최대 몇 개를 쓸 수 있는가</td></tr></tbody></table>
+<p>전체 상한만 있으면 요청 하나가 풀을 독점해 뒤 요청이 통째로 기다린다. 요청당 상한만 있으면 전체가 무한정 늘어난다. 둘 다 있어야 요청 두 개가 6개씩 나눠 쓰고, 세 번째부터는 앞 것이 끝나는 대로 들어간다.</p>
+<p>데몬 스레드로 만든 건 종료 때 이 풀이 JVM 을 붙들지 않게 하려는 것이고, 그래도 <code>@PreDestroy</code> 에서 <code>shutdownNow()</code> 를 한 번 더 부른다. 지연 생성에 이중 검사 잠금을 쓴 건 세마포어와 같은 이유로 <code>@Value</code> 주입 시점 때문이다. <code>@PostConstruct</code> 에서 만들어도 되는데, 풀이 실제로 필요해지는 첫 요청 때 만드는 쪽이 기동을 가볍게 유지해서 그렇게 뒀다.</p>
+<h2>4. 같은 종류의 문제를 다른 곳에서도 찾는 법</h2>
+<p>이 두 군데는 "요청 스레드가 CPU 나 스레드를 상한 없이 쓴다"는 같은 패턴이었다. 코드베이스를 훑을 때 잡아낸 기준은 세 가지였다.</p>
+<p>첫째, <code>Executors.new...</code> 가 메서드 안에 있으면 의심한다. 풀은 수명이 서비스와 같아야지 요청과 같으면 안 된다. 둘째, 무거운 계산(추론, 이미지 처리, 큰 정렬)이 요청 스레드에서 직접 돌면 동시성 상한이 어디 있는지 찾는다. 없으면 톰캣 스레드 200개가 곧 상한인데, 그건 상한이 아니다. 셋째, 그 계산이 없어도 응답이 성립하는지 본다. 성립하면 타임아웃 + 건너뛰기가 가능하고, 아니면 큐잉이나 비동기화로 가야 한다.</p>
+<p>같은 기준으로 <code>FxQuoteService</code> 도 걸렸다. 환율 갱신이 <code>synchronized</code> 블록 안에서 야후를 다섯 번 직렬로 부르고, 그 사이 다른 호출자는 잠금에서 기다린다. 진단 때는 <code>@Scheduled</code> 로 60초마다 미리 받아 두고 요청은 캐시만 읽게 하자고 적어 뒀는데, 실제로는 하지 않았다. 사용자가 아무도 없는 새벽에도 야후를 분당 다섯 번 부르게 되기 때문이다. 이 서비스는 외부 API 호출 한도가 가장 빡빡한 자원이라, 그쪽을 쓰는 해법은 지연을 조금 감수하더라도 피했다. 대신 이건 온디맨드 + 60초 캐시를 그대로 두고, 나중에 부하가 실제로 보이면 다시 판단하기로 했다.</p>
+<h2>5. 남은 것</h2>
+<p>수정 전후 지연을 재지 않았다. 부하를 걸 도구가 아직 없고, 이 문제는 구조상 자명해서 측정 없이도 고칠 가치가 있었다. 다만 <code>max-concurrent=2</code>, <code>acquire-timeout=3000ms</code>, <code>pool-size=12</code> 세 숫자는 감으로 정한 것이라 부하 테스트를 붙이면 그때 근거를 채워야 한다. 특히 "3초 넘겨 감성을 비운 응답"이 실제로 몇 %나 나오는지는 로그를 debug 로 두고 있어 운영에서 보이지 않는다. 카운터 하나를 메트릭으로 내보내는 게 다음 일이다.</p>
+<p>설정은 전부 환경변수로 뺐다.</p>
+<pre><code class="language-yaml">news:
+  sentiment:
+    max-concurrent: ${NEWS_SENTIMENT_MAX_CONCURRENT:2}
+    acquire-timeout-ms: ${NEWS_SENTIMENT_ACQUIRE_TIMEOUT_MS:3000}
+  image:
+    concurrency: ${NEWS_IMAGE_CONCURRENCY:6}
+    pool-size: ${NEWS_IMAGE_POOL_SIZE:12}
+</code></pre>
+<p>이 글은 최적화 3단계의 백엔드 몫이고, 같은 단계의 배치 쪽(야후 429 공용 가드, 파이프라인 잠금과 단계 타임아웃)은 따로 정리한다.</p>
+</article><section><h2>StockAnalyst의 다른 글</h2><ul class="pr-list"><li><a href="/post/stockanalyst-dev-log-4-deploy">StockAnalyst 개발기 (4) - 클라우드 견적을 내다 집에 서버를 올린 기록</a><p>주식 분석 서비스를 실제로 배포한 기록. OCI 무료 티어가 계속 용량 부족으로 막혀 유료까지 전부 견적을 냈고, 결국 데이터가 이미 있는 집 PC 로 갔다. mem_limit 을 근거를 세워 다시 계산하고, Cloudflare Tunnel 로 포트를 열지 않고 공개하고, TLS 종단 때문에 OAuth 가 깨지던 문제와 MySQL 이 두 개가 되는 사고를 잡았다.</p><span class="pr-meta">2026.09.05</span></li><li><a href="/post/stockanalyst-oci-deploy">StockAnalyst OCI 무료 티어 배포 준비 - 홈 리전, 요청 수 병목, ARM 빌드, 유휴 회수</a><p>주식 분석 서비스를 오라클 클라우드 Always Free에 올리기까지의 판단 기록. 2026년 6월에 반토막 난 A1 스펙, 홈 리전이 춘천이면 A1을 못 쓴다는 되돌릴 수 없는 제약, 관리형 MySQL 대신 직접 설치를 고른 세 가지 이유, 용량이 아니라 요청 수가 먼저 바닥나는 Object Storage, 유휴 인스턴스 회수, aarch64 빌드 함정, mem_limit 없는 컨테이너에서 JVM이 호스트를 노리는 문제.</p><span class="pr-meta">2026.09.04</span></li><li><a href="/post/stockanalyst-dev-log-3-signals-rates">StockAnalyst 개발기 (3) - 실시간 신호와 사후 분석을 분리하다, 공매도 카드, 국채·금리 페이지</a><p>StockAnalyst 개발기 3편. 매번 다시 계산돼 사라지던 매수·매도 신호를 실시간(확정)과 사후 분석으로 분리, 신호당 기사 4건 재연결, 공매도 화면을 카드로 바꾸고 색의 뜻을 명시, 국채·금리 페이지 신설과 재할인율을 기준금리로 쓰던 실수, 화면이 비어 보이던 수집 버그 다섯 개.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dow-theory">StockAnalyst 다우 이론 시황 위젯 - 주봉 ZigZag로 1차 추세 판정, 9국면, 52주 위치를 로그 스케일로</a><p>다우 이론 1차 추세를 주봉 + ZigZag 5%로 판정하는 시황 위젯 기록. 두 지수의 상호 확증, 52주 위치와 합쳐 9국면 추정, 횡보에 이름이 없어 늘 &quot;판독 보류&quot;만 뜨던 구멍, 52주 레인지가 3.7배일 때 선형 위치가 거짓말을 해서 로그 스케일로 바꾼 과정, 그리고 낯선 자릿수를 오염으로 오해했다가 데이터가 정상임을 확인한 검증 방법.</p><span class="pr-meta">2026.09.03</span></li><li><a href="/post/stockanalyst-dev-log-2-overview">StockAnalyst 개발기 (2) 목차 - 포트폴리오, 위험분석, 데이터 파이프라인, 배포까지</a><p>StockAnalyst 개발기 2편 목차. V1 차트·뉴스, V2 포트폴리오, V3 위험분석까지 세 단계 계획이 실제로 어떻게 만들어졌는지, 주제별 10편의 글과 배포 전 남은 일을 정리한다.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-portfolio">StockAnalyst 포트폴리오 - 전략을 고르게 하지 말고 추천하자, 채권과 환율을 캔들처럼 다루기</a><p>StockAnalyst 포트폴리오 화면 기록. 전략 프리셋 12개를 고르게 하던 기획을 보유 종목 입력 + 규칙 기반 추천으로 뒤집었다. 채권과 미국 주식을 원화 가격 시리즈로 캔들 테이블에 넣어 기존 위험분석이 수정 없이 처리하게 한 설계.</p><span class="pr-meta">2026.09.02</span></li></ul></section></main></div>
+  </body>
+</html>

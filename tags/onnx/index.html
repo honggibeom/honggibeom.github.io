@@ -9,15 +9,15 @@
     />
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
-    <meta name="description" content="onnx 태그가 달린 글 2편" />
-    <meta name="keywords" content="onnx, stockanalyst, python, pytorch, 변곡점, 머신러닝, spring, bert, 감성분석, 파인튜닝, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle" />
+    <meta name="description" content="onnx 태그가 달린 글 3편" />
+    <meta name="keywords" content="onnx, stockanalyst, spring, 동시성, 세마포어, 스레드풀, 최적화, python, pytorch, 변곡점, 머신러닝, bert, 감성분석, 파인튜닝, 홍기범, 개발 블로그, 풀스택 개발자, React, Spring Boot, Java, Docker, Oracle" />
     <meta name="author" content="홍기범 (Honggibeom)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://honggibeom.github.io/tags/onnx" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Honggibeom's blog" />
     <meta property="og:title" content="#onnx | Honggibeom's blog" />
-    <meta property="og:description" content="onnx 태그가 달린 글 2편" />
+    <meta property="og:description" content="onnx 태그가 달린 글 3편" />
     <meta property="og:url" content="https://honggibeom.github.io/tags/onnx" />
     <meta property="og:image" content="https://honggibeom.github.io/logo512.png" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -58,7 +58,7 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cca0aa9240d8fb3cbaf85657d76fd05a&libraries=services,clusterer"
     ></script>
-    <script type="module" crossorigin src="/assets/index-BiXmtaH6.js"></script>
+    <script type="module" crossorigin src="/assets/index-RuiSjIwy.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ScW1pibr.css">
   </head>
   <body>
@@ -76,6 +76,6 @@
   .pr ul.pr-list{list-style:none;padding:0}
   .pr ul.pr-list li{padding:14px 0;border-bottom:1px solid var(--color-border,#d8dee4)}
   .pr ul.pr-list p{margin:4px 0 0;color:var(--color-text-muted,#4e5763)}
-</style><main class="pr"><h1>#onnx</h1><p class="pr-meta">2편</p><ul class="pr-list"><li><a href="/post/stockanalyst-turning-point-v2">StockAnalyst 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a><p>전 종목 배치 예측을 지우고 버튼을 눌렀을 때만 계산하는 구조로 바꾼 기록. 국내 종목 신호가 무너진 진짜 원인(임계값 이진 탐색의 도달 불가능한 목표)을 찾고, TensorFlow를 버리고 PyTorch로 옮겨 국내 372·미국 380종목으로 v2를 재학습했다. 그리고 평가를 정직하게 다시 짜서 &quot;가격 지표만으로는 정밀도 0.6이 상한&quot;이라는 결론에 도달한 과정.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-sentiment-model">StockAnalyst 뉴스 감성 분류, 한국어 BERT를 파인튜닝해서 Spring에서 ONNX로 돌리기</a><p>뉴스 기사의 호재/악재 판정을 Gemini에서 자체 모델로 옮겼다. 왜 LLM이 아니라 BERT 분류기인지, 정답 데이터를 어떻게 만들고 어떻게 평가했는지, 그리고 파이썬 없이 Spring 안에서 ONNX로 추론하는 구조까지 실험 기록 그대로 남긴다.</p><span class="pr-meta">2026.09.01</span></li></ul></main></div>
+</style><main class="pr"><h1>#onnx</h1><p class="pr-meta">3편</p><ul class="pr-list"><li><a href="/post/stockanalyst-inference-concurrency">StockAnalyst 요청마다 생기던 ONNX 추론과 스레드풀 - 세마포어와 공용 풀로 묶기</a><p>뉴스 감성 추론이 요청 스레드 위에서 제한 없이 돌고, 검색 요청마다 og:image 스레드풀을 새로 만들었다 버리고 있었다. 동시 요청이 겹치면 코어를 N배로 다투다 전부 느려지는 구조. ONNX 추론은 Semaphore(2)로 자리를 정하고 못 잡으면 감성 없이 응답하게, 이미지 풀은 공용 고정 풀 하나에 요청당 세마포어로 바꾼 기록이다.</p><span class="pr-meta">2026.09.06</span></li><li><a href="/post/stockanalyst-turning-point-v2">StockAnalyst 변곡점 예측 v2 - 배치를 지우고 온디맨드로, PyTorch 재학습과 정밀도 상한</a><p>전 종목 배치 예측을 지우고 버튼을 눌렀을 때만 계산하는 구조로 바꾼 기록. 국내 종목 신호가 무너진 진짜 원인(임계값 이진 탐색의 도달 불가능한 목표)을 찾고, TensorFlow를 버리고 PyTorch로 옮겨 국내 372·미국 380종목으로 v2를 재학습했다. 그리고 평가를 정직하게 다시 짜서 &quot;가격 지표만으로는 정밀도 0.6이 상한&quot;이라는 결론에 도달한 과정.</p><span class="pr-meta">2026.09.02</span></li><li><a href="/post/stockanalyst-sentiment-model">StockAnalyst 뉴스 감성 분류, 한국어 BERT를 파인튜닝해서 Spring에서 ONNX로 돌리기</a><p>뉴스 기사의 호재/악재 판정을 Gemini에서 자체 모델로 옮겼다. 왜 LLM이 아니라 BERT 분류기인지, 정답 데이터를 어떻게 만들고 어떻게 평가했는지, 그리고 파이썬 없이 Spring 안에서 ONNX로 추론하는 구조까지 실험 기록 그대로 남긴다.</p><span class="pr-meta">2026.09.01</span></li></ul></main></div>
   </body>
 </html>
